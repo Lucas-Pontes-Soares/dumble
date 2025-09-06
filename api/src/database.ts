@@ -9,11 +9,11 @@ export class Database {
   // O construtor é privado para impedir a criação de novas instâncias,
   private constructor() {
     this.pool = new Pool({
-      user: process.env.DB_USER,
-      host: process.env.DB_HOST,
-      database: process.env.DB_DATABASE,
-      password: process.env.DB_PASSWORD,
-      port: 5432, // Porta padrão do PostgreSQL
+      user: process.env.PGUSER,
+      host: process.env.PGHOST,
+      database: process.env.PGDATABASE,
+      password: process.env.PGPASSWORD,
+      port: 5432 // Porta padrão do PostgreSQL
     });
 
     // Adiciona um listener para a conexão e desconexão
