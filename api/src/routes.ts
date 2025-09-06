@@ -3,6 +3,8 @@ import testCreateUser from './controllers/testCreateUser';
 
 const router = Router();
 
+
+
 // Definir cada rota
 router.get('/testCreateUser', testCreateUser);
 
