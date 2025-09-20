@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 import { Request, Response } from 'express';
 import { Database } from '../../database';
 
@@ -10,10 +11,15 @@ export const createTeacher = async (req: Request, res: Response) => {
     }
 
     try {
+        // Defina o 'salt' (o número de rodadas de criptografia)
+        const saltRounds = 10;
+        // Gere o hash da senha
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
         const db = Database.getInstance();
         const result = await db.query(
             'INSERT INTO teachers (name, email, password, birthday, picture) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [name, email, password, birthday, picture]
+            [name, email, hashedPassword, birthday, picture]
         );
 
         const newTeacher = result.rows[0];
