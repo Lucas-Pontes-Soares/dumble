@@ -1,11 +1,14 @@
 import { Router } from 'express';
 
+// importa os controladores
+// para professores
 import { createTeacher } from './controllers/teacher/teacherCreate';
 import { deleteTeacher } from './controllers/teacher/teacherDelete';
 import { getTeacher } from './controllers/teacher/teacherGet';
 import { loginTeacher } from './controllers/teacher/teacherLogin';
 import { updateTeacher } from './controllers/teacher/teacherUpdate';
 
+// para estudantes
 import { createStudent } from './controllers/student/studentCreate';
 import { deleteStudent } from './controllers/student/studentDelete';
 import { getStudent } from './controllers/student/studentGet';

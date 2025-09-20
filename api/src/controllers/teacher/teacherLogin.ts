@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 import { Request, Response } from 'express';
 import { Database } from '../../database';
 
@@ -12,14 +13,24 @@ export const loginTeacher = async (req: Request, res: Response) => {
     try {
         const db = Database.getInstance();
         const result = await db.query(
-            'SELECT id, name, email, birthday, picture FROM teachers WHERE email = $1 AND password = $2',
-            [email, password]
+            'SELECT * FROM teachers WHERE email = $1',
+            [email]
         );
 
+        // Verifica se o email existe
         if (result.rowCount === 0) {
-            return res.status(401).json({ message: 'Invalid credentials' });
+            return res.status(401).json({ message: 'Invalid credentials. Email not found.' });
         }
 
+        // Verifica se a senha está correta
+        const user = result.rows[0];
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordCorrect) {
+            return res.status(401).json({ message: 'Invalid credentials. Password Incorrect.' });
+        }
+
+        // Retorna os dados do professor (senha criptografada)
         return res.status(200).json(result.rows[0]);
 
     } catch (error) {
