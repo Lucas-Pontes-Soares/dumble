@@ -20,10 +20,6 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
-app.get('/health', (req: Request, res: Response) => {
-  res.send('OK');
-});
-
 app.use(routes);
 
 app.listen(port, () => {

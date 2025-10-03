@@ -7,7 +7,6 @@ export const createStudent = async (req: Request, res: Response) => {
 
     if (!name || !email || !password || !birthday || !picture) {
         return res.status(400).json({ message: 'All fields are required' });
-
     }
 
     try {
@@ -23,7 +22,9 @@ export const createStudent = async (req: Request, res: Response) => {
         );
 
         const newStudent = result.rows[0];
-        return res.status(201).json(newStudent);
+
+        delete newStudent.password;
+        return res.status(201).json({ student: newStudent });
 
     } catch (error) {
         console.error(error);

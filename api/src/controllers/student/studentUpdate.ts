@@ -1,7 +1,17 @@
 import { Request, Response } from 'express';
 import { Database } from '../../database';
 
-export const updateStudent = async (req: Request, res: Response) => {
+// Adicionando o userAuthenticated ao Request original do Express
+interface AuthenticatedRequest extends Request {
+    userAuthenticated?: {
+      id: number;
+      role: string;
+    };
+}
+
+export const updateStudent = async (req: AuthenticatedRequest, res: Response) => {
+    const userAuthenticated  = req.userAuthenticated;
+
     const { id } = req.params;
     const { name, email, password, birthday, picture } = req.body;
 
@@ -27,7 +37,10 @@ export const updateStudent = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'Student not found' });
         }
 
-        return res.status(200).json(result.rows[0]);
+        const student = result.rows[0];
+
+        delete student.password;
+        return res.status(200).json({ student: student });
 
     } catch (error) {
         console.error(error);

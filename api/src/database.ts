@@ -8,6 +8,11 @@ export class Database {
 
   // O construtor é privado para impedir a criação de novas instâncias,
   private constructor() {
+
+    if (!process.env.PGUSER || !process.env.PGHOST || !process.env.PGDATABASE || !process.env.PGPASSWORD) {
+      throw new Error('Database configuration environment variables must be defined');
+    }
+
     this.pool = new Pool({
       user: process.env.PGUSER,
       host: process.env.PGHOST,

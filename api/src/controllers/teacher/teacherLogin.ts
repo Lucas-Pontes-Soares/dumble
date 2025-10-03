@@ -1,13 +1,13 @@
 const bcrypt = require("bcrypt");
 import { Request, Response } from 'express';
 import { Database } from '../../database';
+import { generateJWTToken } from '../jwt-token/jwt-token-generate';
 
 export const loginTeacher = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
         return res.status(400).json({ message: 'Email and password are required' });
-
     }
 
     try {
@@ -23,15 +23,19 @@ export const loginTeacher = async (req: Request, res: Response) => {
         }
 
         // Verifica se a senha está correta
-        const user = result.rows[0];
-        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        const teacher = result.rows[0];
+        const isPasswordCorrect = await bcrypt.compare(password, teacher.password);
 
         if (!isPasswordCorrect) {
             return res.status(401).json({ message: 'Invalid credentials. Password Incorrect.' });
         }
 
-        // Retorna os dados do professor (senha criptografada)
-        return res.status(200).json(result.rows[0]);
+        // Gera o token JWT
+        const token = generateJWTToken(teacher.id, 'teacher');
+
+        // Retorna os dados do professor
+        delete teacher.password;
+        return res.status(200).json({ teacher: teacher, JWTToken: token});
 
     } catch (error) {
         console.error(error);

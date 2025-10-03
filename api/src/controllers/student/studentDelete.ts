@@ -1,12 +1,20 @@
 import { Request, Response } from 'express';
 import { Database } from '../../database';
 
-export const deleteStudent = async (req: Request, res: Response) => {
+// Adicionando o userAuthenticated ao Request original do Express
+interface AuthenticatedRequest extends Request {
+    userAuthenticated?: {
+      id: number;
+      role: string;
+    };
+}
+
+export const deleteStudent = async (req: AuthenticatedRequest, res: Response) => {
+    const userAuthenticated  = req.userAuthenticated;
     const { id } = req.params;
 
     if (!id) {
         return res.status(400).json({ message: 'Student ID is required' });
-
     }
 
     try {
@@ -17,11 +25,14 @@ export const deleteStudent = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'Student not found' });
 
         }
-        return res.status(200).json({ message: 'Student deleted', teacher: result.rows[0] });
+
+        const student = result.rows[0];
+
+        delete student.password;
+        return res.status(200).json({ message: 'Student deleted', student: student });
 
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Student deleting teacher' });
-
+        return res.status(500).json({ message: 'Error deleting student' });
     }
 };

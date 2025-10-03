@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { verifyJWTToken } from './controllers/jwt-token/jwt-token-verify';
 
 // importa os controladores
 // para professores
@@ -17,19 +18,24 @@ import { updateStudent } from './controllers/student/studentUpdate';
 
 const router = Router();
 
+// Rota para verificar se a API está funcionando
+router.get('/health', (req, res) => {
+    res.send('OK');
+});
+
 // Rotas para professores
 router.post('/teachers', createTeacher);            
-router.delete('/teachers/:id', deleteTeacher);      
-router.get('/teachers/:id', getTeacher);            
+router.delete('/teachers/:id', verifyJWTToken, deleteTeacher);      
+router.get('/teachers/:id', verifyJWTToken, getTeacher);            
 router.post('/teachers/login', loginTeacher);       
-router.put('/teachers/:id', updateTeacher);         
+router.put('/teachers/:id', verifyJWTToken, updateTeacher);         
 
 // Rotas para estudantes
 router.post('/students', createStudent);            
-router.delete('/students/:id', deleteStudent);      
-router.get('/students/:id', getStudent);            
+router.delete('/students/:id', verifyJWTToken, deleteStudent);      
+router.get('/students/:id', verifyJWTToken, getStudent);            
 router.post('/students/login', loginStudent);       
-router.put('/students/:id', updateStudent);         
+router.put('/students/:id', verifyJWTToken, updateStudent);         
 
 // Exporta o roteador para ser usado em server.ts
 export default router;
