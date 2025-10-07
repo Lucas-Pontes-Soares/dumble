@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 import { Request, Response } from 'express';
 import { Database } from '../../database';
-import { generateJWTToken } from '../jwt-token/jwt-token-generate';
+import { generateJWTToken } from '../jwt-token/generateJWTToken';
 
 export const loginTeacher = async (req: Request, res: Response) => {
     const { email, password } = req.body;

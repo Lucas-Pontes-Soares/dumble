@@ -10,17 +10,25 @@ interface AuthenticatedRequest extends Request {
 }
 
 export const deleteTeacher = async (req: AuthenticatedRequest, res: Response) => {
-    const userAuthenticated  = req.userAuthenticated;
+    const userAuthenticated = req.userAuthenticated;
 
-    const { id } = req.params;
+    const { teacher_id } = req.params;
 
-    if (!id) {
+    if(userAuthenticated?.role !== 'teacher'){
+        return res.status(403).json({ message: 'Route only for teachers' });
+    }
+
+    if (!teacher_id) {
         return res.status(400).json({ message: 'Teacher ID is required' });
+    }
+
+    if (teacher_id !== String(userAuthenticated.id)) {
+        return res.status(403).json({ message: 'Forbidden: You can only delete your own account' });
     }
 
     try {
         const db = Database.getInstance();
-        const result = await db.query('DELETE FROM teachers WHERE id = $1 RETURNING *', [id]);
+        const result = await db.query('DELETE FROM teachers WHERE id = $1 RETURNING *', [teacher_id]);
 
         if (result.rowCount === 0) {
             return res.status(404).json({ message: 'Teacher not found' });

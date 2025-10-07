@@ -10,13 +10,25 @@ interface AuthenticatedRequest extends Request {
 }
 
 export const getStudent = async (req: AuthenticatedRequest, res: Response) => {
-    const userAuthenticated  = req.userAuthenticated;
+    const userAuthenticated = req.userAuthenticated;
 
-    const { id } = req.params;
+    const { student_id } = req.params;
+
+    if(userAuthenticated?.role !== 'student'){
+        return res.status(403).json({ message: 'Route only for students' });
+    }
+
+    if (!student_id) {
+        return res.status(400).json({ message: 'Student ID is required' });
+    }
+
+    if (student_id !== String(userAuthenticated.id)) {
+        return res.status(403).json({ message: 'Forbidden: You can only get your own account' });
+    }
 
     try {
         const db = Database.getInstance();
-        const result = await db.query('SELECT id, name, email, birthday, picture FROM students WHERE id = $1', [id]);
+        const result = await db.query('SELECT id, name, email, birthday, picture FROM students WHERE id = $1', [student_id]);
 
         if (result.rowCount === 0) {
             return res.status(404).json({ message: 'Student not found' });

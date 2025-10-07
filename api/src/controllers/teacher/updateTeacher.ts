@@ -10,13 +10,21 @@ interface AuthenticatedRequest extends Request {
 }
 
 export const updateTeacher = async (req: AuthenticatedRequest, res: Response) => {
-    const userAuthenticated  = req.userAuthenticated;
+    const userAuthenticated = req.userAuthenticated;
 
-    const { id } = req.params;
+    const { teacher_id } = req.params;
     const { name, email, password, birthday, picture } = req.body;
 
-    if (!id) {
+    if(userAuthenticated?.role !== 'teacher'){
+        return res.status(403).json({ message: 'Route only for teachers' });
+    }
+
+    if (!teacher_id) {
         return res.status(400).json({ message: 'Teacher ID is required' });
+    }
+
+    if (teacher_id !== String(userAuthenticated.id)) {
+        return res.status(403).json({ message: 'Forbidden: You can only update your own account' });
     }
 
     try {
@@ -30,7 +38,7 @@ export const updateTeacher = async (req: AuthenticatedRequest, res: Response) =>
                 picture = COALESCE($5, picture)
             WHERE id = $6
             RETURNING id, name, email, birthday, picture`,
-            [name, email, password, birthday, picture, id]
+            [name, email, password, birthday, picture, teacher_id]
         );
 
         if (result.rowCount === 0) {

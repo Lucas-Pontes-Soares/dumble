@@ -1,20 +1,42 @@
 import { Router } from 'express';
-import { verifyJWTToken } from './controllers/jwt-token/jwt-token-verify';
+import { verifyJWTToken } from './controllers/jwt-token/verifyJWTToken';
+import multer from 'multer';
 
 // importa os controladores
 // para professores
-import { createTeacher } from './controllers/teacher/teacherCreate';
-import { deleteTeacher } from './controllers/teacher/teacherDelete';
-import { getTeacher } from './controllers/teacher/teacherGet';
-import { loginTeacher } from './controllers/teacher/teacherLogin';
-import { updateTeacher } from './controllers/teacher/teacherUpdate';
+import { createTeacher } from './controllers/teacher/createTeacher';
+import { deleteTeacher } from './controllers/teacher/deleteTeacher';
+import { getTeacher } from './controllers/teacher/getTeacher';
+import { getTeacherByClassId } from './controllers/teacher/getTeacherByClassId';
+import { loginTeacher } from './controllers/teacher/loginTeacher';
+import { updateTeacher } from './controllers/teacher/updateTeacher';
 
 // para estudantes
-import { createStudent } from './controllers/student/studentCreate';
-import { deleteStudent } from './controllers/student/studentDelete';
-import { getStudent } from './controllers/student/studentGet';
-import { loginStudent } from './controllers/student/studentLogin';
-import { updateStudent } from './controllers/student/studentUpdate';
+import { createStudent } from './controllers/student/createStudent';
+import { deleteStudent } from './controllers/student/deleteStudent';
+import { getStudent } from './controllers/student/getStudent';
+import { getStudentByClassId } from './controllers/student/getStudentByClassId';
+import { loginStudent } from './controllers/student/loginStudent';
+import { updateStudent } from './controllers/student/updateStudent';
+
+// para chatbot
+import { chatbotMessageCreate } from './controllers/chat-bot/createChatbotMessage';
+import { getChatBotMessageByStudentId } from './controllers/chat-bot/getChatBotMessageByStudentId';
+
+// para arquivos
+import { archiveCreate } from './controllers/archive/createArchive';
+import { getArchiveByClassId } from './controllers/archive/getArchiveByClassId';
+import { deleteArchive } from './controllers/archive/deleteArchive';
+
+// Configuração do multer para upload de arquivos
+const upload = multer({ storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+}) });
 
 const router = Router();
 
@@ -24,18 +46,29 @@ router.get('/health', (req, res) => {
 });
 
 // Rotas para professores
-router.post('/teachers', createTeacher);            
-router.delete('/teachers/:id', verifyJWTToken, deleteTeacher);      
-router.get('/teachers/:id', verifyJWTToken, getTeacher);            
-router.post('/teachers/login', loginTeacher);       
-router.put('/teachers/:id', verifyJWTToken, updateTeacher);         
+router.post('/teachers', createTeacher);
+router.delete('/teachers/:teacher_id', verifyJWTToken, deleteTeacher);
+router.get('/teachers/:teacher_id', verifyJWTToken, getTeacher);
+router.get('/classes/:class_id/teachers', verifyJWTToken, getTeacherByClassId);
+router.post('/teachers/login', loginTeacher);
+router.put('/teachers/:teacher_id', verifyJWTToken, updateTeacher);
 
 // Rotas para estudantes
-router.post('/students', createStudent);            
-router.delete('/students/:id', verifyJWTToken, deleteStudent);      
-router.get('/students/:id', verifyJWTToken, getStudent);            
-router.post('/students/login', loginStudent);       
-router.put('/students/:id', verifyJWTToken, updateStudent);         
+router.post('/students', createStudent);
+router.delete('/students/:student_id', verifyJWTToken, deleteStudent);
+router.get('/students/:student_id', verifyJWTToken, getStudent);
+router.get('/classes/:class_id/students', verifyJWTToken, getStudentByClassId);
+router.post('/students/login', loginStudent);
+router.put('/students/:student_id', verifyJWTToken, updateStudent);
+
+// Rotas para o chat-bot
+router.post('/chat-bot-messages', verifyJWTToken, chatbotMessageCreate);
+router.get('/students/:student_id/chat-bot-messages', verifyJWTToken, getChatBotMessageByStudentId);
+
+// Rotas para arquivos
+router.post('/archives', upload.single('file'), verifyJWTToken, archiveCreate);
+router.get('/classes/:class_id/archives', verifyJWTToken, getArchiveByClassId);
+router.delete('/archives/:archive_id', verifyJWTToken, deleteArchive);
 
 // Exporta o roteador para ser usado em server.ts
 export default router;
