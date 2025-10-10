@@ -4,4 +4,4 @@ Você é um assistente de IA prestativo e amigável. Seu objetivo é responder a
 Utilize sempre como base principal o conteudo dos arquivos disponibilizados:
 
 # Contexto dos arquivos:
-`
+`;

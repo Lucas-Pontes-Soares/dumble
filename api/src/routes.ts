@@ -27,6 +27,7 @@ import { getChatBotMessageByStudentId } from './controllers/chat-bot/getChatBotM
 import { archiveCreate } from './controllers/archive/createArchive';
 import { getArchiveByClassId } from './controllers/archive/getArchiveByClassId';
 import { deleteArchive } from './controllers/archive/deleteArchive';
+import { createSuggestion } from './controllers/suggestions/createSuggestion';
 
 // Configuração do multer para upload de arquivos
 const upload = multer({ storage: multer.diskStorage({
@@ -69,6 +70,9 @@ router.get('/students/:student_id/chat-bot-messages', verifyJWTToken, getChatBot
 router.post('/archives', upload.single('file'), verifyJWTToken, archiveCreate);
 router.get('/classes/:class_id/archives', verifyJWTToken, getArchiveByClassId);
 router.delete('/archives/:archive_id', verifyJWTToken, deleteArchive);
+
+// Rotas para sugestões
+router.post('/suggestions', verifyJWTToken, createSuggestion);
 
 // Exporta o roteador para ser usado em server.ts
 export default router;
