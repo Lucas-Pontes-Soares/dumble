@@ -39,8 +39,6 @@ const safetySettings = [
     }
 ];
 
-let systemInstruction = chatbotPrompt;
-
 export const chatbotMessageCreate = async (req: AuthenticatedRequest, res: Response) => {
     const userAuthenticated = req.userAuthenticated;
     const { student_message, class_id, student_id } = req.body;
@@ -74,12 +72,22 @@ export const chatbotMessageCreate = async (req: AuthenticatedRequest, res: Respo
             return res.status(404).json({ message: 'Archives not found' });
         }
 
-        let archivesContent = '';
+        let archivesContent = '\n# Contexto dos Arquivos\n';
         result.rows.forEach((row: any, index: number) => {
             archivesContent += `\n## Arquivo ${index + 1}\n${row.content}`;
         });
 
+        const resultClass = await db.query('SELECT title FROM classes WHERE id = $1', [class_id]);
+
+        if (resultClass.rowCount === 0) {
+            return res.status(404).json({ message: 'Class not found' });
+        }
+
+        const classTitle = resultClass.rows[0].title;
+
+        let systemInstruction = chatbotPrompt(classTitle);
         systemInstruction += archivesContent;
+
         console.log("System Instruction:", systemInstruction);
         
         res.setHeader('Content-Type', 'text/plain; charset=utf-8');

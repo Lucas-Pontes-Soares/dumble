@@ -65,7 +65,7 @@ export const createSuggestion = async (req: AuthenticatedRequest, res: Response)
             return res.status(404).json({ message: 'Archives not found' });
         }
 
-        let archivesContent = '';
+        let archivesContent = '\n# Contexto dos Arquivos\n';
         result.rows.forEach((row: any, index: number) => {
             archivesContent += `\n## Arquivo ${index + 1}\n${row.content}`;
         });
@@ -78,7 +78,9 @@ export const createSuggestion = async (req: AuthenticatedRequest, res: Response)
 
         const classTitle = resultClass.rows[0].title;
 
-        const systemInstruction = suggestionPrompt(classTitle, question_type);
+        let systemInstruction = suggestionPrompt(classTitle, question_type);
+        systemInstruction += archivesContent;
+
         console.log("System Instruction:", systemInstruction);
 
         const response = await ai.models.generateContent({

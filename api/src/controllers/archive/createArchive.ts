@@ -49,6 +49,12 @@ export const archiveCreate = async (req: AuthenticatedRequest, res: Response) =>
         const fileType = file.originalname.split('.').pop();
         const db = Database.getInstance();
         
+        const resultSelect = await db.query('SELECT id, type, name FROM archives WHERE class_id = $1', [class_id]);
+
+        if ((resultSelect.rowCount ?? 0) >= 5) {
+            return res.status(403).json({ message: 'Max 5 archives allowed' });
+        }
+
         const result = await db.query(
             'INSERT INTO archives (class_id, name, type, content) VALUES ($1, $2, $3, $4) RETURNING *',
             [class_id, fileName, fileType, cleanedMarkdown] 

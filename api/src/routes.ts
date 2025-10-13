@@ -27,7 +27,9 @@ import { getChatBotMessageByStudentId } from './controllers/chat-bot/getChatBotM
 import { archiveCreate } from './controllers/archive/createArchive';
 import { getArchiveByClassId } from './controllers/archive/getArchiveByClassId';
 import { deleteArchive } from './controllers/archive/deleteArchive';
-import { createSuggestion } from './controllers/suggestions/createSuggestion';
+
+// para sugestões
+import { createSuggestion } from './controllers/suggestion/createSuggestion';
 
 // Configuração do multer para upload de arquivos
 const upload = multer({ storage: multer.diskStorage({

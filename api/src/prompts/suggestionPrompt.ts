@@ -48,6 +48,7 @@ Responda sempre com a alternativa correta na mesma posição. Para o estudante s
 
 - Question Multiple Alternative
 Temos sempre 4 alternativas e apenas uma correta.
+No "correct_alternative" coloque sempre por extenso: "alternative_a", "alternative_b", "alternative_c" ou "alternative_d".
 {
   "suggestion": {
     "statement": "",
