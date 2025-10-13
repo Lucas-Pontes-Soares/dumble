@@ -46,15 +46,15 @@ export const createSuggestion = async (req: AuthenticatedRequest, res: Response)
     const { class_id, content, question_type } = req.body;
 
     if(userAuthenticated?.role !== 'teacher'){
-        return res.status(403).json({ message: 'Route only for teachers' });
+        return res.status(403).json({ success: false, message: 'Route only for teachers' });
     }
 
     if(!class_id) {
-        return res.status(400).json({ message: 'class_id is required' });
+        return res.status(400).json({ success: false, message: 'class_id is required' });
     }
 
     if (!content) {
-        return res.status(400).json({ message: 'Content is required' });
+        return res.status(400).json({ success: false, message: 'Content is required' });
     }
 
     try {
@@ -62,7 +62,7 @@ export const createSuggestion = async (req: AuthenticatedRequest, res: Response)
         const result = await db.query('SELECT content FROM archives WHERE class_id = $1', [class_id]);
 
         if (result.rowCount === 0) {
-            return res.status(404).json({ message: 'Archives not found' });
+            return res.status(404).json({ success: false, message: 'Archives not found' });
         }
 
         let archivesContent = '\n# Contexto dos Arquivos\n';
@@ -73,7 +73,7 @@ export const createSuggestion = async (req: AuthenticatedRequest, res: Response)
         const resultClass = await db.query('SELECT title FROM classes WHERE id = $1', [class_id]);
 
         if (resultClass.rowCount === 0) {
-            return res.status(404).json({ message: 'Class not found' });
+            return res.status(404).json({ success: false, message: 'Class not found' });
         }
 
         const classTitle = resultClass.rows[0].title;
@@ -96,10 +96,10 @@ export const createSuggestion = async (req: AuthenticatedRequest, res: Response)
 
         console.log(response.text);
         
-        return res.status(201).json({ suggestion: response.text });
+        return res.status(201).json({ success: true, suggestion: response.text });
 
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Error creating suggestion' });
+        return res.status(500).json({ success: false, message: 'Error creating suggestion' });
     }
 };

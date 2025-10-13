@@ -15,7 +15,7 @@ export const getTeacherByClassId = async (req: AuthenticatedRequest, res: Respon
     const { class_id } = req.params;
 
     if(!class_id) {
-        return res.status(400).json({ message: 'Class ID is required' });
+        return res.status(400).json({ success: false, message: 'Class ID is required' });
     }
 
     try {
@@ -23,15 +23,15 @@ export const getTeacherByClassId = async (req: AuthenticatedRequest, res: Respon
         const result = await db.query('SELECT teachers.* FROM classes INNER JOIN teachers ON teachers.id = classes.teacher_id WHERE classes.id = $1', [class_id]);
 
         if (result.rowCount === 0) {
-            return res.status(404).json({ message: 'Teacher not found' });
+            return res.status(404).json({ success: false, message: 'Teacher not found' });
         }
 
         const teacher = result.rows[0];
 
-        return res.status(200).json({ teacher: teacher });
+        return res.status(200).json({ success: true, teacher: teacher });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Error fetching teacher' });
+        return res.status(500).json({ success: false, message: 'Error fetching teacher' });
 
     }
 };

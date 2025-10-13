@@ -15,7 +15,7 @@ export const getStudentByClassId = async (req: AuthenticatedRequest, res: Respon
     const { class_id } = req.params;
 
     if(!class_id) {
-        return res.status(400).json({ message: 'Class ID is required' });
+        return res.status(400).json({ success: false, message: 'Class ID is required' });
     }
 
     try {
@@ -23,15 +23,15 @@ export const getStudentByClassId = async (req: AuthenticatedRequest, res: Respon
         const result = await db.query('SELECT students.* FROM students_classes INNER JOIN students ON students.id = students_classes.student_id WHERE students_classes.class_id = $1', [class_id]);
 
         if (result.rowCount === 0) {
-            return res.status(404).json({ message: 'Students not found' });
+            return res.status(404).json({ success: false, message: 'Students not found' });
         }
 
         const students = result.rows;
 
-        return res.status(200).json({ students: students });
+        return res.status(200).json({ success: true, students: students });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Error fetching students(s)' });
+        return res.status(500).json({ success: false, message: 'Error fetching students(s)' });
 
     }
 };

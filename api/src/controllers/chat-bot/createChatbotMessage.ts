@@ -45,23 +45,23 @@ export const chatbotMessageCreate = async (req: AuthenticatedRequest, res: Respo
 
     console.log(userAuthenticated);
     if(userAuthenticated?.role !== 'student'){
-        return res.status(403).json({ message: 'Route only for students' });
+        return res.status(403).json({ success: false, message: 'Route only for students' });
     }
 
     if (!student_message) {
-        return res.status(400).json({ message: 'Student message are required' });
+        return res.status(400).json({ success: false, message: 'Student message are required' });
     }
 
     if(!class_id) {
-        return res.status(400).json({ message: 'class_id is required' });
+        return res.status(400).json({ success: false, message: 'class_id is required' });
     }
 
     if(!student_id) {
-        return res.status(400).json({ message: 'student_id is required' });
+        return res.status(400).json({ success: false, message: 'student_id is required' });
     }
 
     if (student_id !== String(userAuthenticated.id)) {
-        return res.status(403).json({ message: 'Forbidden: You can only get your own account' });
+        return res.status(403).json({ success: false, message: 'Forbidden: You can only get your own account' });
     }
 
     try {
@@ -69,7 +69,7 @@ export const chatbotMessageCreate = async (req: AuthenticatedRequest, res: Respo
         const result = await db.query('SELECT content FROM archives WHERE class_id = $1', [class_id]);
 
         if (result.rowCount === 0) {
-            return res.status(404).json({ message: 'Archives not found' });
+            return res.status(404).json({ success: false, message: 'Archives not found' });
         }
 
         let archivesContent = '\n# Contexto dos Arquivos\n';
@@ -133,7 +133,7 @@ export const chatbotMessageCreate = async (req: AuthenticatedRequest, res: Respo
     } catch (error) {
         console.error("Erro durante o streaming da mensagem:", error); 
         if (!res.headersSent) {
-            return res.status(500).json({ message: 'Error sending message via chat-bot stream' });
+            return res.status(500).json({ success: false, message: 'Error sending message via chat-bot stream' });
         } else {
             res.end();
         }

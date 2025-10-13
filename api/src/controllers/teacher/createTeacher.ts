@@ -3,10 +3,10 @@ import { Request, Response } from 'express';
 import { Database } from '../../database';
 
 export const createTeacher = async (req: Request, res: Response) => {
-    const { name, email, password, birthday, picture } = req.body;
+    const { name, email, password, birthday } = req.body;
 
-    if (!name || !email || !password || !birthday || !picture) {
-        return res.status(400).json({ message: 'All fields are required' });
+    if (!name || !email || !password || !birthday) {
+        return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
     try {
@@ -17,18 +17,18 @@ export const createTeacher = async (req: Request, res: Response) => {
 
         const db = Database.getInstance();
         const result = await db.query(
-            'INSERT INTO teachers (name, email, password, birthday, picture) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [name, email, hashedPassword, birthday, picture]
+            'INSERT INTO teachers (name, email, password, birthday) VALUES ($1, $2, $3, $4) RETURNING *',
+            [name, email, hashedPassword, birthday]
         );
 
         const newTeacher = result.rows[0];
 
         delete newTeacher.password;
-        return res.status(201).json({ teacher: newTeacher });
+        return res.status(201).json({ success: true, teacher: newTeacher });
 
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Error creating teacher' });
+        return res.status(500).json({ success: false, message: 'Error creating teacher' });
 
     }
 };

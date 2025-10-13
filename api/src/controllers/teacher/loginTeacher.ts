@@ -7,7 +7,7 @@ export const loginTeacher = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-        return res.status(400).json({ message: 'Email and password are required' });
+        return res.status(400).json({ success: false, message: 'Email and password are required' });
     }
 
     try {
@@ -19,7 +19,7 @@ export const loginTeacher = async (req: Request, res: Response) => {
 
         // Verifica se o email existe
         if (result.rowCount === 0) {
-            return res.status(401).json({ message: 'Invalid credentials. Email not found.' });
+            return res.status(401).json({ success: false, message: 'Invalid credentials. Email not found.' });
         }
 
         // Verifica se a senha está correta
@@ -27,7 +27,7 @@ export const loginTeacher = async (req: Request, res: Response) => {
         const isPasswordCorrect = await bcrypt.compare(password, teacher.password);
 
         if (!isPasswordCorrect) {
-            return res.status(401).json({ message: 'Invalid credentials. Password Incorrect.' });
+            return res.status(401).json({ success: false, message: 'Invalid credentials. Password Incorrect.' });
         }
 
         // Gera o token JWT
@@ -35,11 +35,11 @@ export const loginTeacher = async (req: Request, res: Response) => {
 
         // Retorna os dados do professor
         delete teacher.password;
-        return res.status(200).json({ teacher: teacher, JWTToken: token});
+        return res.status(200).json({ success: true, teacher: teacher, JWTToken: token });
 
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Error logging in teacher' });
+        return res.status(500).json({ success: false, message: 'Error logging in teacher' });
 
     }
 };

@@ -5,26 +5,74 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ModeToggle } from "@/components/mode-toggle";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Eye, EyeOff } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Eye, EyeOff, ChevronDownIcon } from "lucide-react";
+import api from "../../apiService";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export default function CreateAccount() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [birthday, setBirthday] = useState<Date>();
   const [accountType, setAccountType] = useState("option-student");
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const navigateTo = useNavigate();
 
   async function handleCreateUser() {
-    console.log(email, password, accountType);
-    toast.success("Conta criada com sucesso!");
+    if (!name) {
+      toast.error("Nome é obrigatório");
+      return;
+    }
+    if (!email) {
+      toast.error("Email é obrigatório");
+      return;
+    }
+    if (!password) {
+      toast.error("Senha é obrigatória");
+      return;
+    }
+    if (!birthday) {
+      toast.error("Data de nascimento é obrigatória");
+      return;
+    }
+    if (!accountType) {
+      toast.error("Tipo de conta é obrigatório");
+      return;
+    }
+
+    let accountTypeSelected = "";
 
     if (accountType === "option-student") {
-      navigateTo("/students/");
+      accountTypeSelected = "students";
     } else if (accountType === "option-teacher") {
-      navigateTo("/teachers/");
+      accountTypeSelected = "teachers";
+    }
+
+    try {
+      const response = await api.post<any>(`/${accountTypeSelected}`, {
+        name,
+        email,
+        password,
+        birthday: birthday,
+      });
+
+      if (response.data.success === false) {
+        return;
+      }
+
+      toast.success("Conta criada com sucesso! Redirecionando para o login...");
+      navigateTo("/login");
+    } catch (error: any) {
+      console.error("Erro na requisição:", error);
+      toast.error(error.response.data.message);
     }
   }
 
@@ -39,7 +87,9 @@ export default function CreateAccount() {
 
         <div className="space-y-4">
           <div>
-            <Label htmlFor="name" mb-2>Nome</Label>
+            <Label htmlFor="name" className="mb-2">
+              Nome
+            </Label>
             <Input
               id="name"
               type="name"
@@ -50,7 +100,9 @@ export default function CreateAccount() {
           </div>
 
           <div>
-            <Label htmlFor="email" className="mb-2">Email</Label>
+            <Label htmlFor="email" className="mb-2">
+              Email
+            </Label>
             <Input
               id="email"
               type="email"
@@ -61,7 +113,36 @@ export default function CreateAccount() {
           </div>
 
           <div>
-            <Label htmlFor="password" className="mb-2">Senha</Label>
+            <Label htmlFor="birthday" className="mb-2">Data de Nascimento</Label>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  id="birthday"
+                  className="w-full justify-between font-normal"
+                >
+                  {birthday ? birthday.toLocaleDateString() : <span>Selecione uma data</span>}
+                  <ChevronDownIcon className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={birthday}
+                  captionLayout="dropdown"
+                  onSelect={(date) => {
+                    setBirthday(date);
+                    setOpen(false);
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div>
+            <Label htmlFor="password" className="mb-2">
+              Senha
+            </Label>
             <div className="relative">
               <Input
                 id="password"
@@ -69,14 +150,14 @@ export default function CreateAccount() {
                 placeholder="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pr-10" 
+                className="pr-10"
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
                 className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                onClick={() => setShowPassword((prev) => !prev)} 
+                onClick={() => setShowPassword((prev) => !prev)}
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4" aria-hidden="true" />
@@ -121,4 +202,3 @@ export default function CreateAccount() {
     </div>
   );
 }
-

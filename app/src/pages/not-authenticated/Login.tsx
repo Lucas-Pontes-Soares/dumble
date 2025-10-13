@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { ModeToggle } from "@/components/mode-toggle";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Eye, EyeOff } from "lucide-react"; 
+import api from "../../apiService";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -17,13 +18,50 @@ export default function Login() {
   const navigateTo = useNavigate();
 
   async function handleLoginUser() {
+    if(!email){
+      toast.error("Email é obrigatório");
+      return;
+    }
+    if(!password){
+      toast.error("Senha é obrigatória");
+      return;
+    }
+    if(!accountType){
+      toast.error("Tipo de conta é obrigatório");
+      return;
+    }
+
     console.log(email, password, accountType);
-    toast.success("Logado com sucesso!");
+
+    let accountTypeSelected = "";
 
     if (accountType === "option-student") {
-      navigateTo("/students/classes");
+      accountTypeSelected = "students";
     } else if (accountType === "option-teacher") {
-      navigateTo("/teachers/classes");
+      accountTypeSelected = "teachers";
+    }
+
+    try {
+      const response = await api.post<any>(`/${accountTypeSelected}/login`, {
+        email,
+        password,
+      });
+
+      console.log(response.data);
+
+      if (response.data.success === false) {
+        return;
+      }
+
+      toast.success("Logado com sucesso!");
+      if (accountType === "option-student") {
+        navigateTo("/students/classes");
+      } else if (accountType === "option-teacher") {
+        navigateTo("/teachers/classes");
+      }
+    } catch (error: any) {
+      console.error("Erro na requisição:", error);
+      toast.error(error.response.data.message);
     }
   }
 

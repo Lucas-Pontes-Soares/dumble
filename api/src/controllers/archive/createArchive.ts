@@ -26,16 +26,16 @@ export const archiveCreate = async (req: AuthenticatedRequest, res: Response) =>
     const { class_id } = req.body; 
 
     if(userAuthenticated?.role !== 'teacher'){
-        return res.status(403).json({ message: 'Route only for teachers' });
+        return res.status(403).json({ success: false, message: 'Route only for teachers' });
     }
 
     if (!file) {
-        return res.status(400).json({ message: 'File is required' });
+        return res.status(400).json({ success: false, message: 'File is required' });
     }
 
     if (!class_id) {
         if (file.path) await fs.unlink(file.path).catch(() => {});
-        return res.status(400).json({ message: 'class_id is required' });
+        return res.status(400).json({ success: false, message: 'class_id is required' });
     }
 
     const filePath = file.path; 
@@ -52,7 +52,7 @@ export const archiveCreate = async (req: AuthenticatedRequest, res: Response) =>
         const resultSelect = await db.query('SELECT id, type, name FROM archives WHERE class_id = $1', [class_id]);
 
         if ((resultSelect.rowCount ?? 0) >= 5) {
-            return res.status(403).json({ message: 'Max 5 archives allowed' });
+            return res.status(403).json({ success: false, message: 'Max 5 archives allowed' });
         }
 
         const result = await db.query(
@@ -64,7 +64,7 @@ export const archiveCreate = async (req: AuthenticatedRequest, res: Response) =>
 
         await fs.unlink(filePath);
 
-        return res.status(201).json({ archive: newArchive });
+        return res.status(201).json({ success: true, archive: newArchive });
 
     } catch (error) {
         console.error("Error creating archive:", error);
@@ -72,6 +72,6 @@ export const archiveCreate = async (req: AuthenticatedRequest, res: Response) =>
         if (filePath) {
             await fs.unlink(filePath).catch(err => console.error("Error cleaning up file:", err));
         }
-        return res.status(500).json({ message: 'Error creating archive' });
+        return res.status(500).json({ success: false, message: 'Error creating archive' });
     }
 };
