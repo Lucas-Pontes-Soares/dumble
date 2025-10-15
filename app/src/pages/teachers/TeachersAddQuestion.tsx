@@ -1,4 +1,4 @@
-import * as React from "react"
+import { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -12,9 +12,21 @@ import { Label } from "@/components/ui/label"
 import AddQuestionMultipleChoice from "@/components/add-question-multiple-choice"
 import AddQuestionFillInTheBlack from "@/components/add-question-fill-in-the-blank"
 import AddQuestionMatchingPairs from "@/components/add-question-matching-pairs"
+import { useNavigate } from "react-router"
+import { verifyJWTToken } from "@/verifyJWTToken";
 
 export default function TeachersAddQuestion() {
-  const [questionType, setQuestionType] = React.useState<string | null>(null)
+  const [questionType, setQuestionType] = useState<string | null>(null)
+  const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const decodedToken = verifyJWTToken("teacher", navigate);
+    if (decodedToken) {
+      setDecodedToken(decodedToken);
+    }
+  }, [navigate]);
 
   return (
     <div className="min-h-screen p-6 max-w-2xl mx-auto">
@@ -32,15 +44,15 @@ export default function TeachersAddQuestion() {
             </SelectGroup>
             </SelectContent>
         </Select>
-            {questionType === 'multiple-choice' ? (
-                <AddQuestionMultipleChoice />
-            )
-            : questionType === 'fill-in-the-blank' ? (
-                <AddQuestionFillInTheBlack />
-            )
-            : questionType === 'matching-pairs' ? (
-                <AddQuestionMatchingPairs />
-            ) : null}
+        {questionType === 'multiple-choice' ? (
+            <AddQuestionMultipleChoice />
+        )
+        : questionType === 'fill-in-the-blank' ? (
+            <AddQuestionFillInTheBlack />
+        )
+        : questionType === 'matching-pairs' ? (
+            <AddQuestionMatchingPairs />
+        ) : null}
     </div>
   )
 }

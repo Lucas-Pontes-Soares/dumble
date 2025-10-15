@@ -1,11 +1,23 @@
 import CurrentClass from "@/components/current-class";
 import TeachersNavigation from "@/components/teachers-navigation";
 import QuestionsTrail from '@/components/questions-trail';
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { Question } from "@/components/item-question-trail";
+import { useEffect, useState } from "react";
+import { verifyJWTToken } from "@/verifyJWTToken";
 
 export default function TeachersHome() {
   const { classCode } = useParams<{ classCode: string }>();
+  const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const decodedToken = verifyJWTToken("teacher", navigate);
+    if (decodedToken) {
+      setDecodedToken(decodedToken);
+    }
+  }, [navigate]);
 
   const questions: Question[] = [
     { id: 1, status: 'completed', position: 1, side: 'none', type: 'multiple' },

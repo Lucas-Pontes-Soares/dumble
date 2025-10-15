@@ -23,7 +23,7 @@ function removeMarkdownImages(markdown: string): string {
 export const archiveCreate = async (req: AuthenticatedRequest, res: Response) => {
     const userAuthenticated = req.userAuthenticated;
     const file = req.file; 
-    const { class_id } = req.body; 
+    const { class_code } = req.body; 
 
     if(userAuthenticated?.role !== 'teacher'){
         return res.status(403).json({ success: false, message: 'Route only for teachers' });
@@ -33,9 +33,9 @@ export const archiveCreate = async (req: AuthenticatedRequest, res: Response) =>
         return res.status(400).json({ success: false, message: 'File is required' });
     }
 
-    if (!class_id) {
+    if (!class_code) {
         if (file.path) await fs.unlink(file.path).catch(() => {});
-        return res.status(400).json({ success: false, message: 'class_id is required' });
+        return res.status(400).json({ success: false, message: 'class_code is required' });
     }
 
     const filePath = file.path; 
@@ -48,7 +48,14 @@ export const archiveCreate = async (req: AuthenticatedRequest, res: Response) =>
         const fileName = file.originalname.split('.').shift();
         const fileType = file.originalname.split('.').pop();
         const db = Database.getInstance();
-        
+       
+        const resultClassId = await db.query('SELECT * FROM classes WHERE code = $1', [class_code]);
+        if (resultClassId.rowCount === 0) {
+            await fs.unlink(filePath);
+            return res.status(404).json({ success: false, message: 'Class not found' });
+        }
+        const class_id = resultClassId.rows[0].id;
+
         const resultSelect = await db.query('SELECT id, type, name FROM archives WHERE class_id = $1', [class_id]);
 
         if ((resultSelect.rowCount ?? 0) >= 5) {

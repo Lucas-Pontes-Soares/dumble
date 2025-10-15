@@ -8,16 +8,24 @@ import { Plus } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import ClassItemSkeleton from "@/components/class-item-skeleton";
 import ClassItem from "@/components/class-item";
+import { useNavigate } from "react-router";
+import { verifyJWTToken } from "@/verifyJWTToken";
 
 export default function TeachersClasses() {
   const [open, setOpen] = useState(false);
   const [className, setClassName] = useState("");
   const [classAcronym, setClassAcronym] = useState("");
   const [classDescription, setClassDescription] = useState("");
-  
+  const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
+
+  const navigate = useNavigate();
+
   useEffect(() => {
-    //setOpen(true);
-  }, []);
+    const decodedToken = verifyJWTToken("teacher", navigate);
+    if (decodedToken) {
+      setDecodedToken(decodedToken);
+    }
+  }, [navigate]);
 
   async function handleAddClass() {
     if (!className || !classAcronym || !classDescription) {

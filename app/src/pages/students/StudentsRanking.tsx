@@ -1,34 +1,46 @@
 import CurrentClass from "@/components/current-class";
 import StudentsNavigation from "@/components/students-navigation";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { StudentsRankingDataTable } from "../../components/students-ranking-data-table";
 import { columns, StudentsRank } from "../../components/students-ranking-columns"
-import React from "react";
+import { useEffect, useState } from "react";
+import { verifyJWTToken } from "@/verifyJWTToken";
 
 export default function StudentsRanking() {
-    const { classCode } = useParams<{ classCode: string }>();
+  const { classCode } = useParams<{ classCode: string }>();
 
-    const [data, setData] = React.useState<StudentsRank[]>([]);
+  const [data, setData] = useState<StudentsRank[]>([]);
+  const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
 
-    React.useEffect(() => {
-      async function getData(): Promise<StudentsRank[]> {
-        return [
-          {
-            id: "728ed52f",
-            placing: 1,
-            avatar: 'https://github.com/Lucas-Pontes-Soares.png',
-            name: 'Lucas Pontes Soares',
-            rank: "diamond",
-            score: 360
-          },
-          // ...
-        ]
-      }
+  const navigate = useNavigate();
 
-      getData().then((data) => {
-        setData(data);
-      })
-    }, [])
+  useEffect(() => {
+    const decodedToken = verifyJWTToken("student", navigate);
+    if (decodedToken) {
+      setDecodedToken(decodedToken);
+    }
+  }, [navigate]);
+
+
+  useEffect(() => {
+    async function getData(): Promise<StudentsRank[]> {
+      return [
+        {
+          id: "728ed52f",
+          placing: 1,
+          avatar: 'https://github.com/Lucas-Pontes-Soares.png',
+          name: 'Lucas Pontes Soares',
+          rank: "diamond",
+          score: 360
+        },
+        // ...
+      ]
+    }
+
+    getData().then((data) => {
+      setData(data);
+    })
+  }, [])
 
   return (
     <div>

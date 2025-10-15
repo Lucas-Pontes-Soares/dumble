@@ -2,15 +2,26 @@ import CurrentClass from "@/components/current-class";
 import TeachersNavigation from "@/components/teachers-navigation";
 import { StudentsRankingDataTable } from "../../components/students-ranking-data-table";
 import { columns, StudentsRank } from "../../components/students-ranking-columns"
-import { useParams } from "react-router";
-import React from "react";
+import { useNavigate, useParams } from "react-router";
+import { useEffect, useState } from "react";
+import { verifyJWTToken } from "@/verifyJWTToken";
 
 export default function TeachersRanking() {
   const { classCode } = useParams<{ classCode: string }>();
 
-   const [data, setData] = React.useState<StudentsRank[]>([]);
-  
-  React.useEffect(() => {
+  const [data, setData] = useState<StudentsRank[]>([]);
+  const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const decodedToken = verifyJWTToken("teacher", navigate);
+    if (decodedToken) {
+      setDecodedToken(decodedToken);
+    }
+  }, [navigate]);
+
+  useEffect(() => {
     async function getData(): Promise<StudentsRank[]> {
       return [
         {

@@ -53,6 +53,10 @@ export default function Login() {
         return;
       }
 
+      const JWTToken = response.data.JWTToken;
+
+      localStorage.setItem("JWTToken", JWTToken);
+      
       toast.success("Logado com sucesso!");
       if (accountType === "option-student") {
         navigateTo("/students/classes");

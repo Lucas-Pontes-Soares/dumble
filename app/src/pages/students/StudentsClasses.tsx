@@ -7,14 +7,22 @@ import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import ClassItem from "@/components/class-item";
 import ClassItemSkeleton from "@/components/class-item-skeleton";
+import { verifyJWTToken } from "@/verifyJWTToken";
+import { useNavigate } from "react-router-dom";
 
 export default function StudentsClasses() {
   const [open, setOpen] = useState(false);
   const [classId, setClassId] = useState("");
+  const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
-    //setOpen(true);
-  }, []);
+    const decodedToken = verifyJWTToken("student", navigate);
+    if (decodedToken) {
+      setDecodedToken(decodedToken);
+    }
+  }, [navigate]);
 
   async function handleJoinClass() {
     if (!classId) {

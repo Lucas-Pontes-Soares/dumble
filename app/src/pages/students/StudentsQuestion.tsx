@@ -1,11 +1,11 @@
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import QuestionMatchingPairs from "@/components/question-matching-pairs";
 import QuestionsFooter from "@/components/questions-footer";
 import QuestionsProgressBar from "@/components/questions-progress-bar";
 import { useNavigate, useParams } from "react-router";
 import QuestionMultipleChoice from "@/components/question-multiple-choice";
 import QuestionFillInTheBlank from "@/components/question-fill-in-the-blank";
+import { verifyJWTToken } from "@/verifyJWTToken";
 
 export default function StudentsQuestion() {
   const { classCode, questionId } = useParams<{ classCode: string; questionId: string }>();
@@ -13,6 +13,17 @@ export default function StudentsQuestion() {
   const [footerState, setFooterState] = useState<'none' | 'correct' | 'wrong'>('none');
   const [isRemake, setIsRemake] = useState(false);
   const [isRemakeAll, setIsRemakeAll] = useState(false);
+  const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const decodedToken = verifyJWTToken("student", navigate);
+    if (decodedToken) {
+      setDecodedToken(decodedToken);
+    }
+  }, [navigate]);
+
 
   const navigateTo = useNavigate();
 

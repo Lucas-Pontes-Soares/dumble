@@ -1,29 +1,41 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { StudentsDataTable } from "../../components/students-data-table";
 import { columns, Students } from "../../components/students-columns";
-import React from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { verifyJWTToken } from "@/verifyJWTToken";
 
 export default function StudentsClassInfo() {
-     const [data, setData] = React.useState<Students[]>([]);
-      
-      React.useEffect(() => {
-        async function getData(): Promise<Students[]> {
-          return [
-            {
-              id: "728ed52f",
-              avatar: 'https://github.com/Lucas-Pontes-Soares.png',
-              name: 'Lucas Pontes Soares',
-              email: "lucas.soares63@fatec.sp.gov.br",
-              enrollmentDate: '23/07/2025'
-            },
-            // ...
-          ]
-        }
-    
-        getData().then((data) => {
-          setData(data);
-        })
-      }, [])
+  const [data, setData] = useState<Students[]>([]);
+  const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const decodedToken = verifyJWTToken("student", navigate);
+    if (decodedToken) {
+      setDecodedToken(decodedToken);
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    async function getData(): Promise<Students[]> {
+      return [
+        {
+          id: "728ed52f",
+          avatar: 'https://github.com/Lucas-Pontes-Soares.png',
+          name: 'Lucas Pontes Soares',
+          email: "lucas.soares63@fatec.sp.gov.br",
+          enrollmentDate: '23/07/2025'
+        },
+        // ...
+      ]
+    }
+
+    getData().then((data) => {
+      setData(data);
+    })
+  }, [])
 
   return (
     <div className="min-h-screen p-6 max-w-2xl mx-auto">

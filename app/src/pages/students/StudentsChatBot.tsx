@@ -1,6 +1,7 @@
 import CurrentClass from "@/components/current-class";
 import StudentsNavigation from "@/components/students-navigation";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
+import { useEffect, useState } from "react";
 
 import * as React from "react";
 import { ArrowUpIcon } from "lucide-react";
@@ -19,9 +20,20 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { verifyJWTToken } from "@/verifyJWTToken";
 
 export default function StudentsChatBot() {
   const { classCode } = useParams<{ classCode: string }>();
+  const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const decodedToken = verifyJWTToken("student", navigate);
+    if (decodedToken) {
+      setDecodedToken(decodedToken);
+    }
+  }, [navigate]);
 
   const [messages, setMessages] = React.useState([
     { role: "agent", content: "Hi, how can I help you today?" },

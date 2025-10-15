@@ -12,14 +12,21 @@ interface AuthenticatedRequest extends Request {
 export const getStudentByClassId = async (req: AuthenticatedRequest, res: Response) => {
     const userAuthenticated = req.userAuthenticated;
 
-    const { class_id } = req.params;
+    const { class_code } = req.params;
 
-    if(!class_id) {
-        return res.status(400).json({ success: false, message: 'Class ID is required' });
+    if(!class_code) {
+        return res.status(400).json({ success: false, message: 'class_code is required' });
     }
 
     try {
         const db = Database.getInstance();
+
+        const resultClassId = await db.query('SELECT * FROM classes WHERE code = $1', [class_code]);
+        if (resultClassId.rowCount === 0) {
+            return res.status(404).json({ success: false, message: 'Class not found' });
+        }
+        const class_id = resultClassId.rows[0].id;
+
         const result = await db.query('SELECT students.* FROM students_classes INNER JOIN students ON students.id = students_classes.student_id WHERE students_classes.class_id = $1', [class_id]);
 
         if (result.rowCount === 0) {

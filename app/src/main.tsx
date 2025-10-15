@@ -12,11 +12,11 @@ import AppRoutes from './AppRoutes.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <AppRoutes />
-        </ThemeProvider>
-    </BrowserRouter>
     <Toaster richColors />
+    <BrowserRouter>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <AppRoutes />
+      </ThemeProvider>
+    </BrowserRouter>  
   </StrictMode>,
 )

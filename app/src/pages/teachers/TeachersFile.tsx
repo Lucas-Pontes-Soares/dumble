@@ -3,24 +3,65 @@ import TeachersNavigation from "@/components/teachers-navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { File, Trash, Upload } from "lucide-react";
-import { useRef, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
+import { useEffect, useState, useRef } from "react";
+import { verifyJWTToken } from "@/verifyJWTToken";
+import api from "@/apiService";
 
 export default function TeachersFile() {
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
+  const [jwtToken, setJwtToken] = useState<string | null>(null);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const decodedToken = verifyJWTToken("teacher", navigate);
+    if (decodedToken) {
+      setDecodedToken(decodedToken);
+      setJwtToken(localStorage.getItem("JWTToken"));
+    }
+  }, [navigate]);
 
   const { classCode } = useParams<{ classCode: string }>();
 
   function handleUpload(){
     inputFileRef.current?.click();
-    console.log("Arquivos selecionados:", selectedFiles);
   }
 
   async function handleSaveUploads() {
-    toast.success("Arquivos salvos com sucesso!");
-    setSelectedFiles([]);
+    if (selectedFiles.length === 0) {
+      toast.error("Nenhum arquivo selecionado.");
+      return;
+    }
+
+    if (!classCode) {
+      toast.error("Código da turma não encontrado.");
+      return;
+    }
+
+    try {
+      for (const file of selectedFiles) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("class_code", classCode);
+
+        await api.post("/archives", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${jwtToken}`,
+          },
+        });
+      }
+
+      toast.success("Arquivos salvos com sucesso!");
+      setSelectedFiles([]);
+    } catch (error: any) {
+      console.error("Erro ao salvar arquivos:", error);
+      toast.error(error.response?.data?.message || "Erro ao salvar arquivos.");
+    }
   }
 
   function handleRemoveFile(indexToRemove: number) {
