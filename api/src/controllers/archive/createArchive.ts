@@ -45,8 +45,10 @@ export const archiveCreate = async (req: AuthenticatedRequest, res: Response) =>
         
         const cleanedMarkdown = removeMarkdownImages(rawMarkdown);
         
-        const fileName = file.originalname.split('.').shift();
-        const fileType = file.originalname.split('.').pop();
+        const originalname = Buffer.from(file.originalname, 'latin1').toString('utf8');
+        const parts = originalname.split('.');
+        const fileType = parts.length > 1 ? parts.pop() : '';
+        const fileName = parts.join('.');
         const db = Database.getInstance();
        
         const resultClassId = await db.query('SELECT * FROM classes WHERE code = $1', [class_code]);
@@ -59,6 +61,7 @@ export const archiveCreate = async (req: AuthenticatedRequest, res: Response) =>
         const resultSelect = await db.query('SELECT id, type, name FROM archives WHERE class_id = $1', [class_id]);
 
         if ((resultSelect.rowCount ?? 0) >= 5) {
+            await fs.unlink(filePath);
             return res.status(403).json({ success: false, message: 'Max 5 archives allowed' });
         }
 

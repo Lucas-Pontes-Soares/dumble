@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { ModeToggle } from "@/components/mode-toggle";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Eye, EyeOff, ChevronDownIcon } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 import api from "../../apiService";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -23,10 +24,13 @@ export default function CreateAccount() {
   const [accountType, setAccountType] = useState("option-student");
   const [showPassword, setShowPassword] = useState(false);
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigateTo = useNavigate();
 
   async function handleCreateUser() {
+    setIsLoading(true);
+
     if (!name) {
       toast.error("Nome é obrigatório");
       return;
@@ -73,6 +77,8 @@ export default function CreateAccount() {
     } catch (error: any) {
       console.error("Erro na requisição:", error);
       toast.error(error.response.data.message);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -187,7 +193,8 @@ export default function CreateAccount() {
             </RadioGroup>
           </div>
 
-          <Button className="w-full" onClick={handleCreateUser}>
+          <Button className="w-full" onClick={handleCreateUser} disabled={isLoading}>
+            {isLoading ? <Spinner/> : null}
             Criar Conta
           </Button>
 

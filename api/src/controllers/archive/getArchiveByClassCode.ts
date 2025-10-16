@@ -9,7 +9,7 @@ interface AuthenticatedRequest extends Request {
     };
 }
 
-export const getArchiveByClassId = async (req: AuthenticatedRequest, res: Response) => {
+export const getArchiveByClassCode = async (req: AuthenticatedRequest, res: Response) => {
     const userAuthenticated = req.userAuthenticated;
 
     if(userAuthenticated?.role !== 'teacher'){

@@ -7,7 +7,7 @@ import multer from 'multer';
 import { createTeacher } from './controllers/teacher/createTeacher';
 import { deleteTeacher } from './controllers/teacher/deleteTeacher';
 import { getTeacher } from './controllers/teacher/getTeacher';
-import { getTeacherByClassId } from './controllers/teacher/getTeacherByClassId';
+import { getTeacherByClassCode } from './controllers/teacher/getTeacherByClassCode';
 import { loginTeacher } from './controllers/teacher/loginTeacher';
 import { updateTeacher } from './controllers/teacher/updateTeacher';
 
@@ -15,7 +15,7 @@ import { updateTeacher } from './controllers/teacher/updateTeacher';
 import { createStudent } from './controllers/student/createStudent';
 import { deleteStudent } from './controllers/student/deleteStudent';
 import { getStudent } from './controllers/student/getStudent';
-import { getStudentByClassId } from './controllers/student/getStudentByClassId';
+import { getStudentByClassCode } from './controllers/student/getStudentByClassCode';
 import { loginStudent } from './controllers/student/loginStudent';
 import { updateStudent } from './controllers/student/updateStudent';
 
@@ -25,7 +25,7 @@ import { getChatBotMessageByStudentId } from './controllers/chat-bot/getChatBotM
 
 // para arquivos
 import { archiveCreate } from './controllers/archive/createArchive';
-import { getArchiveByClassId } from './controllers/archive/getArchiveByClassId';
+import { getArchiveByClassCode } from './controllers/archive/getArchiveByClassCode';
 import { deleteArchive } from './controllers/archive/deleteArchive';
 
 // para sugestões
@@ -52,7 +52,7 @@ router.get('/health', (req, res) => {
 router.post('/teachers', createTeacher);
 router.delete('/teachers/:teacher_id', verifyJWTToken, deleteTeacher);
 router.get('/teachers/:teacher_id', verifyJWTToken, getTeacher);
-router.get('/classes/:class_id/teachers', verifyJWTToken, getTeacherByClassId);
+router.get('/classes/:class_code/teachers', verifyJWTToken, getTeacherByClassCode);
 router.post('/teachers/login', loginTeacher);
 router.put('/teachers/:teacher_id', verifyJWTToken, updateTeacher);
 
@@ -60,7 +60,7 @@ router.put('/teachers/:teacher_id', verifyJWTToken, updateTeacher);
 router.post('/students', createStudent);
 router.delete('/students/:student_id', verifyJWTToken, deleteStudent);
 router.get('/students/:student_id', verifyJWTToken, getStudent);
-router.get('/classes/:class_id/students', verifyJWTToken, getStudentByClassId);
+router.get('/classes/:class_code/students', verifyJWTToken, getStudentByClassCode);
 router.post('/students/login', loginStudent);
 router.put('/students/:student_id', verifyJWTToken, updateStudent);
 
@@ -70,7 +70,7 @@ router.get('/students/:student_id/chat-bot-messages', verifyJWTToken, getChatBot
 
 // Rotas para arquivos
 router.post('/archives', upload.single('file'), verifyJWTToken, archiveCreate);
-router.get('/classes/:class_id/archives', verifyJWTToken, getArchiveByClassId);
+router.get('/classes/:class_code/archives', verifyJWTToken, getArchiveByClassCode);
 router.delete('/archives/:archive_id', verifyJWTToken, deleteArchive);
 
 // Rotas para sugestões

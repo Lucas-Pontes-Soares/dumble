@@ -9,7 +9,7 @@ interface AuthenticatedRequest extends Request {
     };
 }
 
-export const getTeacherByClassId = async (req: AuthenticatedRequest, res: Response) => {
+export const getTeacherByClassCode = async (req: AuthenticatedRequest, res: Response) => {
     const userAuthenticated = req.userAuthenticated;
 
     const { class_code } = req.params;

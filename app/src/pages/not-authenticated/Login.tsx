@@ -6,18 +6,22 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { ModeToggle } from "@/components/mode-toggle";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Eye, EyeOff } from "lucide-react"; 
+import { Eye, EyeOff } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner"; 
 import api from "../../apiService";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [accountType, setAccountType] = useState("option-student");
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); 
 
   const navigateTo = useNavigate();
 
   async function handleLoginUser() {
+    setIsLoading(true);
+
     if(!email){
       toast.error("Email é obrigatório");
       return;
@@ -66,6 +70,8 @@ export default function Login() {
     } catch (error: any) {
       console.error("Erro na requisição:", error);
       toast.error(error.response.data.message);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -136,7 +142,8 @@ export default function Login() {
             </RadioGroup>
           </div>
 
-          <Button className="w-full" onClick={handleLoginUser}>
+          <Button className="w-full" onClick={handleLoginUser} disabled={isLoading}>
+            {isLoading ? <Spinner/> : null}
             Login
           </Button>
 
