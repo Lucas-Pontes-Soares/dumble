@@ -66,7 +66,7 @@ router.put('/students/:student_id', verifyJWTToken, updateStudent);
 
 // Rotas para o chat-bot
 router.post('/chat-bot-messages', verifyJWTToken, chatbotMessageCreate);
-router.get('/students/:student_id/chat-bot-messages', verifyJWTToken, getChatBotMessageByStudentId);
+router.get('/students/:student_id/classes/:class_code/chat-bot-messages', verifyJWTToken, getChatBotMessageByStudentId);
 
 // Rotas para arquivos
 router.post('/archives', upload.single('file'), verifyJWTToken, archiveCreate);

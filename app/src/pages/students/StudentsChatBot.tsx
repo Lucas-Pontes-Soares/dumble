@@ -1,9 +1,8 @@
 import CurrentClass from "@/components/current-class";
 import StudentsNavigation from "@/components/students-navigation";
 import { useNavigate, useParams } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
-import * as React from "react";
 import { ArrowUpIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -21,10 +20,17 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { verifyJWTToken } from "@/verifyJWTToken";
+import api from "@/apiService";
+import { toast } from "sonner";
 
 export default function StudentsChatBot() {
   const { classCode } = useParams<{ classCode: string }>();
   const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
+  const [jwtToken, setJwtToken] = useState<string | null>(null);
+  const [messages, setMessages] = useState<{ role: string; content: string; time: string }[]>([]);
+  const [input, setInput] = useState("");
+  const inputLength = input.trim().length;
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const navigate = useNavigate();
 
@@ -32,29 +38,54 @@ export default function StudentsChatBot() {
     const decodedToken = verifyJWTToken("student", navigate);
     if (decodedToken) {
       setDecodedToken(decodedToken);
+      const token = localStorage.getItem("JWTToken");
+      setJwtToken(token);
+      getChatBotMessages(token, decodedToken);
     }
   }, [navigate]);
 
-  const [messages, setMessages] = React.useState([
-    { role: "agent", content: "Hi, how can I help you today?" },
-    { role: "user", content: "Hey, I'm having trouble with my account." },
-    { role: "agent", content: "What seems to be the problem?" },
-    { role: "user", content: "I can't log in." },
-    { role: "agent", content: "Hi, how can I help you today?" },
-    { role: "user", content: "Hey, I'm having trouble with my account." },
-    { role: "agent", content: "What seems to be the problem?" },
-    { role: "user", content: "I can't log in." },
-    { role: "agent", content: "Hi, how can I help you today?" },
-    { role: "user", content: "Hey, I'm having trouble with my account." },
-    { role: "agent", content: "What seems to be the problem?" },
-    { role: "user", content: "I can't log in." },
-  ]);
-  const [input, setInput] = React.useState("");
-  const inputLength = input.trim().length;
+  async function getChatBotMessages(token: string | null, decodedToken: { id: string; role: string; exp: number } | null) {
+    if (!classCode || !token) return;
 
-  const messagesEndRef = React.useRef<HTMLDivElement>(null);
+    try {
+      const response = await api.get<any>(`/students/${decodedToken?.id}/classes/${classCode}/chat-bot-messages`, {
+        headers: {                                                                         
+          Authorization: `Bearer ${token}`,                                                
+        },                                                                                 
+      });                                                                                 
+      if (response.data.messages) {
+        const fetchedMessages = response.data.messages.flatMap((msg: { student_message: string; ai_message: string; created_at: string }) => {
+          const dateObject = new Date(msg.created_at);
 
-  React.useEffect(() => {
+    // Formata o objeto Date. Ele converte de UTC (13:32Z) para o fuso horário
+    // especificado (America/Sao_Paulo, GMT-3), resultando em 10:32.
+    const formattedTime = dateObject.toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false, // Força o formato 24 horas (ex: 13:50)
+      timeZone: 'America/Sao_Paulo' // Converte para o fuso horário de Brasília (GMT-3)
+    });
+          return [
+            {
+              role: "user",
+              content: msg.student_message,
+              time: formattedTime
+            },
+            {
+              role: "agent",
+              content: msg.ai_message,
+              time: formattedTime
+            }
+          ];
+        });
+        setMessages(fetchedMessages);
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Erro ao buscar mensagens.");
+    }
+  }
+  
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -94,7 +125,8 @@ export default function StudentsChatBot() {
                       : "bg-muted"
                   )}
                 >
-                  {message.content}
+                  <div className="whitespace-pre-wrap">{message.content}</div>
+                  <div className="text-xs text-right text-muted-foreground mt-1">{message.time}</div>
                 </div>
               ))}
               <div ref={messagesEndRef} />
@@ -104,16 +136,7 @@ export default function StudentsChatBot() {
           <CardFooter className="flex-shrink-0 border-t">
             <form
               onSubmit={(event) => {
-                event.preventDefault();
-                if (inputLength === 0) return;
-                setMessages([
-                  ...messages,
-                  {
-                    role: "user",
-                    content: input,
-                  },
-                ]);
-                setInput("");
+                
               }}
               className="relative w-full"
             >

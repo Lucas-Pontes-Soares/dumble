@@ -120,9 +120,17 @@ export const chatbotMessageCreate = async (req: AuthenticatedRequest, res: Respo
         }
 
         try {
+            const resultStudentClass = await db.query('SELECT * FROM students_classes WHERE student_id = $1', [student_id]);
+            if (resultStudentClass.rowCount === 0) {
+                console.error("Student-Class association not found. Message not saved.");
+                return;
+            }
+
+            const studentClassId = resultStudentClass.rows[0].id;
+            
             await db.query(
-                'INSERT INTO chat_bot_messages (student_id, student_message, ai_message) VALUES ($1, $2, $3)',
-                [student_id, student_message, ai_message]
+                'INSERT INTO chat_bot_messages (student_class_id, student_message, ai_message) VALUES ($1, $2, $3)',
+                [studentClassId, student_message, ai_message]
             );
         } catch (dbError) {
             console.error("Error saving chat message to database:", dbError);
