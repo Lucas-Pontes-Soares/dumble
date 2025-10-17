@@ -22,6 +22,9 @@ import { Input } from "@/components/ui/input";
 import { verifyJWTToken } from "@/verifyJWTToken";
 import api from "@/apiService";
 import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
+import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 export default function StudentsChatBot() {
   const { classCode } = useParams<{ classCode: string }>();
@@ -31,6 +34,7 @@ export default function StudentsChatBot() {
   const [input, setInput] = useState("");
   const inputLength = input.trim().length;
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -56,15 +60,18 @@ export default function StudentsChatBot() {
       if (response.data.messages) {
         const fetchedMessages = response.data.messages.flatMap((msg: { student_message: string; ai_message: string; created_at: string }) => {
           const dateObject = new Date(msg.created_at);
-
-    // Formata o objeto Date. Ele converte de UTC (13:32Z) para o fuso horário
-    // especificado (America/Sao_Paulo, GMT-3), resultando em 10:32.
-    const formattedTime = dateObject.toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false, // Força o formato 24 horas (ex: 13:50)
-      timeZone: 'America/Sao_Paulo' // Converte para o fuso horário de Brasília (GMT-3)
-    });
+          // Formata o objeto Date. Ele converte de UTC (13:32Z) para o fuso horário
+          // especificado (America/Sao_Paulo, GMT-3), resultando em 10:32.
+          const formattedTime = dateObject.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          }) + ' ' + dateObject.toLocaleTimeString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+            timeZone: 'America/Sao_Paulo'
+          });
           return [
             {
               role: "user",
@@ -85,6 +92,81 @@ export default function StudentsChatBot() {
     }
   }
   
+  async function handleSendMessage(event: React.FormEvent) {
+    event.preventDefault();
+    if (!input.trim() || !classCode || !decodedToken || !jwtToken) return;
+
+    const userMessage = input;
+    setInput("");
+    setIsLoading(true);
+
+    const now = new Date();
+    const formattedTime = now.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }) + ' ' + now.toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: 'America/Sao_Paulo'
+    });
+ 
+
+    // Add user message to state
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { role: "user", content: userMessage, time: formattedTime },
+      { role: "agent", content: "Pensando...", time: formattedTime }, // Placeholder for AI response
+    ]);
+
+    try {
+      const response = await fetch("http://localhost:3000/chat-bot-messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwtToken}`,
+        },
+        body: JSON.stringify({
+          student_message: userMessage,
+          class_code: classCode,
+          student_id: decodedToken.id,
+        }),
+      });
+
+      if (!response.ok || !response.body) {
+        throw new Error("Failed to fetch AI response.");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let aiResponseContent = "";
+
+      // Read the stream
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        aiResponseContent += chunk;
+
+        // Update the last message (AI's message) in state
+        setMessages((prevMessages) => {
+          const newMessages = [...prevMessages];
+          newMessages[newMessages.length - 1].content = aiResponseContent;
+          return newMessages;
+        });
+      }
+    } catch (error: any) {
+      console.error("Error during streaming AI response:", error);
+      toast.error(error.message || "Erro ao obter resposta do AI.");
+      // Remove the placeholder AI message if an error occurs
+      setMessages((prevMessages) => prevMessages.slice(0, prevMessages.length - 1));
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -125,7 +207,16 @@ export default function StudentsChatBot() {
                       : "bg-muted"
                   )}
                 >
-                  <div className="whitespace-pre-wrap">{message.content}</div>
+                  <Markdown 
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      ul: ({...props}) => <ul className="list-disc pl-5 space-y-1" {...props} />,
+                      ol: ({...props}) => <ol className="list-decimal pl-5 space-y-1" {...props} />,
+                      p: ({...props}) => <p className="mb-1" {...props} />,
+                    }}
+                  >
+                    {message.content}
+                  </Markdown>
                   <div className="text-xs text-right text-muted-foreground mt-1">{message.time}</div>
                 </div>
               ))}
@@ -135,9 +226,7 @@ export default function StudentsChatBot() {
 
           <CardFooter className="flex-shrink-0 border-t">
             <form
-              onSubmit={(event) => {
-                
-              }}
+              onSubmit={handleSendMessage}
               className="relative w-full"
             >
               <Input
@@ -152,10 +241,9 @@ export default function StudentsChatBot() {
                 type="submit"
                 size="icon"
                 className="absolute top-1/2 right-2 size-6 -translate-y-1/2 rounded-full"
-                disabled={inputLength === 0}
+                disabled={inputLength === 0 || isLoading}
               >
-                <ArrowUpIcon className="size-3.5" />
-                <span className="sr-only">Send</span>
+                {isLoading ? <Spinner className="size-3.5"/> : <ArrowUpIcon className="size-3.5" />}
               </Button>
             </form>
           </CardFooter>
