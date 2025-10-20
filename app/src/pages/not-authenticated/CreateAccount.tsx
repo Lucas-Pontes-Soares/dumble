@@ -20,9 +20,11 @@ export default function CreateAccount() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [birthday, setBirthday] = useState<Date>();
   const [accountType, setAccountType] = useState("option-student");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,24 +33,35 @@ export default function CreateAccount() {
   async function handleCreateUser() {
     setIsLoading(true);
 
+    if (password !== confirmPassword) {
+      toast.error("As senhas não coincidem");
+      setIsLoading(false);
+      return;
+    }
+
     if (!name) {
       toast.error("Nome é obrigatório");
+      setIsLoading(false);
       return;
     }
     if (!email) {
       toast.error("Email é obrigatório");
+      setIsLoading(false);
       return;
     }
     if (!password) {
       toast.error("Senha é obrigatória");
+      setIsLoading(false);
       return;
     }
     if (!birthday) {
       toast.error("Data de nascimento é obrigatória");
+      setIsLoading(false);
       return;
     }
     if (!accountType) {
       toast.error("Tipo de conta é obrigatório");
+      setIsLoading(false);
       return;
     }
 
@@ -166,6 +179,36 @@ export default function CreateAccount() {
                 onClick={() => setShowPassword((prev) => !prev)}
               >
                 {showPassword ? (
+                  <EyeOff className="h-4 w-4" aria-hidden="true" />
+                ) : (
+                  <Eye className="h-4 w-4" aria-hidden="true" />
+                )}
+                <span className="sr-only">Toggle password visibility</span>
+              </Button>
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="confirm-password" className="mb-2">
+              Confirme a Senha
+            </Label>
+            <div className="relative">
+              <Input
+                id="confirm-password"
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirme a Senha"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="pr-10"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+              >
+                {showConfirmPassword ? (
                   <EyeOff className="h-4 w-4" aria-hidden="true" />
                 ) : (
                   <Eye className="h-4 w-4" aria-hidden="true" />
