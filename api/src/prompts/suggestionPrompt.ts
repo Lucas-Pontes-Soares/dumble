@@ -19,6 +19,7 @@ Responda sempre nesse formato em json, sem o '''json''' tag:
 Temos 5 lacunas para preencher. No máximo 3 corretas e 2 para confundir.
 Adicione "_" para fazer a lacuna, APENAS 1 caracter por lacuna "_" e NUNCA "_____".
 {
+  "question_type" : "fill-in-the-blank"
   "suggestion": {
     "statement": "",
     "correct_blank1": "",
@@ -33,6 +34,7 @@ Adicione "_" para fazer a lacuna, APENAS 1 caracter por lacuna "_" e NUNCA "____
 Temos sempre 4 colunas na esquerda e 4 colunas na direita.
 Responda sempre com a alternativa correta na mesma posição. Para o estudante será aleatoriezado as ordens.
 {
+  "question_type" : "matching-pairs"
   "suggestion": {
     "statement": "",
     "alternative1_left": "",
@@ -50,6 +52,7 @@ Responda sempre com a alternativa correta na mesma posição. Para o estudante s
 Temos sempre 4 alternativas e apenas uma correta.
 No "correct_alternative" coloque sempre por extenso: "alternative_a", "alternative_b", "alternative_c" ou "alternative_d".
 {
+  "question_type" : "multiple-choice"
   "suggestion": {
     "statement": "",
     "alternative_a": "",

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
@@ -6,8 +6,7 @@ import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router";
 
-export default function AddQuestionMultipleChoice() {
-  const [title, setTitle] = useState("");
+export default function AddQuestionMultipleChoice({ suggestion }: { suggestion: any }) {
   const [statement, setStatement] = useState("");
   const [correctAlternative, setCorrectAlternative] = useState("");
   const [alternatives, setAlternatives] = useState([
@@ -18,6 +17,27 @@ export default function AddQuestionMultipleChoice() {
   ]);
 
   const navigateTo = useNavigate();
+
+  useEffect(() => {
+    if (suggestion) {
+      setStatement(suggestion.statement || "");
+      setAlternatives([
+        { id: "A", text: suggestion.alternative_a || "" },
+        { id: "B", text: suggestion.alternative_b || "" },
+        { id: "C", text: suggestion.alternative_c || "" },
+        { id: "D", text: suggestion.alternative_d || "" },
+      ]);
+      if (suggestion.correct_alternative) {
+        const correctMap: { [key: string]: string } = {
+          "alternative_a": "option-A",
+          "alternative_b": "option-B",
+          "alternative_c": "option-C",
+          "alternative_d": "option-D",
+        };
+        setCorrectAlternative(correctMap[suggestion.correct_alternative]);
+      }
+    }
+  }, [suggestion]);
 
   function handleAlternativeChange(id: string, newText: string) {
     setAlternatives((prev) => {
@@ -31,44 +51,33 @@ export default function AddQuestionMultipleChoice() {
   }
 
   const handleCreateAndStop = () => {
-        console.log("Criar e Parar", { title, alternatives });
+        console.log("Criar e Parar", { alternatives });
         setAlternatives([
             { id: "A", text: "" },
             { id: "B", text: "" },
             { id: "C", text: "" },
             { id: "D", text: "" },
         ]);
-        setTitle('');
         setCorrectAlternative('');
         setStatement('');
         navigateTo('/teachers/ED-1234/')
     };
 
     const handleCreateAndContinue = () => {
-        console.log("Criar e Continuar", { title, alternatives });
+        console.log("Criar e Continuar", { alternatives });
         setAlternatives([
             { id: "A", text: "" },
             { id: "B", text: "" },
             { id: "C", text: "" },
             { id: "D", text: "" },
         ]);
-        setTitle('');
         setCorrectAlternative('');
         setStatement('');
     };
 
   return (
-    <div className="mt-4">
-      <Label className="mt-4 mb-2">Titulo:</Label>
-      <Input
-        id="title"
-        type="text"
-        placeholder="Informe o Título"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-
-      <Label className="mt-4 mb-2">Enunciado:</Label>
+    <div>
+      <Label className="mb-2">Enunciado:</Label>
       <Textarea
         id="statement"
         placeholder="Informe o Enunciado"

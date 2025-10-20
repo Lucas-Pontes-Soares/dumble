@@ -25,6 +25,8 @@ import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import ConversorMDtoHTML from "@/ConversorMDtoHTML";
+
 
 export default function StudentsChatBot() {
   const { classCode } = useParams<{ classCode: string }>();
@@ -207,16 +209,12 @@ export default function StudentsChatBot() {
                       : "bg-muted"
                   )}
                 >
-                  <Markdown 
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      ul: ({...props}) => <ul className="list-disc pl-5 space-y-1" {...props} />,
-                      ol: ({...props}) => <ol className="list-decimal pl-5 space-y-1" {...props} />,
-                      p: ({...props}) => <p className="mb-1" {...props} />,
-                    }}
-                  >
-                    {message.content}
-                  </Markdown>
+                  {message.role === "user" ? (
+                    <span className="prose"><ConversorMDtoHTML message={message.content} /></span>
+                  ) : (
+                    <span className="prose prose-invert"><ConversorMDtoHTML message={message.content} /></span>
+                  )}
+
                   <div className="text-xs text-right text-muted-foreground mt-1">{message.time}</div>
                 </div>
               ))}

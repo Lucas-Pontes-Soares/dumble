@@ -1,12 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { useNavigate } from "react-router";
 
-export default function AddQuestionFillInTheBlack() {
-  const [title, setTitle] = useState("");
+export default function AddQuestionFillInTheBlack({ suggestion }: { suggestion: any }) {
   const [statement, setStatement] = useState("");
   const [gaps, setGaps] = useState([
     { id: "1", text: "" },
@@ -18,8 +17,21 @@ export default function AddQuestionFillInTheBlack() {
 
   const navigateTo = useNavigate();
 
+  useEffect(() => {
+    if (suggestion) {
+      setStatement(suggestion.statement || "");
+      setGaps([
+        { id: "1", text: suggestion.correct_blank1 || "" },
+        { id: "2", text: suggestion.correct_blank2 || "" },
+        { id: "3", text: suggestion.correct_blank3 || "" },
+        { id: "4", text: suggestion.blank4 || "" },
+        { id: "5", text: suggestion.blank5 || "" },
+      ]);
+    }
+  }, [suggestion]);
+
   const handleCreateAndStop = () => {
-        console.log("Criar e Parar", { title, gaps });
+        console.log("Criar e Parar", { gaps });
         setGaps([
             { id: "1", text: "" },
             { id: "2", text: "" },
@@ -27,13 +39,12 @@ export default function AddQuestionFillInTheBlack() {
             { id: "4", text: "" },
             { id: "5", text: "" },
         ]);
-        setTitle('');
         setStatement('');
         navigateTo('/teachers/ED-1234/')
     };
 
     const handleCreateAndContinue = () => {
-        console.log("Criar e Continuar", { title, gaps });
+        console.log("Criar e Continuar", { gaps });
         setGaps([
             { id: "1", text: "" },
             { id: "2", text: "" },
@@ -41,7 +52,6 @@ export default function AddQuestionFillInTheBlack() {
             { id: "4", text: "" },
             { id: "5", text: "" },
         ]);
-        setTitle('');
         setStatement('');
     };
 
@@ -57,17 +67,8 @@ export default function AddQuestionFillInTheBlack() {
   };
 
   return (
-   <div className="mt-4">
-      <Label className="mt-4 mb-2">Titulo:</Label>
-      <Input
-        id="title"
-        type="text"
-        placeholder="Informe o Título"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-
-      <Label className="mt-4 mb-2">Enunciado:</Label>
+   <div>
+      <Label className="mb-2">Enunciado:</Label>
       <Label className="mt-4 mb-2">Adicone "_" para fazer a lacuna:</Label>
       <small>No máximo 3 lacunas corretas</small>
       <Textarea
