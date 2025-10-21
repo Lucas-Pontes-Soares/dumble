@@ -2,6 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
+import getInitials from "@/getInitials"
 
 export type Students = {
   id: string
@@ -13,13 +14,12 @@ export type Students = {
 
 export const columns: ColumnDef<Students>[] = [
   {
-    accessorKey: "student",
+    accessorKey: "name",
     header: "Estudante",
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         <Avatar>
-          <AvatarImage src={row.original.avatar} />
-          <AvatarFallback>{row.original.name.charAt(0)}</AvatarFallback>
+          <AvatarFallback>{getInitials(row.original.name)}</AvatarFallback>
         </Avatar>
         <span>{row.original.name}</span>
       </div>
