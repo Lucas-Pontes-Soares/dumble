@@ -23,7 +23,7 @@ import { Spinner } from "@/components/ui/spinner";
 
 export default function TeachersAddQuestion() {
   const [questionType, setQuestionType] = useState<string | null>(null)
-  const { classCode } = useParams<{ classCode: string }>();
+  const { class_id } = useParams<{ class_id: string }>();
   const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
   const [jwtToken, setJwtToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,7 +48,7 @@ export default function TeachersAddQuestion() {
     try {
       const response = await api.post<any>(`/suggestions/`, 
         { 
-          class_code: classCode,
+          class_id: class_id,
           content: prompt,
           question_type: questionType ? questionType : 'none',
         },

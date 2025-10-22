@@ -40,7 +40,7 @@ export default function AddQuestionFillInTheBlack({ suggestion }: { suggestion: 
             { id: "5", text: "" },
         ]);
         setStatement('');
-        navigateTo('/teachers/ED-1234/')
+        navigateTo('/teachers/classes/1/')
     };
 
     const handleCreateAndContinue = () => {

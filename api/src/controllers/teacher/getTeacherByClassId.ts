@@ -9,25 +9,25 @@ interface AuthenticatedRequest extends Request {
     };
 }
 
-export const getTeacherByClassCode = async (req: AuthenticatedRequest, res: Response) => {
+export const getTeacherByClassId = async (req: AuthenticatedRequest, res: Response) => {
     const userAuthenticated = req.userAuthenticated;
 
-    const { class_code } = req.params;
+    const { class_id } = req.params;
 
-    if(!class_code) {
-        return res.status(400).json({ success: false, message: 'class_code is required' });
+    if(!class_id) {
+        return res.status(400).json({ success: false, message: 'class_id is required' });
     }
 
     try {
         const db = Database.getInstance();
 
-        const resultClass = await db.query('SELECT * FROM classes WHERE code = $1', [class_code]);
+        const resultClass = await db.query('SELECT * FROM classes WHERE code = $1', [class_id]);
         if (resultClass.rowCount === 0) {
             return res.status(404).json({ success: false, message: 'Class not found' });
         }
         const classInfo = resultClass.rows[0];
 
-        const result = await db.query('SELECT teachers.* FROM classes INNER JOIN teachers ON teachers.id = classes.teacher_id WHERE classes.id = $1', [classInfo.id]);
+        const result = await db.query('SELECT teachers.* FROM classes INNER JOIN teachers ON teachers.id = classes.teacher_id WHERE classes.id = $1', [class_id]);
 
         if (result.rowCount === 0) {
             return res.status(404).json({ success: false, message: 'Teacher not found' });

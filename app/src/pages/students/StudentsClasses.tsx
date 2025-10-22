@@ -1,10 +1,6 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
 import ClassItem from "@/components/class-item";
 import ClassItemSkeleton from "@/components/class-item-skeleton";
 import { verifyJWTToken } from "@/verifyJWTToken";
@@ -12,8 +8,8 @@ import { useNavigate } from "react-router-dom";
 
 export default function StudentsClasses() {
   const [open, setOpen] = useState(false);
-  const [classId, setClassId] = useState("");
   const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
+  const [classIdSelected, setClassIdSelected] = useState("");
 
   const navigate = useNavigate();
 
@@ -25,68 +21,51 @@ export default function StudentsClasses() {
   }, [navigate]);
 
   async function handleJoinClass() {
-    if (!classId) {
+    if (!classIdSelected) {
       toast.error("Por favor, informe o código da turma.");
       return;
     }
 
-    console.log("opa");
-    setClassId("")
+    console.log(`opa ${classIdSelected}`);
+    setClassIdSelected("")
     setOpen(false);
+
+    navigate("/students/classes/1")
   }
 
   return (
-    <div className="min-h-screen p-6 max-w-2xl mx-auto">
+    <div className="min-h-screen">
       <div className="w-full">
-        <div className="space-y-4 text-center">
-          <h1 className="text-4xl font-bold">Turmas do Estudante</h1>
-          <Button variant="outline" onClick={() => setOpen(true)} className="mx-auto">
-            <Plus className="mr-2 h-4 w-4" />
-            Entrar em Turma
-
-          </Button>
-          <p className="text-gray-500">Peça ao seu professor, o código da turma. </p>
-          <Dialog open={open} onOpenChange={setOpen}>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Entrar em uma Turma</DialogTitle>
-                  <DialogDescription>
-                    Informe o código da turma que você deseja entrar.
-                  </DialogDescription>
-                </DialogHeader>
-
-                <div className="grid gap-4">
-                  <div className="grid gap-3">
-                    <Label htmlFor="classId">Código</Label>
-                    <Input
-                      id="classId"
-                      name="classId"
-                      placeholder="DS-1234"
-                      value={classId}
-                      onChange={(e) => setClassId(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button variant="outline">Fechar</Button>
-                  </DialogClose>
-                  <Button onClick={() => handleJoinClass()}>Entrar</Button>
-                </DialogFooter>
-              </DialogContent>
-          </Dialog>
+        <div className="fixed top-0 left-0 right-0 z-50 bg-background space-y-4 pt-4 pb-2 text-center border-b-2 dark:border-b-gray-800 white:border-b-gray-400">
+          <h1 className="font-nunito text-xl font-extrabold">Turmas</h1> 
         </div>
-        <div className="w-full max-w-2xl mt-4">
+        <div className="w-full max-w-2xl mx-auto pt-20 pb-20 p-6">
+          <div className="w-full mx-auto">
+            <div className="pt-4">
+              <h2 className="font-nunito mb-4 text-2xl font-extrabold">Matriculado</h2>
+              <ClassItem acronym="ED" id="1" classIdSelected={classIdSelected} title="Estrutura de Dados" userType="student" onSelect={(id) => setClassIdSelected(id)} registered={true}/>
 
-          <p className="text-gray-500 text-center">Clique na turma para acessar</p>
+              <ClassItemSkeleton />
+            </div>
+            <div className="pt-4">
+              <h2 className="font-nunito mb-4 text-2xl font-extrabold">Outros</h2>
+              <ClassItem acronym="ED" id="2" classIdSelected={classIdSelected} title="Estrutura de Dados" userType="student" onSelect={(id) => setClassIdSelected(id)} registered={false}/>
 
-          <div className="w-full mx-auto mt-4">
-            <ClassItem acronym="ED" title="Estrutura de Dados" code="ED-1234" userType="student"/>
+              <ClassItem acronym="ED" id="3" classIdSelected={classIdSelected} title="Estrutura de Dados" userType="student" onSelect={(id) => setClassIdSelected(id)} registered={false}/>
 
-            <ClassItemSkeleton />
+              <ClassItemSkeleton />
+            </div>
           </div>
 
+        </div>
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t-2 dark:border-t-gray-800 white:border-t-gray-400">
+          <div className="w-full max-w-2xl mx-auto p-6">
+            {classIdSelected ? (
+              <Button className="w-full bg-purple-predominant border-b-4 border-b-dark-shadow p-6 font-nunito text-lg font-extrabold hover:bg-purple-600" onClick={handleJoinClass}>ENTRAR</Button>
+            ) : (
+              <Button disabled className="w-full bg-grey-disabled border-b-4 text-text-secondary p-6 font-nunito text-lg font-extrabold" onClick={handleJoinClass}>ENTRAR</Button>
+            )}
+          </div>
         </div>
       </div>
     </div>

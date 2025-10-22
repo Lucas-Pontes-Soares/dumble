@@ -25,7 +25,7 @@ export default function TeachersClassInfo() {
   const [students, setStudents] = useState<Students[]>([]);
   const [teacher, setTeacher] = useState<Teacher | null>(null);
   const [classInfo, setClassInfo] = useState<ClassInfo | null>(null);
-  const { classCode } = useParams<{ classCode: string }>();
+  const { class_id } = useParams<{ class_id: string }>();
   const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
   const [jwtToken, setJwtToken] = useState<string | null>(null);
 
@@ -44,7 +44,7 @@ export default function TeachersClassInfo() {
   async function getClassInfo(token: string | null) {
     try {
       // Fetch teacher and class info
-      const teacherResponse = await api.get<any>(`/classes/${classCode}/teachers`, {
+      const teacherResponse = await api.get<any>(`/classes/${class_id}/teachers`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (teacherResponse.data.success) {
@@ -53,7 +53,7 @@ export default function TeachersClassInfo() {
       }
 
       // Fetch students
-      const studentsResponse = await api.get<any>(`/classes/${classCode}/students`, {
+      const studentsResponse = await api.get<any>(`/classes/${class_id}/students`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (studentsResponse.data.success) {

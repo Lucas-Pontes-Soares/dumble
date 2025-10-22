@@ -42,7 +42,7 @@ export default function AddQuestionMatchingPairs({ suggestion }: { suggestion: a
             { left: "", right: "" },
             { left: "", right: "" }
         ]);
-        navigateTo('/teachers/ED-1234/')
+        navigateTo('/teachers/classes/1/')
     };
 
     const handleCreateAndContinue = () => {

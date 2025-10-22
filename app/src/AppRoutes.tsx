@@ -27,22 +27,22 @@ export default function AppRoutes() {
       {/* Students Routes */}
       <Route path="/students/classes" element={<StudentsClasses />} />
       <Route path="/students/" element={<StudentsClasses />} />
-      <Route path="/students/:classCode" element={<StudentsHome />} />
-      <Route path="/students/:classCode/info" element={<StudentsClassInfo />} />
-      <Route path="/students/:classCode/chatbot" element={<StudentsChatBot />} />
-      <Route path="/students/:classCode/ranking" element={<StudentsRanking />} />
-      <Route path="/students/:classCode/profile" element={<StudentsProfile />} />
-      <Route path="/students/:classCode/questions/:questionId" element={<StudentsQuestion />} />
+      <Route path="/students/classes/:class_id" element={<StudentsHome />} />
+      <Route path="/students/classes/:class_id/info" element={<StudentsClassInfo />} />
+      <Route path="/students/classes/:class_id/chatbot" element={<StudentsChatBot />} />
+      <Route path="/students/classes/:class_id/ranking" element={<StudentsRanking />} />
+      <Route path="/students/classes/:class_id/profile" element={<StudentsProfile />} />
+      <Route path="/students/classes/:class_id/questions/:questionId" element={<StudentsQuestion />} />
 
       {/* Teachers Routes */}
       <Route path="/teachers/classes" element={<TeachersClasses />} />
       <Route path="/teachers/" element={<TeachersClasses />} />
-      <Route path="/teachers/:classCode" element={<TeachersHome />} />
-       <Route path="/teachers/:classCode/info" element={<TeachersClassInfo />} />
-      <Route path="/teachers/:classCode/files" element={<TeachersFile />} />
-      <Route path="/teachers/:classCode/ranking" element={<TeachersRanking />} />
-      <Route path="/teachers/:classCode/profile" element={<TeachersProfile />} />
-      <Route path="/teachers/:classCode/addQuestion" element={<TeachersAddQuestion />} />
+      <Route path="/teachers/classes/:class_id" element={<TeachersHome />} />
+       <Route path="/teachers/classes/:class_id/info" element={<TeachersClassInfo />} />
+      <Route path="/teachers/classes/:class_id/files" element={<TeachersFile />} />
+      <Route path="/teachers/classes/:class_id/ranking" element={<TeachersRanking />} />
+      <Route path="/teachers/classes/:class_id/profile" element={<TeachersProfile />} />
+      <Route path="/teachers/classes/:class_id/addQuestion" element={<TeachersAddQuestion />} />
 
       {/* Catch-all route for 404 page */}
       <Route path="*" element={<NotFound />} />

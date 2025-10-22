@@ -5,16 +5,16 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 
 interface QuestionsProgressBarProps {
-  classCode?: string;
+  class_id?: string;
 }
 
-export default function QuestionsProgressBar({ classCode }: QuestionsProgressBarProps) {
+export default function QuestionsProgressBar({ class_id }: QuestionsProgressBarProps) {
   const [open, setOpen] = useState(false);
 
   const navigateTo = useNavigate();
 
   function handleExitQuestion(){
-    navigateTo(`/students/${classCode}`)
+    navigateTo(`/students/classes/${class_id}`)
   }
   return (
      <div className="fixed top-0 left-0 right-0 z-50 bg-background p-4 pb-0">

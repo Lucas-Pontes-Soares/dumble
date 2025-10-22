@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { verifyJWTToken } from "@/verifyJWTToken";
 
 export default function StudentsRanking() {
-  const { classCode } = useParams<{ classCode: string }>();
+  const { class_id } = useParams<{ class_id: string }>();
 
   const [data, setData] = useState<StudentsRank[]>([]);
   const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
@@ -44,7 +44,7 @@ export default function StudentsRanking() {
 
   return (
     <div>
-      <CurrentClass acronym={`ED`} code={`${classCode}`} title={`Estrutura de Dados`} userType="student"/>
+      <CurrentClass acronym={`ED`} class_id={`${class_id}`} title={`Estrutura de Dados`} userType="student"/>
       <div className="container mx-auto mt-24 mb-28 max-w-2xl">
         <StudentsRankingDataTable columns={columns} data={data} />
       </div>

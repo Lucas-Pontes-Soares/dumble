@@ -15,7 +15,7 @@ interface ItemQuestionTrailProps {
 }
 
 export default function ItemQuestionTrail({ question }: ItemQuestionTrailProps) {
-  const { classCode } = useParams<{ classCode: string }>();
+  const { class_id } = useParams<{ class_id: string }>();
   const [open, setOpen] = useState(false);
 
   function getPositionClass() {
@@ -40,11 +40,11 @@ export default function ItemQuestionTrail({ question }: ItemQuestionTrailProps) 
   }
 
   async function handleRemakeQuestion(){
-    window.location.href = `/students/${classCode}/questions/${question.id}`
+    window.location.href = `/students/classes/${class_id}/questions/${question.id}`
   }
 
   async function handleRemakeAllQuestions(){
-    window.location.href = `/students/${classCode}/questions/1`
+    window.location.href = `/students/classes/${class_id}/questions/1`
   }
 
   return (
@@ -68,7 +68,7 @@ export default function ItemQuestionTrail({ question }: ItemQuestionTrailProps) 
       <div className="absolute top-2 left-0 w-20 h-20 rounded-full bg-gray-300 opacity-50 z-0"></div>
 
       {question.status === 'new' ? (
-        <a href={`/teachers/${classCode}/addQuestion`}>
+        <a href={`/teachers/classes/${class_id}/addQuestion`}>
           <div className="bg-gray-300 border-4 border-dashed dark:bg-gray-700 w-20 h-20 rounded-full flex items-center justify-center font-bold text-2xl shadow-lg cursor-pointer transition-transform hover:top-1 relative z-10">
             <div className="w-20 h-20 rounded-full flex items-center justify-center">
               <Plus />
@@ -76,7 +76,7 @@ export default function ItemQuestionTrail({ question }: ItemQuestionTrailProps) 
           </div>
         </a>
       ) : question.status !== 'locked' ? (
-        <a href={`/students/${classCode}/questions/${question.id}`} onClick={handleClick}>
+        <a href={`/students/classes/${class_id}/questions/${question.id}`} onClick={handleClick}>
           <div
             className={`${getBackgroudColor()} w-20 h-20 rounded-full flex items-center justify-center font-bold text-2xl shadow-lg cursor-pointer transition-transform hover:top-1 relative z-10`}
           >

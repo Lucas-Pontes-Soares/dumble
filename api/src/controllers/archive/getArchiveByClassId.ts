@@ -9,27 +9,21 @@ interface AuthenticatedRequest extends Request {
     };
 }
 
-export const getArchiveByClassCode = async (req: AuthenticatedRequest, res: Response) => {
+export const getArchiveByClassId = async (req: AuthenticatedRequest, res: Response) => {
     const userAuthenticated = req.userAuthenticated;
 
     if(userAuthenticated?.role !== 'teacher'){
         return res.status(403).json({ success: false, message: 'Route only for teachers' });
     }
 
-    const { class_code } = req.params;
+    const { class_id } = req.params;
 
-    if(!class_code) {
-        return res.status(400).json({ success: false, message: 'class_code is required' });
+    if(!class_id) {
+        return res.status(400).json({ success: false, message: 'class_id is required' });
     }
 
     try {
         const db = Database.getInstance();
-        
-        const resultClassId = await db.query('SELECT * FROM classes WHERE code = $1', [class_code]);
-        if (resultClassId.rowCount === 0) {
-            return res.status(404).json({ success: false, message: 'Class not found' });
-        }
-        const class_id = resultClassId.rows[0].id;
 
         const result = await db.query('SELECT id, type, name FROM archives WHERE class_id = $1', [class_id]);
 

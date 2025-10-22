@@ -41,7 +41,7 @@ const safetySettings = [
 
 export const chatbotMessageCreate = async (req: AuthenticatedRequest, res: Response) => {
     const userAuthenticated = req.userAuthenticated;
-    const { student_message, class_code, student_id } = req.body;
+    const { student_message, class_id, student_id } = req.body;
 
     console.log(userAuthenticated);
     if(userAuthenticated?.role !== 'student'){
@@ -52,7 +52,7 @@ export const chatbotMessageCreate = async (req: AuthenticatedRequest, res: Respo
         return res.status(400).json({ success: false, message: 'Student message are required' });
     }
 
-    if(!class_code) {
+    if(!class_id) {
         return res.status(400).json({ success: false, message: 'class_id is required' });
     }
 
@@ -67,12 +67,6 @@ export const chatbotMessageCreate = async (req: AuthenticatedRequest, res: Respo
 
     try {
         const db = Database.getInstance();
-
-        const resultClassId = await db.query('SELECT * FROM classes WHERE code = $1', [class_code]);
-        if (resultClassId.rowCount === 0) {
-            return res.status(404).json({ success: false, message: 'Class not found' });
-        }
-        const class_id = resultClassId.rows[0].id;
 
         const result = await db.query('SELECT content FROM archives WHERE class_id = $1', [class_id]);
 

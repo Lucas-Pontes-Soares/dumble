@@ -8,7 +8,7 @@ import QuestionFillInTheBlank from "@/components/question-fill-in-the-blank";
 import { verifyJWTToken } from "@/verifyJWTToken";
 
 export default function StudentsQuestion() {
-  const { classCode, questionId } = useParams<{ classCode: string; questionId: string }>();
+  const { class_id, questionId } = useParams<{ class_id: string; questionId: string }>();
   const [showResults, setShowResults] = useState(false);
   const [footerState, setFooterState] = useState<'none' | 'correct' | 'wrong'>('none');
   const [isRemake, setIsRemake] = useState(false);
@@ -36,7 +36,7 @@ export default function StudentsQuestion() {
         setIsRemake(false);
         setFooterState('none');
         setIsRemakeAll(false);
-        navigateTo(`/students/ED-1234/`)
+        navigateTo(`/students/classes/1`)
         
       } else {
         const questionIdNumber = Number(questionId);
@@ -44,7 +44,7 @@ export default function StudentsQuestion() {
         setIsRemake(false);
         setFooterState('none');
         setIsRemakeAll(false);
-        navigateTo(`/students/ED-1234/questions/${questionIdNumber + 1}`)
+        navigateTo(`/students/classes/1/questions/${questionIdNumber + 1}`)
       }
     }
   };
@@ -56,7 +56,7 @@ export default function StudentsQuestion() {
   return (
     <div>
       <div className="flex justify-center pb-24">
-        <QuestionsProgressBar classCode={classCode} />
+        <QuestionsProgressBar class_id={class_id} />
         
         {questionId === '1' ? (
           <QuestionMatchingPairs 

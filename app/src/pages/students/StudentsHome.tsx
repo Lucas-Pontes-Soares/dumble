@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { verifyJWTToken } from "@/verifyJWTToken";
 
 export default function StudentsHome() {
-  const { classCode } = useParams<{ classCode: string }>();
+  const { class_id } = useParams<{ class_id: string }>();
   const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
 
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ export default function StudentsHome() {
 
   return (
     <div>
-      <CurrentClass acronym={`ED`} code={`${classCode}`} title={`Estrutura de Dados`} userType="student"/>
+      <CurrentClass acronym={`ED`} class_id={`${class_id}`} title={`Estrutura de Dados`} userType="student"/>
       <div className="min-h-screen flex items-center justify-center mt-24 mb-24"> 
         <QuestionsTrail questions={questions}/>
       </div>

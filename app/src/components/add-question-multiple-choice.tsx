@@ -60,7 +60,7 @@ export default function AddQuestionMultipleChoice({ suggestion }: { suggestion: 
         ]);
         setCorrectAlternative('');
         setStatement('');
-        navigateTo('/teachers/ED-1234/')
+        navigateTo('/teachers/classes/1/')
     };
 
     const handleCreateAndContinue = () => {

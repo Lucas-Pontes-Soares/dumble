@@ -29,7 +29,7 @@ import ConversorMDtoHTML from "@/ConversorMDtoHTML";
 
 
 export default function StudentsChatBot() {
-  const { classCode } = useParams<{ classCode: string }>();
+  const { class_id } = useParams<{ class_id: string }>();
   const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
   const [jwtToken, setJwtToken] = useState<string | null>(null);
   const [messages, setMessages] = useState<{ role: string; content: string; time: string }[]>([]);
@@ -51,10 +51,10 @@ export default function StudentsChatBot() {
   }, [navigate]);
 
   async function getChatBotMessages(token: string | null, decodedToken: { id: string; role: string; exp: number } | null) {
-    if (!classCode || !token) return;
+    if (!class_id || !token) return;
 
     try {
-      const response = await api.get<any>(`/students/${decodedToken?.id}/classes/${classCode}/chat-bot-messages`, {
+      const response = await api.get<any>(`/students/${decodedToken?.id}/classes/${class_id}/chat-bot-messages`, {
         headers: {                                                                         
           Authorization: `Bearer ${token}`,                                                
         },                                                                                 
@@ -96,7 +96,7 @@ export default function StudentsChatBot() {
   
   async function handleSendMessage(event: React.FormEvent) {
     event.preventDefault();
-    if (!input.trim() || !classCode || !decodedToken || !jwtToken) return;
+    if (!input.trim() || !class_id || !decodedToken || !jwtToken) return;
 
     const userMessage = input;
     setInput("");
@@ -131,7 +131,7 @@ export default function StudentsChatBot() {
         },
         body: JSON.stringify({
           student_message: userMessage,
-          class_code: classCode,
+          class_id: class_id,
           student_id: decodedToken.id,
         }),
       });
@@ -177,7 +177,7 @@ export default function StudentsChatBot() {
     <div className="flex flex-col h-screen">
       <CurrentClass
         acronym={`ED`}
-        code={`${classCode}`}
+        class_id={`${class_id}`}
         title={`Estrutura de Dados`}
         userType="student"
       />

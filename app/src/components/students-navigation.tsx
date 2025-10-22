@@ -14,7 +14,7 @@ interface StudentsNavigationProps {
 }
 
 export default function StudentsNavigation({ activePage }: StudentsNavigationProps) {
-  const { classCode } = useParams<{ classCode: string }>();
+  const { class_id } = useParams<{ class_id: string }>();
 
   return (
     <div className="fixed bottom-0 left-0 w-full border-t-2 bg-background z-20">
@@ -24,7 +24,7 @@ export default function StudentsNavigation({ activePage }: StudentsNavigationPro
             <NavigationMenuItem className="px-2 sm:px-4">
               <NavigationMenuLink asChild className={`flex h-12 w-12 items-center justify-center cursor-pointer sm:h-16 sm:w-16
                                                 ${activePage === 'chatBot' ? 'border-2 rounded-2xl border-violet-400' : ''}`}>
-                <Link to={`/students/${classCode}/chatbot/`}>
+                <Link to={`/students/classes/${class_id}/chatbot/`}>
                   <BotMessageSquare className="h-6 w-6 sm:h-8 sm:w-8" />
                 </Link>
               </NavigationMenuLink>
@@ -32,7 +32,7 @@ export default function StudentsNavigation({ activePage }: StudentsNavigationPro
             <NavigationMenuItem className="px-2 sm:px-4">
               <NavigationMenuLink asChild className={`flex h-12 w-12 items-center justify-center cursor-pointer sm:h-16 sm:w-16
                                                 ${activePage === 'home' ? 'border-2 rounded-2xl border-violet-400' : ''}`}>
-                <Link to={`/students/${classCode}`}>
+                <Link to={`/students/classes/${class_id}`}>
                   <Home className="h-6 w-6 sm:h-8 sm:w-8" />
                 </Link>
               </NavigationMenuLink>
@@ -40,7 +40,7 @@ export default function StudentsNavigation({ activePage }: StudentsNavigationPro
             <NavigationMenuItem className="px-2 sm:px-4">
               <NavigationMenuLink asChild className={`flex h-12 w-12 items-center justify-center cursor-pointer sm:h-16 sm:w-16
                                                 ${activePage === 'ranking' ? 'border-2 rounded-2xl border-violet-400' : ''}`}>
-                <Link to={`/students/${classCode}/ranking`}>
+                <Link to={`/students/classes/${class_id}/ranking`}>
                   <Trophy className="h-6 w-6 sm:h-8 sm:w-8" />
                 </Link>
               </NavigationMenuLink>
@@ -48,7 +48,7 @@ export default function StudentsNavigation({ activePage }: StudentsNavigationPro
             <NavigationMenuItem className="px-2 sm:px-4">
               <NavigationMenuLink asChild className={`flex h-12 w-12 items-center justify-center cursor-pointer sm:h-16 sm:w-16
                                                 ${activePage === 'profile' ? 'border-2 rounded-2xl border-violet-400' : ''}`}>
-                <Link to={`/students/${classCode}/profile`}>
+                <Link to={`/students/classes/${class_id}/profile`}>
                   <User className="h-6 w-6 sm:h-8 sm:w-8" />
                 </Link>
               </NavigationMenuLink>

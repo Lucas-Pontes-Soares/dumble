@@ -12,7 +12,7 @@ interface AuthenticatedRequest extends Request {
 export const getChatBotMessageByStudentId = async (req: AuthenticatedRequest, res: Response) => {
     const userAuthenticated = req.userAuthenticated;
 
-    const { student_id, class_code } = req.params;
+    const { student_id, class_id } = req.params;
 
     if(userAuthenticated?.role !== 'student'){
         return res.status(403).json({ success: false, message: 'Route only for students' });
@@ -26,8 +26,8 @@ export const getChatBotMessageByStudentId = async (req: AuthenticatedRequest, re
         return res.status(403).json({ success: false, message: 'Forbidden: You can only get your own account' });
     }
 
-    if(!class_code) {
-        return res.status(400).json({ success: false, message: 'class_code is required' });
+    if(!class_id) {
+        return res.status(400).json({ success: false, message: 'class_id is required' });
     }
     
     try {

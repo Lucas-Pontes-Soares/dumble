@@ -34,10 +34,10 @@ export default function TeachersFile() {
   }, [navigate]);
 
   async function fetchArchives(token: string | null) {
-    if (!classCode || !token) return;
+    if (!class_id || !token) return;
 
     try {
-      const response = await api.get<any>(`/classes/${classCode}/archives`, {
+      const response = await api.get<any>(`/classes/${class_id}/archives`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -62,7 +62,7 @@ export default function TeachersFile() {
     }
   }
 
-  const { classCode } = useParams<{ classCode: string }>();
+  const { class_id } = useParams<{ class_id: string }>();
 
   function handleUpload(){
     inputFileRef.current?.click();
@@ -74,7 +74,7 @@ export default function TeachersFile() {
       return;
     }
 
-    if (!classCode) {
+    if (!class_id) {
       toast.error("Código da turma não encontrado.");
       return;
     }
@@ -85,7 +85,7 @@ export default function TeachersFile() {
       for (const file of selectedFiles) {
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("class_code", classCode);
+        formData.append("class_id", class_id);
 
         await api.post("/archives", formData, {
           headers: {
@@ -112,9 +112,9 @@ export default function TeachersFile() {
 
   return (
     <div className="min-h-screen p-6 max-w-2xl mx-auto">
-      <CurrentClass acronym={`ED`} code={`ED-1234`} title={`Estrutura de Dados`} userType="teacher"/>
+      <CurrentClass acronym={`ED`} class_id={`ED-1234`} title={`Estrutura de Dados`} userType="teacher"/>
       <div className="w-full pt-18 max-w-2xl">
-         <h1 className="text-4xl font-bold mb-4">Arquivos do Professor - {classCode}</h1>
+         <h1 className="text-4xl font-bold mb-4">Arquivos do Professor - {class_id}</h1>
           <Input 
             type="file" 
             multiple 
