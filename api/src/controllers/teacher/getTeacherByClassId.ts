@@ -21,7 +21,7 @@ export const getTeacherByClassId = async (req: AuthenticatedRequest, res: Respon
     try {
         const db = Database.getInstance();
 
-        const resultClass = await db.query('SELECT * FROM classes WHERE code = $1', [class_id]);
+        const resultClass = await db.query('SELECT * FROM classes WHERE id = $1', [class_id]);
         if (resultClass.rowCount === 0) {
             return res.status(404).json({ success: false, message: 'Class not found' });
         }

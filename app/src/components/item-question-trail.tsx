@@ -26,12 +26,6 @@ export default function ItemQuestionTrail({ question }: ItemQuestionTrailProps) 
     return '';
   }
 
-  function getBackgroudColor() {
-    if (question.status === 'completed') return 'bg-green-500';
-    if (question.status === 'unlocked') return 'bg-gray-300 border-4 border-dashed dark:bg-gray-700';
-    return 'bg-gray-300 dark:bg-gray-700';
-  }
-
   function handleClick(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
     if (question.status === 'completed') {
       e.preventDefault(); 
@@ -47,8 +41,12 @@ export default function ItemQuestionTrail({ question }: ItemQuestionTrailProps) 
     window.location.href = `/students/classes/${class_id}/questions/1`
   }
 
+  const innerSize = 'w-20 h-20'; // 80px
+  const outerSize = 'w-24 h-24'; // Ex: 96px, dando 8px de borda total (4px de cada lado)
+  const outerRingColor = 'border-gray-300';
+
   return (
-    <div className={`relative w-20 h-20 ${getPositionClass()}`}>
+    <div className={`font-nunito relative w-20 h-20 ${getPositionClass()}`}>
       <AlertDialog open={open} onOpenChange={setOpen}>
           <AlertDialogContent>
               <AlertDialogHeader>
@@ -65,31 +63,50 @@ export default function ItemQuestionTrail({ question }: ItemQuestionTrailProps) 
           </AlertDialogContent>
       </AlertDialog>
 
-      <div className="absolute top-2 left-0 w-20 h-20 rounded-full bg-gray-300 opacity-50 z-0"></div>
+      {question.status === 'locked' ? (
+        <div className="absolute top-2 left-0 w-20 h-20 rounded-full bg-[#B7B7B7] z-0"></div>
+      ) : (
+        <div className="absolute top-2 left-0 w-20 h-20 rounded-full bg-[#AF33FF] z-0"></div>
+      )}
+
+      {question.status === 'unlocked' ? (
+        <div className="absolute top-[-10px] left-[-16px] w-28 h-28 rounded-full border-6 border-[#E5E5E5] z-0"></div>
+      ) : null}
 
       {question.status === 'new' ? (
         <a href={`/teachers/classes/${class_id}/addQuestion`}>
           <div className="bg-gray-300 border-4 border-dashed dark:bg-gray-700 w-20 h-20 rounded-full flex items-center justify-center font-bold text-2xl shadow-lg cursor-pointer transition-transform hover:top-1 relative z-10">
-            <div className="w-20 h-20 rounded-full flex items-center justify-center">
+            <div className="w-20 h-20 rounded-full flex items-center justify-center text-white">
               <Plus />
             </div>
           </div>
         </a>
-      ) : question.status !== 'locked' ? (
+      ) : question.status === 'completed' ? (
         <a href={`/students/classes/${class_id}/questions/${question.id}`} onClick={handleClick}>
           <div
-            className={`${getBackgroudColor()} w-20 h-20 rounded-full flex items-center justify-center font-bold text-2xl shadow-lg cursor-pointer transition-transform hover:top-1 relative z-10`}
+            className={`bg-[#CE82FF] w-20 h-20 rounded-full flex items-center justify-center font-bold text-2xl cursor-pointer transition-transform hover:top-1 relative z-10`}
           >
-            <div className="w-20 h-20 rounded-full flex items-center justify-center">
+            <img src="/Shine.png" alt="Brilho" className="absolute w-16 h-16 rounded-full object-cover z-20" />
+            <div className="w-20 h-20 rounded-full flex items-center justify-center text-white z-30">
+              {question.id}
+            </div>
+          </div>
+        </a>
+      ) : question.status === 'unlocked' ? (
+        <a href={`/students/classes/${class_id}/questions/${question.id}`} onClick={handleClick} className=''>
+          <div
+            className={`bg-[#CE82FF] w-20 h-20 rounded-full flex items-center justify-center font-bold text-2xl cursor-pointer transition-transform hover:top-1 relative z-10`}
+          >
+            <div className="w-20 h-20 rounded-full flex items-center justify-center text-white">
               {question.id}
             </div>
           </div>
         </a>
       ) : (
         <div
-          className={`${getBackgroudColor()} w-20 h-20 rounded-full flex items-center justify-center font-bold text-2xl shadow-lg cursor-pointer transition-transform relative z-10`}
+          className={`bg-gray-300 w-20 h-20 rounded-full flex items-center justify-center font-bold text-2xl cursor-pointer transition-transform relative z-10`}
         >
-          <div className="w-20 h-20 rounded-full flex items-center justify-center">
+          <div className="w-20 h-20 rounded-full flex items-center justify-center text-white">
             {question.id}
           </div>
         </div>

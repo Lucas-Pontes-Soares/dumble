@@ -96,13 +96,14 @@ export default function CreateAccount() {
   }
 
   return (
-    <div className="min-h-screen p-6 max-w-2xl mx-auto">
+    <div className="font-nunito min-h-screen p-6 max-w-2xl mx-auto">
       <div className="w-full">
         <div className="flex justify-end mb-4">
           <ModeToggle />
         </div>
-        <h1 className="text-4xl font-bold mb-4">Criar Conta</h1>
-        <p className="mb-6">Por favor entre com seus dados.</p>
+        <div className="mb-16">
+          <h1 className="text-2xl font-bold mb-4 text-center">Crie seu perfil</h1>
+        </div>
 
         <div className="space-y-4">
           <div>
@@ -115,6 +116,7 @@ export default function CreateAccount() {
               placeholder="Nome"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              className="bg-[#F7F7F7] border-[#E5E5E5]"
             />
           </div>
 
@@ -128,13 +130,14 @@ export default function CreateAccount() {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="bg-[#F7F7F7] border-[#E5E5E5]"
             />
           </div>
 
           <div>
             <Label htmlFor="birthday" className="mb-2">Data de Nascimento</Label>
             <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
+              <PopoverTrigger asChild className="bg-[#F7F7F7] border-[#E5E5E5]">
                 <Button
                   variant="outline"
                   id="birthday"
@@ -169,7 +172,7 @@ export default function CreateAccount() {
                 placeholder="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pr-10"
+                className="pr-10 bg-[#F7F7F7] border-[#E5E5E5]"
               />
               <Button
                 type="button"
@@ -179,9 +182,9 @@ export default function CreateAccount() {
                 onClick={() => setShowPassword((prev) => !prev)}
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4" aria-hidden="true" />
+                  <EyeOff className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
                 ) : (
-                  <Eye className="h-4 w-4" aria-hidden="true" />
+                  <Eye className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
                 )}
                 <span className="sr-only">Toggle password visibility</span>
               </Button>
@@ -199,7 +202,7 @@ export default function CreateAccount() {
                 placeholder="Confirme a Senha"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="pr-10"
+                className="pr-10 bg-[#F7F7F7] border-[#E5E5E5]"
               />
               <Button
                 type="button"
@@ -209,17 +212,21 @@ export default function CreateAccount() {
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
               >
                 {showConfirmPassword ? (
-                  <EyeOff className="h-4 w-4" aria-hidden="true" />
+                  <EyeOff className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
                 ) : (
-                  <Eye className="h-4 w-4" aria-hidden="true" />
+                  <Eye className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
                 )}
                 <span className="sr-only">Toggle password visibility</span>
               </Button>
             </div>
           </div>
 
-          <div>
-            <p className="text-md text-gray-600">Criar Como ?</p>
+          <div className="mb-10">
+            <div className="relative flex items-center py-4">
+              <div className="flex-grow border-t border-gray-300"></div>
+              <span className="flex-shrink mx-4 text-gray-600">COMO ?</span>
+              <div className="flex-grow border-t border-gray-300"></div>
+            </div>
             <RadioGroup
               value={accountType}
               onValueChange={setAccountType}
@@ -236,17 +243,23 @@ export default function CreateAccount() {
             </RadioGroup>
           </div>
 
-          <Button className="w-full" onClick={handleCreateUser} disabled={isLoading}>
+          <Button className="w-full bg-purple-predominant rounded-xl border-b-4 border-b-dark-shadow p-6 font-nunito text-lg font-bold hover:bg-purple-600" onClick={handleCreateUser} disabled={isLoading}>
             {isLoading ? <Spinner/> : null}
             Criar Conta
           </Button>
 
-          <p className="text-center text-sm mt-4">
-            Já possui uma conta?{" "}
-            <Link to="/login" className="text-blue-500 hover:underline">
-              Clique aqui
-            </Link>
-          </p>
+          <small className="block text-center text-sm mt-2 text-[#AFAFAF]">
+            Ao fazer login no Dumble, você concorda com nossos <strong>Termos e Política de Privacidade.</strong>
+          </small>
+
+          <div className="mt-4">
+            <strong className="block text-center text-sm">
+              Tem uma conta?{" "}
+              <Link to="/login" className="text-purple-predominant hover:underline">
+                CONECTAR
+              </Link>
+            </strong>
+          </div>
         </div>
       </div>
     </div>

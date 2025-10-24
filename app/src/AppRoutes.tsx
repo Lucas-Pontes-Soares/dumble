@@ -16,11 +16,12 @@ import StudentsQuestion from "./pages/students/StudentsQuestion.tsx";
 import TeachersAddQuestion from "./pages/teachers/TeachersAddQuestion.tsx";
 import StudentsClassInfo from "./pages/students/StudentsClassInfo.tsx";
 import TeachersClassInfo from "./pages/teachers/TeachersClassInfo.tsx";
+import Introduction from "./pages/not-authenticated/Introduction.tsx";
 
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route path="/" element={<Introduction />} />
       <Route path="/login" element={<Login />} />
       <Route path="/createUser" element={<CreateAccount />} />
 

@@ -24,14 +24,17 @@ export default function Login() {
 
     if(!email){
       toast.error("Email é obrigatório");
+      setIsLoading(false);
       return;
     }
     if(!password){
       toast.error("Senha é obrigatória");
+      setIsLoading(false);
       return;
     }
     if(!accountType){
       toast.error("Tipo de conta é obrigatório");
+      setIsLoading(false);
       return;
     }
 
@@ -76,14 +79,14 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen p-6 max-w-2xl mx-auto">
+    <div className="font-nunito min-h-screen p-6 max-w-2xl mx-auto">
       <div className="w-full">
         <div className="flex justify-end mb-4">
           <ModeToggle />
         </div>
-        <h1 className="text-4xl font-bold mb-4">Login</h1>
-        <p className="mb-6">Por favor entre com seu email e senha.</p>
-
+        <div className="mb-16">
+          <h1 className="text-2xl font-bold mb-4 text-center">Entre no seu perfil</h1>
+        </div>
         <div className="space-y-4">
           <div>
             <Label htmlFor="email" className="mb-2">Email</Label>
@@ -93,6 +96,7 @@ export default function Login() {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="bg-[#F7F7F7] border-[#E5E5E5]"
             />
           </div>
 
@@ -105,7 +109,7 @@ export default function Login() {
                 placeholder="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pr-10"
+                className="pr-10 bg-[#F7F7F7] border-[#E5E5E5]"
               />
               <Button
                 type="button"
@@ -115,17 +119,21 @@ export default function Login() {
                 onClick={() => setShowPassword((prev) => !prev)} 
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4" aria-hidden="true" />
+                  <EyeOff className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
                 ) : (
-                  <Eye className="h-4 w-4" aria-hidden="true" />
+                  <Eye className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
                 )}
                 <span className="sr-only">Toggle password visibility</span>
               </Button>
             </div>
           </div>
 
-          <div>
-            <p className="text-md text-gray-600">Logar Como ?</p>
+          <div className="mb-10">
+            <div className="relative flex items-center py-4">
+              <div className="flex-grow border-t border-gray-300"></div>
+              <span className="flex-shrink mx-4 text-gray-600">COMO ?</span>
+              <div className="flex-grow border-t border-gray-300"></div>
+            </div>
             <RadioGroup
               value={accountType}
               onValueChange={setAccountType}
@@ -142,17 +150,24 @@ export default function Login() {
             </RadioGroup>
           </div>
 
-          <Button className="w-full" onClick={handleLoginUser} disabled={isLoading}>
+          <Button className="w-full bg-purple-predominant rounded-xl border-b-4 border-b-dark-shadow p-6 font-nunito text-lg font-bold hover:bg-purple-600" onClick={handleLoginUser} disabled={isLoading}>
             {isLoading ? <Spinner/> : null}
-            Login
+            Entrar
           </Button>
 
-          <p className="text-center text-sm mt-4">
-            Não possui uma conta?{" "}
-            <Link to="/createUser" className="text-blue-500 hover:underline">
-              Clique aqui
-            </Link>
-          </p>
+          <small className="block text-center text-sm mt-2 text-[#AFAFAF]">
+            Ao fazer login no Dumble, você concorda com nossos <strong>Termos e Política de Privacidade.</strong>
+          </small>
+
+          <div className="mt-4">
+            <strong className="block text-center text-sm">
+              Não tem uma conta?{" "}
+              <Link to="/createUser" className="text-purple-predominant hover:underline">
+                CRIAR
+              </Link>
+            </strong>
+          </div>
+          
         </div>
       </div>
     </div>

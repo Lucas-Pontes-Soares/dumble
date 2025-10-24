@@ -11,17 +11,17 @@ interface CurrentClassProps {
 
 export default function CurrentClass({ acronym, title, class_id, userType }: CurrentClassProps) {
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 bg-background p-4 pb-0">
-        <div className="w-full max-w-2xl mx-auto border-2 dark:border-gray-800 white:border-gray-400 rounded-xl p-2 flex items-center gap-4">
+    <div className="font-nunito fixed top-0 left-0 right-0 z-50 bg-white p-4 h-auto">
+        <div className="w-full max-w-2xl mx-auto bg-purple-predominant rounded-xl border-b-4 border-b-dark-shadow p-2 flex items-center gap-4 text-white">
             <Link to={`/${userType}s/classes`}>
-              <X className="ml-2 h-5 w-5 text-gray-500" />
+              <X className="ml-2 h-5 w-5 text-white" />
             </Link>
             <div className="ml-4 flex-grow">
-              <Link to={`/${userType}s/${class_id}/info`}>
-                <p className="cursor-pointer underline">{title}</p>
+              <Link to={`/${userType}s/classes/${class_id}/info`}>
+                <p className="cursor-pointer font-bold underline">{title.toUpperCase()}</p>
               </Link>
             </div>
-            <Link to={`/${userType}s/${class_id}/info`}>
+            <Link to={`/${userType}s/classes/${class_id}/info`}>
               <Avatar className="mr-4 w-12 h-12">
                   {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
                   <AvatarFallback className="bg-amber-500 text-white">{acronym}</AvatarFallback>
