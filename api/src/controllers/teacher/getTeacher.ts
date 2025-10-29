@@ -29,7 +29,7 @@ export const getTeacher = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const db = Database.getInstance();
 
-        const result = await db.query('SELECT id, name, email, birthday, picture FROM teachers WHERE id = $1', [teacher_id]);
+        const result = await db.query('SELECT * FROM teachers WHERE id = $1', [teacher_id]);
 
         if (result.rowCount === 0) {
             return res.status(404).json({ success: false, message: 'Teacher not found' });

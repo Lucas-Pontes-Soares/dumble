@@ -64,9 +64,10 @@ export const updateTeacher = async (req: AuthenticatedRequest, res: Response) =>
                 email = COALESCE($2, email),
                 password = COALESCE($3, password),
                 birthday = COALESCE($4, birthday),
-                picture = COALESCE($5, picture)
+                picture = COALESCE($5, picture),
+                updated_at = NOW()
             WHERE id = $6
-            RETURNING id, name, email, birthday, picture`,
+            RETURNING id, name, email, birthday, picture, created_at, updated_at`,
             [name, email, hashedPassword, birthday, picture, teacher_id]
         );
 
