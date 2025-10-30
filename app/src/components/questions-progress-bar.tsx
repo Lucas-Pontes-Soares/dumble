@@ -35,10 +35,10 @@ export default function QuestionsProgressBar({ class_id }: QuestionsProgressBarP
 
         <div className="w-full max-w-2xl mx-auto p-4 flex items-center gap-8">
             <div className="flex-none cursor-pointer" onClick={() => setOpen(true)}>
-                <X />
+                <X className="text-[#AFAFAF]"/>
             </div>
             <div className="flex-grow flex justify-center w-full">
-                <Progress value={10} className="h-4"/>
+                <Progress value={20} className="h-4" />
             </div>
         </div>
     </div>

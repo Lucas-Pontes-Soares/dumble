@@ -112,7 +112,7 @@ export default function TeachersFile() {
 
   return (
     <div className="min-h-screen p-6 max-w-2xl mx-auto">
-      <CurrentClass acronym={`ED`} class_id={`ED-1234`} title={`Estrutura de Dados`} userType="teacher"/>
+      <CurrentClass acronym={`ED`} class_id={`${class_id}`} title={`Estrutura de Dados`} userType="teacher"/>
       <div className="w-full pt-18 max-w-2xl">
          <h1 className="text-4xl font-bold mb-4">Arquivos do Professor - {class_id}</h1>
           <Input 

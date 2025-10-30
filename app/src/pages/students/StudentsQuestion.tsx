@@ -14,6 +14,7 @@ export default function StudentsQuestion() {
   const [isRemake, setIsRemake] = useState(false);
   const [isRemakeAll, setIsRemakeAll] = useState(false);
   const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
+  const [allSelected, setAllSelected] = useState(false); // New state for allSelected
 
   const navigate = useNavigate();
 
@@ -32,15 +33,15 @@ export default function StudentsQuestion() {
       setShowResults(true);
     } else { // se ja tinha resultado, ao clicar, leva para a proxima
       if(isRemake && !isRemakeAll){
-        setShowResults(false); 
+        setShowResults(false);
         setIsRemake(false);
         setFooterState('none');
         setIsRemakeAll(false);
         navigateTo(`/students/classes/1`)
-        
+
       } else {
         const questionIdNumber = Number(questionId);
-        setShowResults(false); 
+        setShowResults(false);
         setIsRemake(false);
         setFooterState('none');
         setIsRemakeAll(false);
@@ -53,29 +54,36 @@ export default function StudentsQuestion() {
     setFooterState(status);
   };
 
+  const handleAllSelectedChange = (selected: boolean) => { // New callback function
+    setAllSelected(selected);
+  };
+
   return (
     <div>
-      <div className="flex justify-center pb-24">
+      <div className="font-nunito flex justify-center pb-24">
         <QuestionsProgressBar class_id={class_id} />
-        
+
         {questionId === '1' ? (
-          <QuestionMatchingPairs 
-            showResults={showResults} 
-            onValidationComplete={handleValidationComplete} 
+          <QuestionMatchingPairs
+            showResults={showResults}
+            onValidationComplete={handleValidationComplete}
+            onAllSelectedChange={handleAllSelectedChange} // Pass callback
           />
         ) : questionId === '2' ?(
-          <QuestionMultipleChoice 
-            showResults={showResults} 
+          <QuestionMultipleChoice
+            showResults={showResults}
             onValidationComplete={handleValidationComplete}
+            onAllSelectedChange={handleAllSelectedChange} // Pass callback
           />
         ) : (
-          <QuestionFillInTheBlank 
-            showResults={showResults} 
+          <QuestionFillInTheBlank
+            showResults={showResults}
             onValidationComplete={handleValidationComplete}
+            onAllSelectedChange={handleAllSelectedChange} // Pass callback
           />
         )}
 
-        <QuestionsFooter state={footerState} onContinue={handleContinue} />
+        <QuestionsFooter state={footerState} onContinue={handleContinue} allSelected={allSelected} /> {/* Pass allSelected */}
       </div>
     </div>
   )

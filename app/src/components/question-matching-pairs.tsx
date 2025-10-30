@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { BrushCleaning } from 'lucide-react';
 
 interface ColumnItem {
   id: string;
@@ -26,9 +27,10 @@ const rightColumnItems: ColumnItem[] = [
 interface QuestionMatchingPairsProps {
   showResults: boolean;
   onValidationComplete: (status: 'correct' | 'wrong') => void;
+  onAllSelectedChange: (selected: boolean) => void; // New prop
 }
 
-export default function QuestionMatchingPairs({ showResults, onValidationComplete }: QuestionMatchingPairsProps) {
+export default function QuestionMatchingPairs({ showResults, onValidationComplete, onAllSelectedChange }: QuestionMatchingPairsProps) {
   const [selectedLeft, setSelectedLeft] = useState<ColumnItem | null>(null);
   const [tempSelectedRight, setTempSelectedRight] = useState<ColumnItem | null>(null);
   const [userPairs, setUserPairs] = useState<Record<string, string>>({});
@@ -65,6 +67,12 @@ export default function QuestionMatchingPairs({ showResults, onValidationComplet
     }
   }, [showResults, userPairs, onValidationComplete]);
 
+  useEffect(() => {
+    const allPairsMade = Object.keys(userPairs).length === leftColumnItems.length;
+    onAllSelectedChange(allPairsMade);
+  }, [userPairs, onAllSelectedChange]);
+
+
   const handleSelect = (item: ColumnItem, column: 'left' | 'right') => {
     if (showResults || tempSelectedRight) return;
 
@@ -96,11 +104,11 @@ export default function QuestionMatchingPairs({ showResults, onValidationComplet
     return cn(
       'p-4 border rounded-md transition-colors h-full flex items-center justify-center text-center',
       {
-        'cursor-pointer hover:bg-zinc-900': !isPaired && !showResults,
-        'border-violet-400': isLeftSelected || isRightTempSelected,
+        'cursor-pointer hover:bg-[#F7F7F7]': !isPaired && !showResults,
+        'border-blue-base': isLeftSelected || isRightTempSelected,
         'opacity-50 cursor-not-allowed': isPaired && !showResults,
-        'border-lime-400': showResults && status === 'correct',
-        'border-red-400': showResults && status === 'incorrect',
+        'border-purple-predominant': showResults && status === 'correct',
+        'border-red-500': showResults && status === 'incorrect',
       }
     );
   };
@@ -113,11 +121,24 @@ export default function QuestionMatchingPairs({ showResults, onValidationComplet
   };
 
   return (
-    <div className="mt-24 w-full max-w-2xl mx-auto">
-      <h2 className="font-extrabold p-4 text-center">Combine os Pares</h2>
+    <div className="mt-24 w-full max-w-2xl mx-auto p-4 pb-24">
+      <div className="flex justify-between items-center mb-6">
+        <small className="text-base text-[#AFAFAF]">* Combine os Pares</small>
+        
+        {showResults ? (
+            <Button variant="outline" onClick={handleReset} disabled>
+                <BrushCleaning className="mr-2" /> Limpar
+            </Button>
+        ) : (
+            <Button variant="outline" onClick={handleReset}>
+                <BrushCleaning className="mr-2" /> Limpar
+            </Button>
+        )}
+      </div>
+      <p className="text-base mt-4 mb-4">Relacione cada aspecto da apresentação com a expectativa correspondente:</p>
       <div className="mt-2 grid grid-cols-1 gap-4">
         {leftColumnItems.map((leftItem, index) => {
-          const rightItem = rightColumnItems[index]; 
+          const rightItem = rightColumnItems[index];
           return (
             <div key={leftItem.id} className="grid grid-cols-2 gap-4 items-stretch">
               <div
@@ -135,13 +156,6 @@ export default function QuestionMatchingPairs({ showResults, onValidationComplet
             </div>
           );
         })}
-      </div> 
-      <div className="mt-8 flex justify-center">
-        {showResults ? (
-            <Button onClick={handleReset} disabled>Reiniciar</Button>
-        ) : (
-            <Button onClick={handleReset}>Reiniciar</Button>
-        )}
       </div>
     </div>
   );

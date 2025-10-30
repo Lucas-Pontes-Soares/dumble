@@ -144,7 +144,7 @@ export default function TeachersProfile() {
   };
 
   return (
-      <div className="font-nunito min-h-screen mb-24">
+      <div className="font-nunito min-h-screen pb-24">
         <div className="w-full bg-[#BF8FFF]">
           <div className="flex justify-end items-end px-6 pt-6 max-w-2xl mx-auto gap-2">
             {!isEditing ? (
@@ -328,7 +328,7 @@ export default function TeachersProfile() {
               ) : null}
             </div>
           </div>
-      </div>
+        </div>
 
       <TeachersNavigation activePage="profile"/>
     </div>
