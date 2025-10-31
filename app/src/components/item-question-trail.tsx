@@ -12,9 +12,10 @@ export interface Question {
 
 interface ItemQuestionTrailProps {
   question: Question;
+  userType: 'teacher' | 'student';
 }
 
-export default function ItemQuestionTrail({ question }: ItemQuestionTrailProps) {
+export default function ItemQuestionTrail({ question, userType }: ItemQuestionTrailProps) {
   const { class_id } = useParams<{ class_id: string }>();
   const [open, setOpen] = useState(false);
 
@@ -27,7 +28,7 @@ export default function ItemQuestionTrail({ question }: ItemQuestionTrailProps) 
   }
 
   function handleClick(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
-    if (question.status === 'completed') {
+    if (question.status === 'completed' && userType === 'student') {
       e.preventDefault(); 
       setOpen(true);
     }
@@ -78,7 +79,7 @@ export default function ItemQuestionTrail({ question }: ItemQuestionTrailProps) 
           </div>
         </a>
       ) : question.status === 'completed' ? (
-        <a href={`/students/classes/${class_id}/questions/${question.id}`} onClick={handleClick}>
+        <a href={`/${userType}s/classes/${class_id}/questions/${question.id}`} onClick={handleClick}>
           <div
             className={`bg-[#CE82FF] w-20 h-20 rounded-full flex items-center justify-center font-bold text-2xl cursor-pointer transition-transform hover:top-1 relative z-10`}
           >

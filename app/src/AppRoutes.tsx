@@ -17,6 +17,7 @@ import TeachersAddQuestion from "./pages/teachers/TeachersAddQuestion.tsx";
 import StudentsClassInfo from "./pages/students/StudentsClassInfo.tsx";
 import TeachersClassInfo from "./pages/teachers/TeachersClassInfo.tsx";
 import Introduction from "./pages/not-authenticated/Introduction.tsx";
+import TeachersEditQuestion from "./pages/teachers/TeachersEditQuestion.tsx";
 
 export default function AppRoutes() {
   return (
@@ -33,17 +34,18 @@ export default function AppRoutes() {
       <Route path="/students/classes/:class_id/chatbot" element={<StudentsChatBot />} />
       <Route path="/students/classes/:class_id/ranking" element={<StudentsRanking />} />
       <Route path="/students/classes/:class_id/profile" element={<StudentsProfile />} />
-      <Route path="/students/classes/:class_id/questions/:questionId" element={<StudentsQuestion />} />
+      <Route path="/students/classes/:class_id/questions/:question_id" element={<StudentsQuestion />} />
 
       {/* Teachers Routes */}
       <Route path="/teachers/classes" element={<TeachersClasses />} />
       <Route path="/teachers/" element={<TeachersClasses />} />
       <Route path="/teachers/classes/:class_id" element={<TeachersHome />} />
-       <Route path="/teachers/classes/:class_id/info" element={<TeachersClassInfo />} />
+      <Route path="/teachers/classes/:class_id/info" element={<TeachersClassInfo />} />
       <Route path="/teachers/classes/:class_id/files" element={<TeachersFile />} />
       <Route path="/teachers/classes/:class_id/ranking" element={<TeachersRanking />} />
       <Route path="/teachers/classes/:class_id/profile" element={<TeachersProfile />} />
       <Route path="/teachers/classes/:class_id/addQuestion" element={<TeachersAddQuestion />} />
+      <Route path="/teachers/classes/:class_id/questions/:question_id" element={<TeachersEditQuestion />} />
 
       {/* Catch-all route for 404 page */}
       <Route path="*" element={<NotFound />} />

@@ -30,7 +30,7 @@ export default function TeachersHome() {
     <div>
       <CurrentClass acronym={`ED`} class_id={`${class_id}`} title={`Estrutura de Dados`} userType="teacher"/>
       <div className="min-h-screen flex items-center justify-center mt-24 pb-24"> 
-        <QuestionsTrail questions={questions}/>
+        <QuestionsTrail userType={"teacher"} questions={questions}/>
       </div>
       
       <TeachersNavigation activePage="home" />

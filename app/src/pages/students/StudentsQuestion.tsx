@@ -8,7 +8,7 @@ import QuestionFillInTheBlank from "@/components/question-fill-in-the-blank";
 import { verifyJWTToken } from "@/verifyJWTToken";
 
 export default function StudentsQuestion() {
-  const { class_id, questionId } = useParams<{ class_id: string; questionId: string }>();
+  const { class_id, question_id } = useParams<{ class_id: string; question_id: string }>();
   const [showResults, setShowResults] = useState(false);
   const [footerState, setFooterState] = useState<'none' | 'correct' | 'wrong'>('none');
   const [isRemake, setIsRemake] = useState(false);
@@ -40,7 +40,7 @@ export default function StudentsQuestion() {
         navigateTo(`/students/classes/1`)
 
       } else {
-        const questionIdNumber = Number(questionId);
+        const questionIdNumber = Number(question_id);
         setShowResults(false);
         setIsRemake(false);
         setFooterState('none');
@@ -63,13 +63,13 @@ export default function StudentsQuestion() {
       <div className="font-nunito flex justify-center pb-24">
         <QuestionsProgressBar class_id={class_id} />
 
-        {questionId === '1' ? (
+        {question_id === '1' ? (
           <QuestionMatchingPairs
             showResults={showResults}
             onValidationComplete={handleValidationComplete}
             onAllSelectedChange={handleAllSelectedChange} // Pass callback
           />
-        ) : questionId === '2' ?(
+        ) : question_id === '2' ?(
           <QuestionMultipleChoice
             showResults={showResults}
             onValidationComplete={handleValidationComplete}
