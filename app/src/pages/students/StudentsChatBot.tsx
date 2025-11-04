@@ -182,9 +182,9 @@ export default function StudentsChatBot() {
         userType="student"
       />
 
-      <div className="flex-grow overflow-hidden px-4 flex justify-center mt-24 mb-28">
+      <div className="font-nunito flex-grow overflow-hidden px-4 flex justify-center mt-26 mb-28">
         <Card className="w-full max-w-2xl flex flex-col h-full">
-          <CardHeader className="flex-shrink-0 flex flex-row items-center">
+          <CardHeader className="flex-shrink-0 flex flex-row items-center border-b">
             <div className="flex items-center gap-4">
               <Avatar className="border">
                 <AvatarImage src="/avatars/01.png" alt="Image" />
@@ -192,30 +192,30 @@ export default function StudentsChatBot() {
               </Avatar>
               <div className="flex flex-col gap-0.5">
                 <p className="text-sm leading-none font-medium">DumbleAI</p>
-                <p className="text-muted-foreground text-xs">m@example.com</p>
+                <p className="text-muted-foreground text-xs">IA que te ajuda nos estudos</p>
               </div>
             </div>
           </CardHeader>
 
-          <CardContent className="flex-grow overflow-y-auto px-4">
-            <div className="flex flex-col gap-4 pb-4">
+          <CardContent className="flex-grow overflow-y-auto bg-muted pt-4">
+            <div className="flex flex-col gap-4 pb-4 bg-muted">
               {messages.map((message, index) => (
                 <div
                   key={index}
                   className={cn(
-                    "flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm",
+                    "flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-xs md:text-sm",
                     message.role === "user"
-                      ? "bg-primary text-primary-foreground ml-auto"
-                      : "bg-muted"
+                      ? "bg-[#DCA7FF] text-black ml-auto"
+                      : "bg-white text-black"
                   )}
                 >
                   {message.role === "user" ? (
-                    <span className="prose"><ConversorMDtoHTML message={message.content} /></span>
+                    <span className="prose text-black text-sm"><ConversorMDtoHTML message={message.content} /></span>
                   ) : (
-                    <span className="prose prose-invert"><ConversorMDtoHTML message={message.content} /></span>
+                    <span className="prose prose-invert text-black text-sm"><ConversorMDtoHTML message={message.content} /></span>
                   )}
 
-                  <div className="text-xs text-right text-muted-foreground mt-1">{message.time}</div>
+                  <div className="text-right text-black mt-1 text-xs">{message.time}</div>
                 </div>
               ))}
               <div ref={messagesEndRef} />
@@ -229,7 +229,7 @@ export default function StudentsChatBot() {
             >
               <Input
                 id="message"
-                placeholder="Pergunte alguma coisa"
+                placeholder="Pergunte alguma coisa..."
                 className="flex-1 pr-10"
                 autoComplete="off"
                 value={input}
@@ -238,7 +238,7 @@ export default function StudentsChatBot() {
               <Button
                 type="submit"
                 size="icon"
-                className="absolute top-1/2 right-2 size-6 -translate-y-1/2 rounded-full"
+                className="absolute top-1/2 right-2 size-6 -translate-y-1/2 rounded-full bg-purple-predominant dark:text-white"
                 disabled={inputLength === 0 || isLoading}
               >
                 {isLoading ? <Spinner className="size-3.5"/> : <ArrowUpIcon className="size-3.5" />}

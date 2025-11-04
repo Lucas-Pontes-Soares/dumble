@@ -119,7 +119,7 @@ export default function TeachersAddQuestion() {
         </div>
       </div>
 
-      <div className="font-nunito min-h-screen pt-20 p-2 max-w-2xl mx-auto pb-48 md:pb-28">
+      <div className="font-nunito min-h-screen pt-20 p-6 max-w-2xl mx-auto pb-48 md:pb-28">
         <div className="mt-4 rounded-md">
           <Label className="mb-2" >Informe o tipo de Questão</Label>
           <Select onValueChange={(value) => setQuestionType(value)} value={questionType || ''}>
@@ -137,7 +137,7 @@ export default function TeachersAddQuestion() {
           </Select>
         </div>
 
-        <div className="mt-4 dark:bg-neutral-900 rounded-md dark:border-neutral-700">
+        <div className="mt-4">
           <Label className="pb-4"><WandSparklesIcon size={16}/>Gerar questão com IA</Label>
           <Textarea 
             className="min-h-[100px]" 
@@ -146,7 +146,7 @@ export default function TeachersAddQuestion() {
             onChange={(e) => setPrompt(e.target.value)}
             />
           <Button 
-            className="mt-4 w-full bg-purple-predominant rounded-xl border-b-4 border-b-dark-shadow p-6 font-nunito text-base hover:bg-purple-600" 
+            className="mt-4 w-full bg-purple-predominant rounded-xl border-b-4 border-b-dark-shadow p-6 font-nunito text-base hover:bg-purple-600 dark:text-white" 
             onClick={() => handleCreateSuggestion()}
             disabled={isLoading}
           >
@@ -176,13 +176,13 @@ export default function TeachersAddQuestion() {
                   onClick={() => setSubmitAction('stop')} 
                   variant={"outline"}
                 >
-                  Criar e Parar
+                  CRIAR E PARAR
                 </Button>
                 <Button 
-                  className="bg-purple-predominant rounded-xl border-b-4 border-b-dark-shadow p-6 font-nunito text-base font-bold hover:bg-purple-600" 
+                  className="bg-purple-predominant rounded-xl border-b-4 border-b-dark-shadow p-6 font-nunito text-base font-bold hover:bg-purple-600 dark:text-white" 
                   onClick={() => setSubmitAction('continue')}
                 >
-                  Criar e Continuar
+                  CRIAR E CONTINUAR
                 </Button>
               </div>
               ) : (
@@ -192,13 +192,13 @@ export default function TeachersAddQuestion() {
                   disabled
                   variant={"outline"}
                 >
-                  Criar e Parar
+                  CRIAR E PARAR
                 </Button>
                 <Button 
                   className="bg-grey-disabled border-b-4 text-text-secondary rounded-xl border-2 p-6 font-nunito text-base font-bold" 
                   disabled
                 >
-                  Criar e Continuar
+                  CRIAR E CONTINUAR
                 </Button>
               </div>
               )}

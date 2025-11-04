@@ -61,13 +61,13 @@ export default function ItemQuestionTrail({ question, userType }: ItemQuestionTr
       </AlertDialog>
 
       {question.status === 'locked' ? (
-        <div className="absolute top-2 left-0 w-20 h-20 rounded-full bg-[#B7B7B7] z-0"></div>
+        <div className="absolute top-2 left-0 w-20 h-20 rounded-full bg-[#B7B7B7] dark:bg-[#111111] z-0"></div>
       ) : (
         <div className="absolute top-2 left-0 w-20 h-20 rounded-full bg-[#AF33FF] z-0"></div>
       )}
 
       {question.status === 'unlocked' || question.status === 'new' ? (
-        <div className="absolute top-[-10px] left-[-16px] w-28 h-28 rounded-full border-6 border-[#E5E5E5] z-0"></div>
+        <div className="absolute top-[-10px] left-[-16px] w-28 h-28 rounded-full border-6 border-[#E5E5E5] dark:border-[#1f1f1f] z-0"></div>
       ) : null}
 
       {question.status === 'new' ? (
@@ -101,7 +101,7 @@ export default function ItemQuestionTrail({ question, userType }: ItemQuestionTr
         </a>
       ) : (
         <div
-          className={`bg-gray-300 w-20 h-20 rounded-full flex items-center justify-center font-bold text-2xl cursor-pointer transition-transform relative z-10`}
+          className={`bg-gray-300 dark:bg-[#1f1f1f] w-20 h-20 rounded-full flex items-center justify-center font-bold text-2xl cursor-pointer transition-transform relative z-10`}
         >
           <div className="w-20 h-20 rounded-full flex items-center justify-center text-white">
             {question.id}

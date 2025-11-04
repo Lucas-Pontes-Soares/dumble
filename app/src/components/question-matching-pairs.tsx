@@ -104,7 +104,7 @@ export default function QuestionMatchingPairs({ showResults, onValidationComplet
     return cn(
       'p-4 border rounded-md transition-colors h-full flex items-center justify-center text-center',
       {
-        'cursor-pointer hover:bg-[#F7F7F7]': !isPaired && !showResults,
+        'cursor-pointer hover:bg-[#F7F7F7] dark:hover:bg-[#3C3C3C]': !isPaired && !showResults,
         'border-blue-base': isLeftSelected || isRightTempSelected,
         'opacity-50 cursor-not-allowed': isPaired && !showResults,
         'border-purple-predominant': showResults && status === 'correct',

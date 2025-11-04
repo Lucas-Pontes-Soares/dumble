@@ -116,7 +116,7 @@ export default function CreateAccount() {
               placeholder="Nome"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="bg-[#F7F7F7] border-[#E5E5E5]"
+              className="bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
             />
           </div>
 
@@ -130,7 +130,7 @@ export default function CreateAccount() {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="bg-[#F7F7F7] border-[#E5E5E5]"
+              className="bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
             />
           </div>
 
@@ -172,7 +172,7 @@ export default function CreateAccount() {
                 placeholder="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pr-10 bg-[#F7F7F7] border-[#E5E5E5]"
+                className="pr-10 bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
               />
               <Button
                 type="button"
@@ -202,7 +202,7 @@ export default function CreateAccount() {
                 placeholder="Confirme a Senha"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="pr-10 bg-[#F7F7F7] border-[#E5E5E5]"
+                className="pr-10 bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
               />
               <Button
                 type="button"
@@ -243,7 +243,7 @@ export default function CreateAccount() {
             </RadioGroup>
           </div>
 
-          <Button className="w-full bg-purple-predominant rounded-xl border-b-4 border-b-dark-shadow p-6 font-nunito text-lg font-bold hover:bg-purple-600" onClick={handleCreateUser} disabled={isLoading}>
+          <Button className="w-full bg-purple-predominant rounded-xl border-b-4 border-b-dark-shadow p-6 font-nunito text-lg font-bold hover:bg-purple-600 dark:text-white" onClick={handleCreateUser} disabled={isLoading}>
             {isLoading ? <Spinner/> : null}
             Criar Conta
           </Button>

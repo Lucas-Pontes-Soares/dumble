@@ -72,7 +72,7 @@ export default function AddQuestionFillInTheBlack({ suggestion, submitAction, on
     <div className="mt-4 p-4 dark:bg-neutral-900 rounded-md border-1 dark:border-neutral-700">
       <Label className="mb-2">Enunciado:</Label>
         <Label className="mt-4 mb-2">Adicone "_" para fazer a lacuna:</Label>
-        <small>No máximo 3 lacunas corretas</small>
+        <small>No máximo 3 lacunas</small>
         <Textarea
           id="statement"
           placeholder="Informe o Enunciado"
@@ -84,10 +84,10 @@ export default function AddQuestionFillInTheBlack({ suggestion, submitAction, on
         <Label className="mt-4 mb-2">Preencha o valor da lacuna:</Label>
 
         <ul className="list-disc list-inside">
-          <li className="mb-4">Lacunas corretas em ordem:</li>
+          <li className="mb-4">Lacunas corretas em ordem certa:</li>
           <div className="flex flex-col gap-4 w-full">
             <div className="flex items-center gap-2">
-              <div className="rounded-full w-9 h-9 flex items-center justify-center text-sm font-bold text-white bg-gray-400">
+              <div className="rounded-full w-9 h-9 flex items-center justify-center text-sm font-bold text-white bg-purple-predominant">
                 1
               </div>
               <Input
@@ -99,7 +99,7 @@ export default function AddQuestionFillInTheBlack({ suggestion, submitAction, on
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="rounded-full w-9 h-9 flex items-center justify-center text-sm font-bold text-white bg-gray-400">
+              <div className="rounded-full w-9 h-9 flex items-center justify-center text-sm font-bold text-white bg-purple-predominant">
                 2
               </div>
               <Input
@@ -111,7 +111,7 @@ export default function AddQuestionFillInTheBlack({ suggestion, submitAction, on
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="rounded-full w-9 h-9 flex items-center justify-center text-sm font-bold text-white bg-gray-400">
+              <div className="rounded-full w-9 h-9 flex items-center justify-center text-sm font-bold text-white bg-purple-predominant">
                 3
               </div>
               <Input
@@ -122,7 +122,7 @@ export default function AddQuestionFillInTheBlack({ suggestion, submitAction, on
               />
             </div>
           </div>
-          <li className="my-4">Lacunas Faltantes (Erradas):</li>
+          <li className="my-4">Lacunas faltantes (erradas):</li>
           <div className="flex flex-col gap-4 w-full">
             <div className="flex items-center gap-2">
               <div className="rounded-full w-9 h-9 flex items-center justify-center text-sm font-bold text-white bg-gray-400">

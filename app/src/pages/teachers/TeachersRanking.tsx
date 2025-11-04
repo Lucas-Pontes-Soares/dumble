@@ -44,7 +44,11 @@ export default function TeachersRanking() {
   return (
     <div>
       <CurrentClass acronym={`ED`} class_id={`${class_id}`} title={`Estrutura de Dados`} userType="teacher"/>
-      <div className="container mx-auto mt-24 mb-28 max-w-2xl">
+      <div className="container mx-auto mt-24 pb-24 max-w-2xl p-6">
+        <div className="flex justify-between items-center mb-4 mt-4">
+          <h2 className="text-xl font-bold">Melhores Alunos:</h2>
+          <span className="text-gray-600">Total de alunos: </span>
+        </div>
         <StudentsRankingDataTable columns={columns} data={data} />
       </div>
 

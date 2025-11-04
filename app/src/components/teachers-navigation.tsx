@@ -23,7 +23,7 @@ export default function TeachersNavigation({ activePage }: TeachersNavigationPro
           <NavigationMenuList>
             <NavigationMenuItem className="px-2 sm:px-4">
               <NavigationMenuLink asChild className={`flex h-12 w-12 items-center justify-center cursor-pointer sm:h-16 sm:w-16 hover:border-2 hover:rounded-2xl
-                                                ${activePage === 'files' ? 'border-2 rounded-2xl border-violet-400 bg-[#F7F7F7]' : ''}`}>
+                                                ${activePage === 'files' ? 'border-2 rounded-2xl border-violet-400 bg-[#F7F7F7] dark:bg-[#1f1f1f]' : ''}`}>
                 <Link to={`/teachers/classes/${class_id}/files`}>
                   <Files className="h-6 w-6 sm:h-8 sm:w-8" />
                 </Link>
@@ -31,7 +31,7 @@ export default function TeachersNavigation({ activePage }: TeachersNavigationPro
             </NavigationMenuItem>
             <NavigationMenuItem className="px-2 sm:px-4">
               <NavigationMenuLink asChild className={`flex h-12 w-12 items-center justify-center cursor-pointer sm:h-16 sm:w-16 hover:border-2 hover:rounded-2xl
-                                                ${activePage === 'home' ? 'border-2 rounded-2xl border-violet-400 bg-[#F7F7F7]' : ''}`} >
+                                                ${activePage === 'home' ? 'border-2 rounded-2xl border-violet-400 bg-[#F7F7F7] dark:bg-[#1f1f1f]' : ''}`} >
                 <Link to={`/teachers/classes/${class_id}`}>
                   <Home className="h-6 w-6 sm:h-8 sm:w-8" />
                 </Link>
@@ -39,7 +39,7 @@ export default function TeachersNavigation({ activePage }: TeachersNavigationPro
             </NavigationMenuItem>
             <NavigationMenuItem className="px-2 sm:px-4">
               <NavigationMenuLink asChild className={`flex h-12 w-12 items-center justify-center cursor-pointer sm:h-16 sm:w-16 hover:border-2 hover:rounded-2xl
-                                                ${activePage === 'ranking' ? 'border-2 rounded-2xl border-violet-400 bg-[#F7F7F7]' : ''}`}>
+                                                ${activePage === 'ranking' ? 'border-2 rounded-2xl border-violet-400 bg-[#F7F7F7] dark:bg-[#1f1f1f]' : ''}`}>
                 <Link to={`/teachers/classes/${class_id}/ranking`}>
                   <Trophy className="h-6 w-6 sm:h-8 sm:w-8" />
                 </Link>
@@ -47,7 +47,7 @@ export default function TeachersNavigation({ activePage }: TeachersNavigationPro
             </NavigationMenuItem>
             <NavigationMenuItem className="px-2 sm:px-4">
               <NavigationMenuLink asChild className={`flex h-12 w-12 items-center justify-center cursor-pointer sm:h-16 sm:w-16 hover:border-2 hover:rounded-2xl
-                                                ${activePage === 'profile' ? 'border-2 rounded-2xl border-violet-400 bg-[#F7F7F7]' : ''}`}>
+                                                ${activePage === 'profile' ? 'border-2 rounded-2xl border-violet-400 bg-[#F7F7F7] dark:bg-[#1f1f1f]' : ''}`}>
                 <Link to={`/teachers/classes/${class_id}/profile`}>
                   <User className="h-6 w-6 sm:h-8 sm:w-8" />
                 </Link>

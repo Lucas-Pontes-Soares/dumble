@@ -148,7 +148,7 @@ export default function TeachersProfile() {
         <div className="w-full bg-[#BF8FFF]">
           <div className="flex justify-end items-end px-6 pt-6 max-w-2xl mx-auto gap-2">
             {!isEditing ? (
-              <Button variant="outline" size="icon" onClick={() => setIsEditing(true)}><Pen /></Button>
+              <Button variant="outline" size="icon" className="dark:text-white dark:bg-black" onClick={() => setIsEditing(true)}><Pen /></Button>
             ) : (
               <div className="flex gap-2">
                 <Button onClick={handleUpdateProfile}>Confirmar</Button>
@@ -246,7 +246,7 @@ export default function TeachersProfile() {
                 </div>
               ) : null}
               {isVisibleChangePassword ? (
-                <div>
+                <div className="pb-10">
                   <Label htmlFor="password" className="my-2">Senha Atual</Label>
                   <div className="relative">
                     <Input
@@ -273,7 +273,7 @@ export default function TeachersProfile() {
                     </Button>
                   </div>
 
-                  <Label htmlFor="password" className="mt-4">Senha Nova</Label>
+                  <Label htmlFor="password" className="my-2">Senha Nova</Label>
                   <div className="relative">
                     <Input
                       id="password"
@@ -299,7 +299,7 @@ export default function TeachersProfile() {
                     </Button>
                   </div>
 
-                  <Label htmlFor="password" className="mt-4">Confirme a Senha</Label>
+                  <Label htmlFor="password" className="my-2">Confirme a Senha</Label>
                   <div className="relative">
                     <Input
                       id="password"

@@ -97,14 +97,14 @@ export default function AddQuestionMultipleChoice({ suggestion, submitAction, on
 
           <Label
             htmlFor="option-A"
-            className={`border rounded-md p-4 w-full cursor-pointer flex items-center gap-4 ${correctAlternative === 'option-A' ? 'border-lime-400' : ''}`}
+            className={`border rounded-md p-4 w-full cursor-pointer flex items-center gap-4 ${correctAlternative === 'option-A' ? 'border-purple-predominant' : ''}`}
           >
             <RadioGroupItem
               value="option-A"
               id="option-A"
               className="hidden"
             />
-            <div className={`rounded-full w-10 h-9 flex items-center justify-center text-sm font-bold text-white ${correctAlternative === 'option-A' ? 'bg-lime-500' : 'bg-gray-400'}`}>
+            <div className={`rounded-full w-10 h-9 flex items-center justify-center text-sm font-bold text-white ${correctAlternative === 'option-A' ? 'bg-purple-predominant' : 'bg-gray-400'}`}>
               A
             </div>
             <Input
@@ -117,14 +117,14 @@ export default function AddQuestionMultipleChoice({ suggestion, submitAction, on
 
           <Label
             htmlFor="option-B"
-            className={`border rounded-md p-4 w-full cursor-pointer flex items-center gap-4 ${correctAlternative === 'option-B' ? 'border-lime-400' : ''}`}
+            className={`border rounded-md p-4 w-full cursor-pointer flex items-center gap-4 ${correctAlternative === 'option-B' ? 'border-purple-predominant' : ''}`}
           >
             <RadioGroupItem
               value="option-B"
               id="option-B"
               className="hidden"
             />
-            <div className={`rounded-full w-10 h-9 flex items-center justify-center text-sm font-bold text-white ${correctAlternative === 'option-B' ? 'bg-lime-500' : 'bg-gray-400'}`}>
+            <div className={`rounded-full w-10 h-9 flex items-center justify-center text-sm font-bold text-white ${correctAlternative === 'option-B' ? 'bg-purple-predominant' : 'bg-gray-400'}`}>
               B
             </div>
             <Input
@@ -137,14 +137,14 @@ export default function AddQuestionMultipleChoice({ suggestion, submitAction, on
 
           <Label
             htmlFor="option-C"
-            className={`border rounded-md p-4 w-full cursor-pointer flex items-center gap-4 ${correctAlternative === 'option-C' ? 'border-lime-400' : ''}`}
+            className={`border rounded-md p-4 w-full cursor-pointer flex items-center gap-4 ${correctAlternative === 'option-C' ? 'border-purple-predominant' : ''}`}
           >
             <RadioGroupItem
               value="option-C"
               id="option-C"
               className="hidden"
             />
-            <div className={`rounded-full w-10 h-9 flex items-center justify-center text-sm font-bold text-white ${correctAlternative === 'option-C' ? 'bg-lime-500' : 'bg-gray-400'}`}>
+            <div className={`rounded-full w-10 h-9 flex items-center justify-center text-sm font-bold text-white ${correctAlternative === 'option-C' ? 'bg-purple-predominant' : 'bg-gray-400'}`}>
               C
             </div>
             <Input
@@ -157,14 +157,14 @@ export default function AddQuestionMultipleChoice({ suggestion, submitAction, on
 
           <Label
             htmlFor="option-D"
-            className={`border rounded-md p-4 w-full cursor-pointer flex items-center gap-4 ${correctAlternative === 'option-D' ? 'border-lime-400' : ''}`}
+            className={`border rounded-md p-4 w-full cursor-pointer flex items-center gap-4 ${correctAlternative === 'option-D' ? 'border-purple-predominant' : ''}`}
           >
             <RadioGroupItem
               value="option-D"
               id="option-D"
               className="hidden"
             />
-            <div className={`rounded-full w-10 h-9 flex items-center justify-center text-sm font-bold text-white ${correctAlternative === 'option-D' ? 'bg-lime-500' : 'bg-gray-400'}`}>
+            <div className={`rounded-full w-10 h-9 flex items-center justify-center text-sm font-bold text-white ${correctAlternative === 'option-D' ? 'bg-purple-predominant' : 'bg-gray-400'}`}>
               D
             </div>
             <Input

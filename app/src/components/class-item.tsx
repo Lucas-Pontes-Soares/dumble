@@ -17,7 +17,7 @@ interface ClassItemProps {
 export default function ClassItem({ id, classIdSelected, title, onSelect, registered }: ClassItemProps) {
   return (
     classIdSelected == id ? (
-      <div className="w-full max-w-2xl border-2 dark:border-gray-800 border-blue-500 bg-blue-ice text-blue-base rounded-xl p-2 cursor-pointer flex items-center gap-4 mb-2">
+      <div className="w-full max-w-2xl border-2 border-blue-base bg-blue-ice dark:bg-blue-800 text-blue-base rounded-xl p-2 cursor-pointer flex items-center gap-4 mb-2">
         <Avatar className="w-12 h-12">
             <AvatarFallback className={`${getAvatarColor(id)} text-white`}>{getInitials(title)}</AvatarFallback>
         </Avatar>

@@ -74,17 +74,17 @@ export default function TeachersEditQuestion() {
           <div className="w-full max-w-2xl mx-auto pb-2 mt-4 px-2">
             {question_id === '1' ? (
                 <Button 
-                    className="w-full bg-purple-predominant rounded-xl border-b-4 border-b-dark-shadow p-6 font-nunito text-base font-bold hover:bg-purple-600" 
+                    className="w-full bg-purple-predominant rounded-xl border-b-4 border-b-dark-shadow p-6 font-nunito text-base font-bold hover:bg-purple-600 dark:text-white" 
                     onClick={() => setSubmitAction('continue')}
                 >
-                    Editar
+                    EDITAR
                 </Button>
             ) : (
                 <Button 
                     className="w-full bg-grey-disabled border-b-4 text-text-secondary rounded-xl border-2 p-6 font-nunito text-base font-bold" 
                     disabled
                 >
-                    Editar
+                    EDITAR
                 </Button>
             )}
           </div>

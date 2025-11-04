@@ -111,78 +111,91 @@ export default function TeachersFile() {
   }
 
   return (
-    <div className="min-h-screen p-6 max-w-2xl mx-auto">
+    <div className="font-nunito">
       <CurrentClass acronym={`ED`} class_id={`${class_id}`} title={`Estrutura de Dados`} userType="teacher"/>
-      <div className="w-full pt-18 max-w-2xl">
-         <h1 className="text-4xl font-bold mb-4">Arquivos do Professor - {class_id}</h1>
-          <Input 
-            type="file" 
-            multiple 
-            accept=".pdf,.doc,.docx,.txt,.pptx"
-            className="collapse" 
-            ref={inputFileRef} 
-            onChange={(e) => setSelectedFiles(Array.from(e.target.files || []))} 
-          />
-          <div className="flex items-center justify-center border-2 border-dashed bg-none rounded-2xl max-w-2xl h-24 hover:border-violet-400 cursor-pointer" onClick={handleUpload}>
-            <Upload />
-            <span className="pl-4">Subir Arquivo</span>
+      <div className="container mx-auto max-w-2xl mt-26 pb-24 p-6">
+        <h2 className="font-nunito text-2xl font-extrabold mb-4">Biblioteca de arquivos</h2>
+        <Input 
+          type="file" 
+          multiple 
+          accept=".pdf,.doc,.docx,.txt,.pptx"
+          className="hidden" 
+          ref={inputFileRef} 
+          onChange={(e) => setSelectedFiles(Array.from(e.target.files || []))} 
+        />
+        <div className="flex flex-col items-center justify-center border-2 border-dashed bg-none rounded-2xl max-w-2xl h-24 hover:border-violet-400 cursor-pointer gap-4" onClick={handleUpload}>
+          <Upload />
+          <small>Arraste e solte ou Clique para adicionar arquivos</small>
+        </div>
+        {selectedFiles.length > 0 && (
+          <div className="mt-4">
+            <ul className="space-y-2">
+              {selectedFiles.map((file, index) => (
+                <li key={index} className="flex items-center justify-between p-2 border rounded-md max-w-2xl">
+                  <div className="flex items-center">
+                    <File className="h-5 w-5 mr-2 text-gray-600 dark:text-gray-300" />
+                    <span className="truncate pr-2">{file.name}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveFile(index)}
+                    className="text-text-secondary hover:text-red-700 dark:hover:text-red-600 p-1 cursor-pointer"
+                  >
+                    <Trash className="h-5 w-5" />
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
-          {selectedFiles.length > 0 && (
-            <div className="mt-4">
-              <p className="text-lg font-semibold mb-2">Arquivos selecionados:</p>
-              <ul className="space-y-2">
-                {selectedFiles.map((file, index) => (
-                  <li key={index} className="flex items-center justify-between p-2 border rounded-md max-w-2xl">
-                    <div className="flex items-center">
-                      <File className="h-5 w-5 mr-2 text-gray-600 dark:text-gray-300" />
-                      <span className="truncate pr-2">{file.name}</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveFile(index)}
-                      className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-600 p-1 cursor-pointer"
-                    >
-                      <Trash className="h-5 w-5" />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+        )}
+        {selectedFiles.length > 0 ? 
+        (
           <Button 
-            className={`w-full mt-4 bg-emerald-400 hover:bg-emerald-700 ${selectedFiles.length === 0 ? 'bg-gray-400' : ''}`}
+            className="mt-4 w-full bg-purple-predominant rounded-xl border-b-4 border-b-dark-shadow p-6 font-nunito text-base font-bold hover:bg-purple-600 dark:text-white" 
             onClick={() => handleSaveUploads()} 
-            disabled={selectedFiles.length === 0 || isLoading}
           >
             {isLoading ? <Spinner/> : null}
-            Salvar
+            SALVAR
           </Button>
+        )
+        : (
+          <Button 
+            className="mt-4 w-full bg-grey-disabled border-b-4 text-text-secondary rounded-xl border-2 p-6 font-nunito text-base font-bold" 
+            disabled
+          >
+            SALVAR
+          </Button>
+        )}
 
-          {archives.length > 0 && (
-            <div className="mt-8">
-              <p className="text-lg font-semibold mb-2">Arquivos existentes:</p>
-              <ul className="space-y-2">
-                {archives.map((archive) => (
-                  <li key={archive.id} className="flex items-center justify-between p-2 border rounded-md max-w-2xl">
-                    <div className="flex items-center">
-                      <File className="h-5 w-5 mr-2 text-gray-600 dark:text-gray-300" />
-                      <span className="truncate pr-2">{archive.name}.{archive.type}</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setArchiveToDelete(archive.id);
-                        setIsAlertOpen(true);
-                      }}
-                      className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-600 p-1 cursor-pointer"
-                    >
-                      <Trash className="h-5 w-5" />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <div className="mt-8">
+            <h2 className="font-nunito text-1xl font-extrabold mb-4">Existentes</h2>
+             {archives.length > 0 ? (
+              <div>
+                <ul className="space-y-2">
+                  {archives.map((archive) => (
+                    <li key={archive.id} className="flex items-center justify-between p-2 border rounded-md max-w-2xl">
+                      <div className="flex items-center">
+                        <File className="h-5 w-5 mr-2 text-gray-600 dark:text-gray-300" />
+                        <span className="truncate pr-2">{archive.name}.{archive.type}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setArchiveToDelete(archive.id);
+                          setIsAlertOpen(true);
+                        }}
+                        className="text-text-secondary hover:text-red-700 dark:hover:text-red-600 p-1 cursor-pointer"
+                      >
+                        <Trash className="h-5 w-5" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p>Nenhum arquivo encontrado.</p>
+            )}
+          </div>
       </div>
 
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>

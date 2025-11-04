@@ -78,7 +78,7 @@ export default function TeachersClasses() {
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t-2 dark:border-t-gray-800 white:border-t-gray-400">
           <div className="w-full max-w-2xl mx-auto p-6">
             {classIdSelected ? (
-              <Button className="w-full bg-purple-predominant border-b-4 border-b-dark-shadow p-6 font-nunito text-lg font-extrabold hover:bg-purple-600" onClick={handleJoinClass}>ENTRAR</Button>
+              <Button className="w-full bg-purple-predominant border-b-4 border-b-dark-shadow p-6 font-nunito text-lg font-extrabold hover:bg-purple-600 dark:text-white" onClick={handleJoinClass}>ENTRAR</Button>
             ) : (
               <Button disabled className="w-full bg-grey-disabled border-b-4 text-text-secondary p-6 font-nunito text-lg font-extrabold" onClick={handleJoinClass}>ENTRAR</Button>
             )}

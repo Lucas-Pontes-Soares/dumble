@@ -11,7 +11,7 @@ interface CurrentClassProps {
 
 export default function CurrentClass({ acronym, title, class_id, userType }: CurrentClassProps) {
   return (
-    <div className="font-nunito fixed top-0 left-0 right-0 z-50 bg-white p-4 h-auto">
+    <div className="font-nunito fixed top-0 left-0 right-0 z-50 p-4 h-auto bg-white dark:bg-[#09090b]">
         <div className="w-full max-w-2xl mx-auto bg-purple-predominant rounded-xl border-b-4 border-b-dark-shadow p-2 flex items-center gap-4 text-white">
             <Link to={`/${userType}s/classes`}>
               <X className="ml-2 h-5 w-5 text-white" />

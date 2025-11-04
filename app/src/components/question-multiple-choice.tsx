@@ -36,7 +36,7 @@ export default function QuestionMultipleChoice({ showResults, onValidationComple
     return cn(
       `border rounded-md p-4 w-full cursor-pointer flex items-center gap-4`,
       {
-        'hover:bg-[#F7F7F7]': !showResults,
+        'hover:bg-[#F7F7F7] dark:hover:bg-[#3C3C3C]': !showResults,
         'border-blue-base': isSelected && !showResults,
         'border-purple-predominant': showResults && isCorrectOption && isSelected,
         'border-red-500': showResults && isSelected && !isCorrectOption,

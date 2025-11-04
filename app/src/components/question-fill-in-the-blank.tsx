@@ -95,7 +95,7 @@ export default function QuestionFillInTheBlack({ showResults, onValidationComple
                 "border rounded-md p-2 cursor-pointer",
                 {
                   "bg-gray-200 text-gray-700": showResults,
-                  "hover:bg-[#F7F7F7]": !showResults
+                  "hover:bg-[#F7F7F7] dark:hover:bg-[#3C3C3C]": !showResults
                 }
               )}
               onClick={() => handleWordClick(word)}

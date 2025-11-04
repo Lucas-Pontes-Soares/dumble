@@ -32,7 +32,7 @@ export default function Introduction() {
           </div>
 
           <div>
-            <Button className="mb-4 w-full bg-purple-predominant rounded-xl border-b-4 border-b-dark-shadow p-6 font-nunito text-base font-bold hover:bg-purple-600" onClick={() => navigateTo("/createUser")}>
+            <Button className="mb-4 w-full bg-purple-predominant rounded-xl border-b-4 border-b-dark-shadow p-6 font-nunito text-base font-bold hover:bg-purple-600 dark:text-white" onClick={() => navigateTo("/createUser")}>
               COMEÇAR
             </Button>
             

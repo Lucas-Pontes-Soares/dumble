@@ -145,10 +145,10 @@ export default function StudentsProfile() {
 
   return (
       <div className="font-nunito min-h-screen pb-24">
-        <div className="w-full bg-[#BF8FFF]">
+        <div className="w-full bg-[#BF8FFF] dark:bg-[#9459e2]">
           <div className="flex justify-end items-end px-6 pt-6 max-w-2xl mx-auto gap-2">
             {!isEditing ? (
-              <Button variant="outline" size="icon" onClick={() => setIsEditing(true)}><Pen /></Button>
+              <Button variant="outline" size="icon" className="dark:text-white dark:bg-black" onClick={() => setIsEditing(true)}><Pen /></Button>
             ) : (
               <div className="flex gap-2">
                 <Button onClick={handleUpdateProfile}>Confirmar</Button>
@@ -181,6 +181,7 @@ export default function StudentsProfile() {
                     placeholder="Nome"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    className="bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
                   />
                 </div>
               ) : (
@@ -201,6 +202,7 @@ export default function StudentsProfile() {
                   placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
                 />
                 </div>
               ) : (
@@ -246,7 +248,7 @@ export default function StudentsProfile() {
                 </div>
               ) : null}
               {isVisibleChangePassword ? (
-                <div>
+                <div className="pb-10">
                   <Label htmlFor="password" className="my-2">Senha Atual</Label>
                   <div className="relative">
                     <Input
@@ -255,7 +257,7 @@ export default function StudentsProfile() {
                       placeholder="Senha"
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
-                      className="pr-10" 
+                      className="pr-10 bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
                     />
                     <Button
                       type="button"
@@ -265,15 +267,15 @@ export default function StudentsProfile() {
                       onClick={() => setShowCurrentPassword((prev) => !prev)} 
                     >
                       {showCurrentPassword ? (
-                        <EyeOff className="h-4 w-4" aria-hidden="true" />
+                        <EyeOff className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
                       ) : (
-                        <Eye className="h-4 w-4" aria-hidden="true" />
+                        <Eye className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
                       )}
                       <span className="sr-only">Toggle password visibility</span>
                     </Button>
                   </div>
 
-                  <Label htmlFor="password" className="mt-4">Senha Nova</Label>
+                  <Label htmlFor="password" className="my-2">Senha Nova</Label>
                   <div className="relative">
                     <Input
                       id="password"
@@ -281,7 +283,7 @@ export default function StudentsProfile() {
                       placeholder="Senha"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="pr-10" 
+                      className="pr-10 bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
                     />
                     <Button
                       type="button"
@@ -293,13 +295,13 @@ export default function StudentsProfile() {
                       {showNewPassword ? (
                         <EyeOff className="h-4 w-4" aria-hidden="true" />
                       ) : (
-                        <Eye className="h-4 w-4" aria-hidden="true" />
+                        <Eye className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
                       )}
                       <span className="sr-only">Toggle password visibility</span>
                     </Button>
                   </div>
 
-                  <Label htmlFor="password" className="mt-4">Confirme a Senha</Label>
+                  <Label htmlFor="password" className="my-2">Confirme a Senha</Label>
                   <div className="relative">
                     <Input
                       id="password"
@@ -307,7 +309,7 @@ export default function StudentsProfile() {
                       placeholder="Senha"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="pr-10" 
+                      className="pr-10 bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
                     />
                     <Button
                       type="button"
@@ -317,9 +319,9 @@ export default function StudentsProfile() {
                       onClick={() => setShowConfirmPassword((prev) => !prev)} 
                     >
                       {showConfirmPassword ? (
-                        <EyeOff className="h-4 w-4" aria-hidden="true" />
+                        <EyeOff className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
                       ) : (
-                        <Eye className="h-4 w-4" aria-hidden="true" />
+                        <Eye className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
                       )}
                       <span className="sr-only">Toggle password visibility</span>
                     </Button>
