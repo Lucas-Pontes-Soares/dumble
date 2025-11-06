@@ -4,17 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { verifyJWTToken } from "@/verifyJWTToken";
-import { ChevronDownIcon, Eye, EyeOff, Pen } from "lucide-react";
-import { useEffect, useState, useCallback } from "react";
+import { ChevronDownIcon, Eye, EyeOff, Pen, Upload } from "lucide-react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router";
 import api from "@/apiService";
 import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { ModeToggle } from "@/components/mode-toggle";
+import { TeacherPicture } from "@/components/teacher-picture";
 
 export default function TeachersProfile() {
+  const [teacherId, setTeacherId] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [birthday, setBirthday] = useState<Date | undefined>();
@@ -35,6 +37,7 @@ export default function TeachersProfile() {
   const [jwtToken, setJwtToken] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [open, setOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const navigate = useNavigate();
 
@@ -48,6 +51,7 @@ export default function TeachersProfile() {
         });
         if (response.data.success) {
           const { name, email, picture, birthday, created_at, updated_at } = response.data.teacher;
+          setTeacherId(decodedToken.id);
           setName(name);
           setEmail(email);
           setPicture(picture);
@@ -143,6 +147,32 @@ export default function TeachersProfile() {
     }
   };
 
+  const handlePictureUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('picture', file);
+
+    try {
+      const response = await api.put<any>(`/teachers/${decodedToken?.id}/picture`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      });
+
+      if (response.data.success) {
+        toast.success("Profile picture updated successfully!");
+        fetchTeacherData();
+      } else {
+        toast.error("Failed to update profile picture.");
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "An error occurred while updating the picture.");
+    }
+  };
+
   return (
       <div className="font-nunito min-h-screen pb-24">
         <div className="w-full bg-[#BF8FFF]">
@@ -160,10 +190,26 @@ export default function TeachersProfile() {
             </div>
           </div>
           <div className="flex flex-col items-center gap-4 w-full">
-            <Avatar className="h-48 w-48 my-6 max-w-2xl mx-auto">
-              <AvatarImage src={picture} />
-              <AvatarFallback>{name ? name.substring(0, 2).toUpperCase() : "LP"}</AvatarFallback>
-            </Avatar>
+            <TeacherPicture picture={picture} teacher_id={teacherId} teacher_name={name} className="h-48 w-48 my-6 max-w-2xl mx-auto" />
+            {isEditing && (
+              <div className="relative -mt-12 mb-6">
+                <Input
+                  ref={fileInputRef}
+                  id="picture-upload"
+                  type="file"
+                  className="hidden"
+                  onChange={handlePictureUpload}
+                />
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="rounded-full"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Upload className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </div>
         </div>
         <div className="flex flex-col items-center gap-4 mt-8">

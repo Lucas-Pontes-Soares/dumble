@@ -18,6 +18,7 @@ import { getStudent } from './controllers/student/getStudent';
 import { getStudentByClassId } from './controllers/student/getStudentByClassId';
 import { loginStudent } from './controllers/student/loginStudent';
 import { updateStudent } from './controllers/student/updateStudent';
+import { uploadStudentPicture } from './controllers/student/uploadStudentPicture';
 
 // para chatbot
 import { chatbotMessageCreate } from './controllers/chat-bot/createChatbotMessage';
@@ -30,6 +31,7 @@ import { deleteArchive } from './controllers/archive/deleteArchive';
 
 // para sugestões
 import { createSuggestion } from './controllers/suggestion/createSuggestion';
+import { uploadTeacherPicture } from './controllers/teacher/uploadTeacherPicture';
 
 // Configuração do multer para upload de arquivos
 const upload = multer({ storage: multer.diskStorage({
@@ -38,6 +40,30 @@ const upload = multer({ storage: multer.diskStorage({
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + '-' + file.originalname);
+    }
+}) });
+
+// Configuração do multer para upload de fotos
+const multerUploadStudentPicture = multer({ storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'students_pictures/');
+    },
+    filename: (req, file, cb) => {
+        const student_id = req.params.student_id;
+        const fileExtension = file.originalname.split('.').pop();
+        cb(null, `${student_id}.${fileExtension}`);
+    }
+}) });
+
+// Configuração do multer para upload de fotos
+const multerUploadTeacherPicture = multer({ storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'teachers_pictures/');
+    },
+    filename: (req, file, cb) => {
+        const teacher_id = req.params.teacher_id;
+        const fileExtension = file.originalname.split('.').pop();
+        cb(null, `${teacher_id}.${fileExtension}`);
     }
 }) });
 
@@ -55,6 +81,7 @@ router.get('/teachers/:teacher_id', verifyJWTToken, getTeacher);
 router.get('/classes/:class_id/teachers', verifyJWTToken, getTeacherByClassId);
 router.post('/teachers/login', loginTeacher);
 router.put('/teachers/:teacher_id', verifyJWTToken, updateTeacher);
+router.put('/teachers/:teacher_id/picture', multerUploadTeacherPicture.single('picture'), verifyJWTToken, uploadTeacherPicture);
 
 // Rotas para estudantes
 router.post('/students', createStudent);
@@ -63,6 +90,7 @@ router.get('/students/:student_id', verifyJWTToken, getStudent);
 router.get('/classes/:class_id/students', verifyJWTToken, getStudentByClassId);
 router.post('/students/login', loginStudent);
 router.put('/students/:student_id', verifyJWTToken, updateStudent);
+router.put('/students/:student_id/picture', multerUploadStudentPicture.single('picture'), verifyJWTToken, uploadStudentPicture);
 
 // Rotas para o chat-bot
 router.post('/chat-bot-messages', verifyJWTToken, chatbotMessageCreate);

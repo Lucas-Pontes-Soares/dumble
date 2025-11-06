@@ -12,6 +12,10 @@ const avatarColors = [
 ];
 
 export default function getAvatarColor (id: string) {
+    if (!id || typeof id !== 'string' || id.length === 0) {
+        return;
+    }
+
     const index = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) % avatarColors.length;
     return avatarColors[index];
 };

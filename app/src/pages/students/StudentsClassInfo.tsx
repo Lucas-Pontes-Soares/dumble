@@ -8,12 +8,13 @@ import api from "@/apiService";
 import getInitials from "@/getInitials";
 import StudentsNavigation from "@/components/students-navigation";
 import CurrentClass from "@/components/current-class";
+import { TeacherPicture } from "@/components/teacher-picture";
 
 interface Teacher {
   id: string;
   name: string;
   email: string;
-  avatar_url: string;
+  picture: string;
 }
 
 interface ClassInfo {
@@ -61,7 +62,7 @@ export default function StudentsClassInfo() {
       if (studentsResponse.data.success) {
         const formattedStudents = studentsResponse.data.students.map((student: any) => ({
           id: student.id,
-          avatar: student.avatar_url,
+          picture: student.picture,
           name: student.name,
           email: student.email,
           enrollmentDate: new Date(student.created_at).toLocaleDateString(),
@@ -84,7 +85,7 @@ export default function StudentsClassInfo() {
                           <AvatarFallback className="bg-amber-500 text-white text-4xl">{getInitials(classInfo.title)}</AvatarFallback>
                       </Avatar>
                       <div className="w-full space-y-2">
-                          <p className="mb-2">{classInfo.title}</p>
+                          <p className="mb-2 text-xl font-bold">{classInfo.title}</p>
                           <p className="">{classInfo.description}</p>
                       </div>
                   </div>
@@ -92,12 +93,9 @@ export default function StudentsClassInfo() {
           )}
           {teacher && (
               <div className="py-4">
-                  <p className="py-4 text-xl font-bold">Professor:</p>
+                  <p className="py-4 text-xl font-bold">Professor</p>
                   <div className="w-full max-w-2xl border-2 dark:border-gray-800 white:border-gray-400 rounded-xl p-2 flex items-center gap-4 mb-2">
-                      <Avatar className="w-12 h-12">
-                          <AvatarImage src={teacher.avatar_url} />
-                          <AvatarFallback className="bg-blue-500 text-white">{getInitials(teacher.name)}</AvatarFallback>
-                      </Avatar>
+                      <TeacherPicture picture={teacher.picture} teacher_id={teacher.id} teacher_name={teacher.name} className="w-12 h-12" />
                       <div className="flex-grow">
                           <p>{teacher.name}</p>
                           <p className="text-gray-600">{teacher.email}</p>

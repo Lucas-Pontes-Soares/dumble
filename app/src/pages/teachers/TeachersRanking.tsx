@@ -25,9 +25,9 @@ export default function TeachersRanking() {
     async function getData(): Promise<StudentsRank[]> {
       return [
         {
-          id: "728ed52f",
+          id: "1",
           placing: 1,
-          avatar: 'https://github.com/Lucas-Pontes-Soares.png',
+          picture: '5.png',
           name: 'Lucas Pontes Soares',
           rank: "diamond",
           score: 360
@@ -47,7 +47,7 @@ export default function TeachersRanking() {
       <div className="container mx-auto mt-24 pb-24 max-w-2xl p-6">
         <div className="flex justify-between items-center mb-4 mt-4">
           <h2 className="text-xl font-bold">Melhores Alunos:</h2>
-          <span className="text-gray-600">Total de alunos: </span>
+          <span className="text-gray-600">Total de alunos: {data.length}</span>
         </div>
         <StudentsRankingDataTable columns={columns} data={data} />
       </div>

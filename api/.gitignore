@@ -1,2 +1,8 @@
 node_modules
 .env
+
+students_pictures/*
+!students_pictures/students_pictures.md
+
+teachers_pictures/*
+!teachers_pictures/teachers_pictures.md

@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 import { Request, Response } from 'express';
 import { Database } from '../../database';
 import { GoogleGenAI, HarmCategory, HarmBlockThreshold } from "@google/genai";
-import { suggestionPrompt } from '../../prompts/suggestionPrompt';
+import { suggestionPrompt } from '../../prompts/suggestionPrompt'; 
 
 // Adicionando o userAuthenticated ao Request original do Express
 interface AuthenticatedRequest extends Request {

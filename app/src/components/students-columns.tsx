@@ -1,12 +1,11 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
-import getInitials from "@/getInitials"
+import { StudentPicture } from "./student-picture"
 
 export type Students = {
   id: string
-  avatar: string
+  picture: string
   name: string
   email: string
   enrollmentDate: string
@@ -18,9 +17,7 @@ export const columns: ColumnDef<Students>[] = [
     header: "Estudante",
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
-        <Avatar>
-          <AvatarFallback>{getInitials(row.original.name)}</AvatarFallback>
-        </Avatar>
+        <StudentPicture picture={row.original.picture} student_id={row.original.id} student_name={row.original.name} />
         <span>{row.original.name}</span>
       </div>
     ),
