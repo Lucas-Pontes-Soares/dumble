@@ -1,17 +1,25 @@
 import { Request, Response } from 'express';
 import { Database } from '../../database';
 
-export const createClass = async (req: Request, res: Response) => {
-    const userAuthenticated = (req as any).userAuthenticated;
+// Adicionando o userAuthenticated ao Request original do Express
+interface AuthenticatedRequest extends Request {
+    userAuthenticated?: {
+      id: number;
+      role: string;
+    };
+}
+
+export const createClass = async (req: AuthenticatedRequest, res: Response) => {
+    const userAuthenticated = req.userAuthenticated;
 
     if (!userAuthenticated || userAuthenticated.role !== 'teacher') {
-        return res.status(403).json({ message: 'Somente professores podem criar turmas' });
+        return res.status(403).json({ success: false, message: 'Route only for teachers' });
     }
 
     const { title, description } = req.body;
 
     if (!title) {
-        return res.status(400).json({ message: 'title é obrigatório' });
+        return res.status(400).json({ success: false, message: 'Title is required' });
     }
 
     try {
@@ -22,10 +30,10 @@ export const createClass = async (req: Request, res: Response) => {
              RETURNING *`,
             [title, description,userAuthenticated.id]
         );
-        return res.status(201).json(result.rows[0]);
+        return res.status(201).json({ success: true, message: 'Class created with success', class: result.rows[0] });
 
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ message: 'Erro ao criar turma' });
+        return res.status(500).json({ success: false, message: 'Error on create class' });
     }
 };

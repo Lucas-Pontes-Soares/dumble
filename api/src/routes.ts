@@ -39,6 +39,8 @@ import { deleteArchive } from './controllers/archive/deleteArchive';
 // para sugestões
 import { createSuggestion } from './controllers/suggestion/createSuggestion';
 import { uploadTeacherPicture } from './controllers/teacher/uploadTeacherPicture';
+import { getClassByTeacherId } from './controllers/classes/getClassByTeacherId';
+import { getEnrolledClass } from './controllers/classes/getEnrolledClass';
 
 // Configuração do multer para upload de arquivos
 const upload = multer({ storage: multer.diskStorage({
@@ -108,6 +110,8 @@ router.get('/classes', verifyJWTToken, getClass); // lista todas
 router.get('/classes/:class_id', verifyJWTToken, getClass); // pega uma
 router.put('/classes/:class_id', verifyJWTToken, updateClass); // professor atualiza
 router.delete('/classes/:class_id', verifyJWTToken, deleteClass); // professor deleta
+router.get('/teachers/:teacher_id/classes', verifyJWTToken, getClassByTeacherId);
+router.get('/students/:student_id/classes', verifyJWTToken, getEnrolledClass);
 
 // Rotas para o chat-bot
 router.post('/chat-bot-messages', verifyJWTToken, chatbotMessageCreate);
