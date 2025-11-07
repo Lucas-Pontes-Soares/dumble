@@ -19,6 +19,13 @@ import { getStudentByClassId } from './controllers/student/getStudentByClassId';
 import { loginStudent } from './controllers/student/loginStudent';
 import { updateStudent } from './controllers/student/updateStudent';
 
+// adiciona imports para classes
+import { createClass } from './controllers/classes/createClass';
+import { getClass } from './controllers/classes/getClass';
+import { updateClass } from './controllers/classes/updateClass';
+import { deleteClass } from './controllers/classes/deleteClass';
+import { enrollStudent } from './controllers/classes/enrollStudent';
+
 // para chatbot
 import { chatbotMessageCreate } from './controllers/chat-bot/createChatbotMessage';
 import { getChatBotMessageByStudentId } from './controllers/chat-bot/getChatBotMessageByStudentId';
@@ -61,6 +68,16 @@ router.get('/students/:student_id', verifyJWTToken, getStudent);
 router.get('/classes/:class_id/students', verifyJWTToken, getStudentByClassId);
 router.post('/students/login', loginStudent);
 router.put('/students/:student_id', verifyJWTToken, updateStudent);
+
+// Rota para estudante matricular-se
+router.post('/classes/:class_id/enroll', verifyJWTToken, enrollStudent);
+
+// Rotas para classes
+router.post('/classes', verifyJWTToken, createClass); // professor cria
+router.get('/classes', verifyJWTToken, getClass); // lista todas
+router.get('/classes/:class_id', verifyJWTToken, getClass); // pega uma
+router.put('/classes/:class_id', verifyJWTToken, updateClass); // professor atualiza
+router.delete('/classes/:class_id', verifyJWTToken, deleteClass); // professor deleta
 
 // Rotas para o chat-bot
 router.post('/chat-bot-messages', verifyJWTToken, chatbotMessageCreate);
