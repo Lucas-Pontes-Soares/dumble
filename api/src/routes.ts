@@ -42,6 +42,16 @@ import { uploadTeacherPicture } from './controllers/teacher/uploadTeacherPicture
 import { getClassByTeacherId } from './controllers/classes/getClassByTeacherId';
 import { getEnrolledClass } from './controllers/classes/getEnrolledClass';
 
+// imports para questões
+import { createQuestion } from './controllers/questions/createQuestion';
+import { updateQuestion } from './controllers/questions/updateQuestion';
+import { deleteQuestion } from './controllers/questions/deleteQuestion';
+import { getQuestionById } from './controllers/questions/getQuestionById';
+import { getQuestionByClassId } from './controllers/questions/getQuestionByClassId';
+
+// imports para respostas
+import { submitAnswer } from './controllers/answers/submitAnswer';
+
 // Configuração do multer para upload de arquivos
 const upload = multer({ storage: multer.diskStorage({
     destination: (req, file, cb) => {
@@ -52,7 +62,7 @@ const upload = multer({ storage: multer.diskStorage({
     }
 }) });
 
-// Configuração do multer para upload de fotos
+// Configuração do multer para upload de fotos ESTUDANTE
 const multerUploadStudentPicture = multer({ storage: multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'students_pictures/');
@@ -64,7 +74,7 @@ const multerUploadStudentPicture = multer({ storage: multer.diskStorage({
     }
 }) });
 
-// Configuração do multer para upload de fotos
+// Configuração do multer para upload de fotos PROFESSOR
 const multerUploadTeacherPicture = multer({ storage: multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'teachers_pictures/');
@@ -124,6 +134,16 @@ router.delete('/archives/:archive_id', verifyJWTToken, deleteArchive);
 
 // Rotas para sugestões
 router.post('/suggestions', verifyJWTToken, createSuggestion);
+
+// rotas para questões
+router.post("/questions", verifyJWTToken, createQuestion);
+router.patch("/questions/:id", verifyJWTToken, updateQuestion);
+router.delete("/questions/:id", verifyJWTToken, deleteQuestion);
+router.get("/questions/:id", getQuestionById);
+router.get("/questions/class/:class_id", getQuestionByClassId); // Rota para buscar por classe
+
+// rotas respostas
+router.post('/answers', verifyJWTToken, submitAnswer);
 
 // Exporta o roteador para ser usado em server.ts
 export default router;
