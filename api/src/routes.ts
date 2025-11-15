@@ -101,15 +101,13 @@ router.post('/students/login', loginStudent);
 router.put('/students/:student_id', verifyJWTToken, updateStudent);
 router.put('/students/:student_id/picture', multerUploadStudentPicture.single('picture'), verifyJWTToken, uploadStudentPicture);
 
-// Rota para estudante matricular-se
-router.post('/classes/:class_id/enroll', verifyJWTToken, enrollStudent);
-
 // Rotas para classes
-router.post('/classes', verifyJWTToken, createClass); // professor cria
-router.get('/classes', verifyJWTToken, getClass); // lista todas
-router.get('/classes/:class_id', verifyJWTToken, getClass); // pega uma
-router.put('/classes/:class_id', verifyJWTToken, updateClass); // professor atualiza
-router.delete('/classes/:class_id', verifyJWTToken, deleteClass); // professor deleta
+router.post('/classes/:class_id/enroll', verifyJWTToken, enrollStudent);
+router.post('/classes', verifyJWTToken, createClass);
+router.get('/classes', verifyJWTToken, getClass); 
+router.get('/classes/:class_id', verifyJWTToken, getClass); 
+router.put('/classes/:class_id', verifyJWTToken, updateClass); 
+router.delete('/classes/:class_id', verifyJWTToken, deleteClass); 
 router.get('/teachers/:teacher_id/classes', verifyJWTToken, getClassByTeacherId);
 router.get('/students/:student_id/classes', verifyJWTToken, getEnrolledClass);
 

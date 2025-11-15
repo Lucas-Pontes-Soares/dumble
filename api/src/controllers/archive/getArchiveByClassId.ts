@@ -28,7 +28,7 @@ export const getArchiveByClassId = async (req: AuthenticatedRequest, res: Respon
         const result = await db.query('SELECT id, type, name FROM archives WHERE class_id = $1', [class_id]);
 
         if (result.rowCount === 0) {
-            return res.status(404).json({ success: false, message: 'Archives not found' });
+            return res.status(200).json({ success: true, message: 'Archives not found' });
         }
 
         const archives = result.rows;

@@ -33,7 +33,7 @@ export const getChatBotMessageByStudentId = async (req: AuthenticatedRequest, re
     try {
         const db = Database.getInstance();
 
-        const resultStudentClass = await db.query('SELECT * FROM students_classes WHERE student_id = $1', [student_id]);
+        const resultStudentClass = await db.query('SELECT * FROM students_classes WHERE student_id = $1 and class_id = $2', [student_id, class_id]);
         if (resultStudentClass.rowCount === 0) {
             return res.status(404).json({ success: false, message: 'Student-Class association not found' });
         }
@@ -42,7 +42,7 @@ export const getChatBotMessageByStudentId = async (req: AuthenticatedRequest, re
         const result = await db.query('SELECT * FROM chat_bot_messages WHERE student_class_id = $1', [studentClassId]);
 
         if (result.rowCount === 0) {
-            return res.status(404).json({ success: false, message: 'Messages not found' });
+            return res.status(200).json({ success: true, message: 'Messages not found' });
         }
 
         const messages = result.rows;

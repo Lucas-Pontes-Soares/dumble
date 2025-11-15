@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import ClassItem from "@/components/class-item";
 import ClassItemSkeleton from "@/components/class-item-skeleton";
@@ -10,52 +10,100 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, Dia
 import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import api from "@/apiService";
+
+interface Class {
+  id: string;
+  title: string;
+  description: string;
+}
 
 export default function TeachersClasses() {
   const [open, setOpen] = useState(false);
   const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
-  const [classIdSelected, setClassIdSelected] = useState("");
   const [className, setClassName] = useState("");
   const [classDescription, setClassDescription] = useState("");
+  const [jwtToken, setJwtToken] = useState<string | null>(null);
+  const [teacherClasses, setTeacherClasses] = useState<Class[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [classIdSelected, setClassIdSelected] = useState(""); 
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const decodedToken = verifyJWTToken("teacher", navigate);
-    if (decodedToken) {
-      setDecodedToken(decodedToken);
+    const decoded = verifyJWTToken("teacher", navigate);
+    if (decoded) {
+      setDecodedToken(decoded);
+      const token = localStorage.getItem("JWTToken");
+      setJwtToken(token);
     }
   }, [navigate]);
+  
+  const fetchClasses = useCallback(async () => {
+    if (!decodedToken || !jwtToken) return;
+    setLoading(true);
+    try {
+      const response = await api.get<any>(`teachers/${decodedToken.id}/classes`, {
+        headers: { Authorization: `Bearer ${jwtToken}` },
+      });
+      if (response.data.success) {
+        setTeacherClasses(response.data.classes);
+      }
+    } catch (error) {
+      console.error("Error fetching teacher classes:", error);
+      toast.error("Erro ao buscar suas turmas.");
+    } finally {
+      setLoading(false);
+    }
+  }, [decodedToken, jwtToken]);
+
+  useEffect(() => {
+    fetchClasses();
+  }, [fetchClasses]);
 
   async function handleJoinClass() {
     if (!classIdSelected) {
-      toast.error("Por favor, informe o código da turma.");
+      toast.error("Por favor, selecione uma turma para entrar.");
       return;
     }
-
-    console.log(`opa ${classIdSelected}`);
-    setClassIdSelected("")
-    setOpen(false);
-
-    navigate("/teachers/classes/1")
+    navigate(`/teachers/classes/${classIdSelected}`);
   }
 
   async function handleAddClass() {
-    if (!className || !classDescription) {
+    if (!className || !classDescription || !decodedToken || !jwtToken) {
       toast.error("Por favor, informe todos os campos.");
       return;
     }
 
-    setClassName("");
-    setClassDescription("");
-    setOpen(false);
+    try {
+      const response = await api.post<any>('/classes', {
+        title: className,
+        description: classDescription,
+        teacher_id: decodedToken.id,
+      }, {
+        headers: { Authorization: `Bearer ${jwtToken}` },
+      });
+
+      if (response.data.success) {
+        toast.success("Turma criada com sucesso!");
+        setClassName("");
+        setClassDescription("");
+        setOpen(false);
+        fetchClasses(); // Refresh list after adding
+      } else {
+        toast.error(response.data.message || "Erro ao criar turma.");
+      }
+    } catch (error) {
+      console.error("Error creating class:", error);
+      toast.error("Erro ao criar turma. Tente novamente.");
+    }
   }
 
   return (
     <div className="min-h-screen">
       <div className="w-full">
         <div className="fixed top-0 left-0 right-0 z-50 bg-background space-y-4 pt-4 pb-2 text-center border-b-2 dark:border-b-gray-800 white:border-b-gray-400">
-          <h1 className="font-nunito text-xl font-extrabold">Turmas</h1> 
+          <h1 className="font-nunito text-xl font-extrabold">Turmas</h1>
         </div>
         <div className="w-full max-w-2xl mx-auto pt-20 pb-20 p-6">
           <div className="w-full mx-auto">
@@ -67,14 +115,34 @@ export default function TeachersClasses() {
                   Adicionar Turma
                 </Button>
               </div>
-          
-              <ClassItem acronym="ED" id="1" classIdSelected={classIdSelected} title="Estrutura de Dados" userType="student" onSelect={(id) => setClassIdSelected(id)} registered={true}/>
 
-              <ClassItemSkeleton />
+              {loading ? (
+                <>
+                  <ClassItemSkeleton />
+                  <ClassItemSkeleton />
+                </>
+              ) : (
+                teacherClasses.length > 0 ? (
+                  teacherClasses.map((c) => (
+                    <ClassItem 
+                      key={c.id} 
+                      id={c.id} 
+                      classIdSelected={classIdSelected} 
+                      title={c.title} 
+                      userType="teacher" 
+                      registered={true}
+                      onSelect={(id) => setClassIdSelected(id)} // Re-added onSelect
+                    />
+                  ))
+                ) : (
+                  <p className="text-center text-gray-500">Você ainda não criou nenhuma turma.</p>
+                )
+              )}
             </div>
           </div>
-
         </div>
+        
+        {/* Re-added bottom bar */}
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t-2 dark:border-t-gray-800 white:border-t-gray-400">
           <div className="w-full max-w-2xl mx-auto p-6">
             {classIdSelected ? (
@@ -101,7 +169,7 @@ export default function TeachersClasses() {
               <Input
                 id="className"
                 name="className"
-                placeholder="Integracao e Entrega Continua"
+                placeholder="Ex: Integração e Entrega Contínua"
                 value={className}
                 onChange={(e) => setClassName(e.target.value)}
               />
@@ -114,7 +182,7 @@ export default function TeachersClasses() {
               <Textarea
                 id="classDescription"
                 name="classDescription"
-                placeholder="Aplicação Integracao e Entrega Continua"
+                placeholder="Ex: Práticas de CI/CD com GitHub Actions"
                 value={classDescription}
                 onChange={(e) => setClassDescription(e.target.value)}
               />
@@ -125,10 +193,10 @@ export default function TeachersClasses() {
             <DialogClose asChild>
               <Button variant="outline">Fechar</Button>
             </DialogClose>
-            <Button onClick={() => handleAddClass()}>Adicionar</Button>
+            <Button onClick={handleAddClass}>Adicionar</Button>
           </DialogFooter>
         </DialogContent>
-    </Dialog>
+      </Dialog>
     </div>
   );
 }

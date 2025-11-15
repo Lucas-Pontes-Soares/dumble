@@ -37,6 +37,7 @@ export default function StudentsChatBot() {
   const inputLength = input.trim().length;
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [actuallyClass, setActuallyClass] = useState<any>(null);
 
   const navigate = useNavigate();
 
@@ -46,6 +47,7 @@ export default function StudentsChatBot() {
       setDecodedToken(decodedToken);
       const token = localStorage.getItem("JWTToken");
       setJwtToken(token);
+      fetchActuallyClasses(token);
       getChatBotMessages(token, decodedToken);
     }
   }, [navigate]);
@@ -119,7 +121,7 @@ export default function StudentsChatBot() {
     setMessages((prevMessages) => [
       ...prevMessages,
       { role: "user", content: userMessage, time: formattedTime },
-      { role: "agent", content: "Pensando...", time: formattedTime }, // Placeholder for AI response
+      { role: "agent", content: "Pensando...", time: formattedTime }, 
     ]);
 
     try {
@@ -169,6 +171,19 @@ export default function StudentsChatBot() {
     }
   }
 
+  async function fetchActuallyClasses(token: string | null) {
+    const enrolledResponse = await api.get<any>(`/classes/${class_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      }
+    );
+    if (enrolledResponse.data.success) {
+      setActuallyClass(enrolledResponse.data.class);
+    }
+  }
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -176,9 +191,8 @@ export default function StudentsChatBot() {
   return (
     <div className="flex flex-col h-screen">
       <CurrentClass
-        acronym={`ED`}
         class_id={`${class_id}`}
-        title={`Estrutura de Dados`}
+        title={actuallyClass?.title}
         userType="student"
       />
 

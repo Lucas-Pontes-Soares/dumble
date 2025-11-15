@@ -5,12 +5,15 @@ import { columns, StudentsRank } from "../../components/students-ranking-columns
 import { useNavigate, useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { verifyJWTToken } from "@/verifyJWTToken";
+import api from "@/apiService";
 
 export default function TeachersRanking() {
   const { class_id } = useParams<{ class_id: string }>();
 
   const [data, setData] = useState<StudentsRank[]>([]);
   const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
+  const [jwtToken, setJwtToken] = useState<string | null>(null);
+  const [actuallyClass, setActuallyClass] = useState<any>(null);
 
   const navigate = useNavigate();
 
@@ -18,6 +21,9 @@ export default function TeachersRanking() {
     const decodedToken = verifyJWTToken("teacher", navigate);
     if (decodedToken) {
       setDecodedToken(decodedToken);
+      const token = localStorage.getItem("JWTToken");
+      setJwtToken(token);
+      fetchActuallyClasses(token);
     }
   }, [navigate]);
 
@@ -41,9 +47,22 @@ export default function TeachersRanking() {
     })
   }, [])
 
+  async function fetchActuallyClasses(token: string | null) {
+    const enrolledResponse = await api.get<any>(`/classes/${class_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      }
+    );
+    if (enrolledResponse.data.success) {
+      setActuallyClass(enrolledResponse.data.class);
+    }
+  }
+
   return (
     <div>
-      <CurrentClass acronym={`ED`} class_id={`${class_id}`} title={`Estrutura de Dados`} userType="teacher"/>
+      <CurrentClass class_id={`${class_id}`} title={actuallyClass?.title} userType="teacher"/>
       <div className="container mx-auto mt-24 pb-24 max-w-2xl p-6">
         <div className="flex justify-between items-center mb-4 mt-4">
           <h2 className="text-xl font-bold">Melhores Alunos:</h2>

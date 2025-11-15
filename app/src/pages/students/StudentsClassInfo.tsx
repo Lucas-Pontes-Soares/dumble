@@ -9,25 +9,12 @@ import getInitials from "@/getInitials";
 import StudentsNavigation from "@/components/students-navigation";
 import CurrentClass from "@/components/current-class";
 import { TeacherPicture } from "@/components/teacher-picture";
-
-interface Teacher {
-  id: string;
-  name: string;
-  email: string;
-  picture: string;
-}
-
-interface ClassInfo {
-  id: string;
-  title: string;
-  code: string;
-  description: string;
-}
+import getAvatarColor from "@/getAvatarColor";
 
 export default function StudentsClassInfo() {
   const [students, setStudents] = useState<Students[]>([]);
-  const [teacher, setTeacher] = useState<Teacher | null>(null);
-  const [classInfo, setClassInfo] = useState<ClassInfo | null>(null);
+  const [teacher, setTeacher] = useState<any>(null);
+  const [classInfo, setClassInfo] = useState<any>(null);
   const { class_id } = useParams<{ class_id: string }>();
   const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
   const [jwtToken, setJwtToken] = useState<string | null>(null);
@@ -76,13 +63,13 @@ export default function StudentsClassInfo() {
 
   return (
     <div className="font-nunito min-h-screen p-6 max-w-2xl mx-auto pb-24">
-        <CurrentClass acronym={`ED`} class_id={`${class_id}`} title={`Estrutura de Dados`} userType="student"/>
+        <CurrentClass class_id={`${class_id}`} title={classInfo?.title} userType="student"/>
         <div className="mt-24">
           {classInfo && (
               <div className="py-4">
                   <div className="flex items-center gap-4">
                       <Avatar className="h-32 w-32">
-                          <AvatarFallback className="bg-amber-500 text-white text-4xl">{getInitials(classInfo.title)}</AvatarFallback>
+                          <AvatarFallback className={`${getAvatarColor(classInfo.id.toString())} text-white`}>{getInitials(classInfo.title)}</AvatarFallback>
                       </Avatar>
                       <div className="w-full space-y-2">
                           <p className="mb-2 text-xl font-bold">{classInfo.title}</p>

@@ -20,6 +20,7 @@ export default function TeachersFile() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [archiveToDelete, setArchiveToDelete] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [actuallyClass, setActuallyClass] = useState<any>(null);
 
   const navigate = useNavigate();
 
@@ -29,6 +30,7 @@ export default function TeachersFile() {
       setDecodedToken(decodedToken);
       const token = localStorage.getItem("JWTToken");
       setJwtToken(token);
+      fetchActuallyClasses(token);
       fetchArchives(token);
     }
   }, [navigate]);
@@ -42,7 +44,9 @@ export default function TeachersFile() {
           Authorization: `Bearer ${token}`,
         },
       });
-      setArchives(response.data.archives);
+      if(response.data.archives){
+        setArchives(response.data.archives);
+      }
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Erro ao buscar arquivos.");
     }
@@ -110,9 +114,22 @@ export default function TeachersFile() {
     setSelectedFiles(prevFiles => prevFiles.filter((_, index) => index !== indexToRemove));
   }
 
+  async function fetchActuallyClasses(token: string | null) {
+    const enrolledResponse = await api.get<any>(`/classes/${class_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      }
+    );
+    if (enrolledResponse.data.success) {
+      setActuallyClass(enrolledResponse.data.class);
+    }
+  }
+
   return (
     <div className="font-nunito">
-      <CurrentClass acronym={`ED`} class_id={`${class_id}`} title={`Estrutura de Dados`} userType="teacher"/>
+      <CurrentClass class_id={`${class_id}`} title={actuallyClass?.title} userType="teacher"/>
       <div className="container mx-auto max-w-2xl mt-26 pb-24 p-6">
         <h2 className="font-nunito text-2xl font-extrabold mb-4">Biblioteca de arquivos</h2>
         <Input 
