@@ -1,185 +1,135 @@
 import { useEffect, useState } from "react";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "./ui/button";
-import { useNavigate } from "react-router";
+import { Plus, Trash2 } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { toast } from "sonner";
+import { Textarea } from "./ui/textarea";
 
-export default function AddQuestionMultipleChoice({ suggestion, submitAction, onFormSubmit }: { suggestion?: any, submitAction: string | null, onFormSubmit: () => void }) {
+interface AddQuestionMultipleChoiceProps {
+  suggestion: any;
+  submitAction: 'stop' | 'continue' | 'update' | 'delete' | null;
+  onFormSubmit: (data: any) => void;
+}
+
+export default function AddQuestionMultipleChoice({ suggestion, submitAction, onFormSubmit }: AddQuestionMultipleChoiceProps) {
   const [statement, setStatement] = useState("");
-  const [correctAlternative, setCorrectAlternative] = useState("");
-  const [alternatives, setAlternatives] = useState([
-    { id: "A", text: "" },
-    { id: "B", text: "" },
-    { id: "C", text: "" },
-    { id: "D", text: "" },
+  const [options, setOptions] = useState([
+    { label: "", is_correct: true },
+    { label: "", is_correct: false },
   ]);
-
-  const navigateTo = useNavigate();
+  const [correctOptionIndex, setCorrectOptionIndex] = useState(0);
 
   useEffect(() => {
     if (suggestion) {
       setStatement(suggestion.statement || "");
-      setAlternatives([
-        { id: "A", text: suggestion.alternative_a || "" },
-        { id: "B", text: suggestion.alternative_b || "" },
-        { id: "C", text: suggestion.alternative_c || "" },
-        { id: "D", text: suggestion.alternative_d || "" },
-      ]);
-      if (suggestion.correct_alternative) {
-        const correctMap: { [key: string]: string } = {
-          "alternative_a": "option-A",
-          "alternative_b": "option-B",
-          "alternative_c": "option-C",
-          "alternative_d": "option-D",
-        };
-        setCorrectAlternative(correctMap[suggestion.correct_alternative]);
+      if (suggestion.options && suggestion.options.length > 0) {
+        setOptions(suggestion.options);
+        const correctIndex = options.findIndex((opt: any) => opt.is_correct);
+        setCorrectOptionIndex(correctIndex !== -1 ? correctIndex : 0);
       }
     }
   }, [suggestion]);
 
   useEffect(() => {
     if (submitAction) {
-      handleSubmit(submitAction);
+      handleSubmit();
     }
   }, [submitAction]);
 
-  function handleAlternativeChange(id: string, newText: string) {
-    setAlternatives((prev) => {
-      const updated = [...prev];
-      const index = updated.findIndex((alt) => alt.id === id);
-      if (index !== -1) {
-        updated[index] = { ...updated[index], text: newText };
-      }
-      return updated;
-    });
-  }
+  const handleOptionChange = (index: number, value: string) => {
+    const newOptions = [...options];
+    newOptions[index].label = value;
+    setOptions(newOptions);
+  };
 
-  const handleSubmit = (action: string) => {
-    console.log(`Creating question with action: ${action}`, { statement, alternatives, correctAlternative });
+  const handleCorrectOptionChange = (indexStr: string) => {
+    const index = parseInt(indexStr, 10);
+    setCorrectOptionIndex(index);
+    setOptions(prevOptions => 
+      prevOptions.map((opt, i) => ({ ...opt, is_correct: i === index }))
+    );
+  };
 
-    // Reset form
-    setStatement("");
-    setAlternatives([
-        { id: "A", text: "" },
-        { id: "B", text: "" },
-        { id: "C", text: "" },
-        { id: "D", text: "" },
-    ]);
-    setCorrectAlternative('');
+  const addOption = () => {
+    setOptions([...options, { label: "", is_correct: false }]);
+  };
 
-    if (action === 'stop') {
-      navigateTo('/teachers/classes/1/');
+  const removeOption = (indexToRemove: number) => {
+    if (options.length <= 2) {
+      toast.error("A questão deve ter no mínimo 2 opções.");
+      return;
+    }
+    
+    let newCorrectIndex = correctOptionIndex;
+    if (indexToRemove === correctOptionIndex) {
+      newCorrectIndex = 0;
+    } else if (indexToRemove < correctOptionIndex) {
+      newCorrectIndex--;
     }
 
-    onFormSubmit();
+    const newOptions = options.filter((_, i) => i !== indexToRemove);
+    
+    setOptions(newOptions.map((opt, i) => ({ ...opt, is_correct: i === newCorrectIndex })));
+    setCorrectOptionIndex(newCorrectIndex);
+  };
+
+  const handleSubmit = () => {
+    if (!statement.trim()) {
+      toast.error("O enunciado da questão não pode estar vazio.");
+      onFormSubmit(null);
+      return;
+    }
+    if (options.some(opt => !opt.label.trim())) {
+      toast.error("Todas as opções devem ter um enunciado.");
+      onFormSubmit(null);
+      return;
+    }
+
+    const formattedData = {
+      statement: statement,
+      options: options,
+    };
+
+    onFormSubmit(formattedData);
   };
 
   return (
-    <div>
-      <div className="mt-4 p-4 dark:bg-neutral-900 rounded-md border-1 dark:border-neutral-700">
-        <Label className="mb-2">Enunciado:</Label>
+    <div className="mt-6 pt-6">
+      <h2 className="text-lg font-semibold mb-4">Múltipla Escolha</h2>
+      <div className="mb-4">
+        <Label htmlFor="statement" className="font-bold">Enunciado da Questão</Label>
         <Textarea
           id="statement"
-          placeholder="Informe o Enunciado"
           value={statement}
           onChange={(e) => setStatement(e.target.value)}
-          className="h-32"
+          placeholder="Ex: Qual a capital do Brasil?"
+          className="mt-2"
         />
-
-        <Label className="mt-4 mb-2">Faça as Alternativas e marque a correta:</Label>
-        <RadioGroup
-          value={correctAlternative}
-          onValueChange={setCorrectAlternative}
-          className="mt-4"
-        >
-
-          <Label
-            htmlFor="option-A"
-            className={`border rounded-md p-4 w-full cursor-pointer flex items-center gap-4 ${correctAlternative === 'option-A' ? 'border-purple-predominant' : ''}`}
-          >
-            <RadioGroupItem
-              value="option-A"
-              id="option-A"
-              className="hidden"
-            />
-            <div className={`rounded-full w-10 h-9 flex items-center justify-center text-sm font-bold text-white ${correctAlternative === 'option-A' ? 'bg-purple-predominant' : 'bg-gray-400'}`}>
-              A
-            </div>
-            <Input
-              type="text"
-              placeholder="Texto Alternativa A"
-              value={alternatives[0].text}
-              onChange={(e) => handleAlternativeChange("A", e.target.value)}
-            />
-          </Label>
-
-          <Label
-            htmlFor="option-B"
-            className={`border rounded-md p-4 w-full cursor-pointer flex items-center gap-4 ${correctAlternative === 'option-B' ? 'border-purple-predominant' : ''}`}
-          >
-            <RadioGroupItem
-              value="option-B"
-              id="option-B"
-              className="hidden"
-            />
-            <div className={`rounded-full w-10 h-9 flex items-center justify-center text-sm font-bold text-white ${correctAlternative === 'option-B' ? 'bg-purple-predominant' : 'bg-gray-400'}`}>
-              B
-            </div>
-            <Input
-              type="text"
-              placeholder="Texto Alternativa B"
-              value={alternatives[1].text}
-              onChange={(e) => handleAlternativeChange("B", e.target.value)}
-            />
-          </Label>
-
-          <Label
-            htmlFor="option-C"
-            className={`border rounded-md p-4 w-full cursor-pointer flex items-center gap-4 ${correctAlternative === 'option-C' ? 'border-purple-predominant' : ''}`}
-          >
-            <RadioGroupItem
-              value="option-C"
-              id="option-C"
-              className="hidden"
-            />
-            <div className={`rounded-full w-10 h-9 flex items-center justify-center text-sm font-bold text-white ${correctAlternative === 'option-C' ? 'bg-purple-predominant' : 'bg-gray-400'}`}>
-              C
-            </div>
-            <Input
-              type="text"
-              placeholder="Texto Alternativa C"
-              value={alternatives[2].text}
-              onChange={(e) => handleAlternativeChange("C", e.target.value)}
-            />
-          </Label>
-
-          <Label
-            htmlFor="option-D"
-            className={`border rounded-md p-4 w-full cursor-pointer flex items-center gap-4 ${correctAlternative === 'option-D' ? 'border-purple-predominant' : ''}`}
-          >
-            <RadioGroupItem
-              value="option-D"
-              id="option-D"
-              className="hidden"
-            />
-            <div className={`rounded-full w-10 h-9 flex items-center justify-center text-sm font-bold text-white ${correctAlternative === 'option-D' ? 'bg-purple-predominant' : 'bg-gray-400'}`}>
-              D
-            </div>
-            <Input
-              type="text"
-              placeholder="Texto Alternativa D"
-              value={alternatives[3].text}
-              onChange={(e) => handleAlternativeChange("D", e.target.value)}
-            />
-          </Label>
-
-        </RadioGroup>
       </div>
-      
 
+      <Label className="font-bold">Opções (marque a correta)</Label>
+      <RadioGroup value={correctOptionIndex.toString()} onValueChange={handleCorrectOptionChange} className="mt-2">
+        {options.map((option, index) => (
+          <div key={index} className="flex items-center gap-2 mb-2">
+            <RadioGroupItem value={index.toString()} id={`option-${index}`} />
+            <Input
+              value={option.label}
+              onChange={(e) => handleOptionChange(index, e.target.value)}
+              placeholder={`Opção ${index + 1}`}
+            />
+            <Button variant="outline" size="icon" onClick={() => removeOption(index)} disabled={options.length <= 2} className="group">
+              <Trash2 className="text-[#AFAFAF] group-hover:text-red-500"/>
+            </Button>
+          </div>
+        ))}
+      </RadioGroup>
+
+      <Button variant="outline" onClick={addOption} className="mt-2 w-full">
+        <Plus className="h-4 w-4 mr-2" />
+        Adicionar Opção
+      </Button>
     </div>
-
   );
 }

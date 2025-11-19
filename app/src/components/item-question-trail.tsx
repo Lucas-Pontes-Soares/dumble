@@ -1,7 +1,12 @@
 import { Plus } from 'lucide-react';
 import { useParams } from 'react-router';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import api from '@/apiService';
+import { verifyJWTToken } from '@/verifyJWTToken';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
+
 export interface Question {
   id: number;
   status: 'completed' | 'unlocked' | 'locked' | 'new';
@@ -18,6 +23,15 @@ interface ItemQuestionTrailProps {
 export default function ItemQuestionTrail({ question, userType }: ItemQuestionTrailProps) {
   const { class_id } = useParams<{ class_id: string }>();
   const [open, setOpen] = useState(false);
+  const [jwtToken, setJwtToken] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("JWTToken");
+    if (token) {
+      setJwtToken(token);
+    }
+  }, []);
 
   function getPositionClass() {
     if (question.position === 2 && question.side === 'right') return 'ml-22';
@@ -35,11 +49,25 @@ export default function ItemQuestionTrail({ question, userType }: ItemQuestionTr
   }
 
   async function handleRemakeQuestion(){
-    window.location.href = `/students/classes/${class_id}/questions/${question.id}`
+    try {
+      await api.delete(`/classes/${class_id}/question/${question.id}/answers`, {
+        headers: { Authorization: `Bearer ${jwtToken}` },
+      });
+      navigate(`/students/classes/${class_id}/questions/${question.id}`);
+    } catch (error) {
+      toast.error("Failed to delete answer.");
+    }
   }
 
   async function handleRemakeAllQuestions(){
-    window.location.href = `/students/classes/${class_id}/questions/1`
+    try {
+      await api.delete(`/classes/${class_id}/answers`, {
+        headers: { Authorization: `Bearer ${jwtToken}` },
+      });
+      window.location.reload();
+    } catch (error) {
+      toast.error("Failed to delete all answers.");
+    }
   }
 
   return (

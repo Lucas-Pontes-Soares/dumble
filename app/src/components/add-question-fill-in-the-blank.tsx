@@ -1,157 +1,155 @@
 import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+import { Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { Textarea } from "./ui/textarea";
-import { useNavigate } from "react-router";
 
-export default function AddQuestionFillInTheBlack({ suggestion, submitAction, onFormSubmit }: { suggestion?: any, submitAction: string | null, onFormSubmit: () => void }) {
+interface AddQuestionFillInTheBlankProps {
+  suggestion: any;
+  submitAction: 'stop' | 'continue' | 'update' | 'delete' | null;
+  onFormSubmit: (data: any) => void;
+}
+
+export default function AddQuestionFillInTheBlank({ suggestion, submitAction, onFormSubmit }: AddQuestionFillInTheBlankProps) {
   const [statement, setStatement] = useState("");
-  const [gaps, setGaps] = useState([
-    { id: "1", text: "" },
-    { id: "2", text: "" },
-    { id: "3", text: "" },
-    { id: "4", text: "" },
-    { id: "5", text: "" },
-  ]);
-
-  const navigateTo = useNavigate();
+  const [correctAnswers, setCorrectAnswers] = useState([""]);
+  const [wrongAnswers, setWrongAnswers] = useState([""]);
 
   useEffect(() => {
     if (suggestion) {
       setStatement(suggestion.statement || "");
-      setGaps([
-        { id: "1", text: suggestion.correct_blank1 || "" },
-        { id: "2", text: suggestion.correct_blank2 || "" },
-        { id: "3", text: suggestion.correct_blank3 || "" },
-        { id: "4", text: suggestion.blank4 || "" },
-        { id: "5", text: suggestion.blank5 || "" },
-      ]);
+      if (suggestion.correct_answers && suggestion.correct_answers.length > 0) {
+        setCorrectAnswers(suggestion.correct_answers);
+      }
+      if (suggestion.wrong_answers && suggestion.wrong_answers.length > 0) {
+        setWrongAnswers(suggestion.wrong_answers);
+      }
     }
   }, [suggestion]);
 
   useEffect(() => {
     if (submitAction) {
-      handleSubmit(submitAction);
+      handleSubmit();
     }
   }, [submitAction]);
 
-  const handleSubmit = (action: string) => {
-    console.log(`Creating question with action: ${action}`, { statement, gaps });
-
-    // Reset form
-    setStatement("");
-    setGaps([
-        { id: "1", text: "" },
-        { id: "2", text: "" },
-        { id: "3", text: "" },
-        { id: "4", text: "" },
-        { id: "5", text: "" },
-    ]);
-
-    if (action === 'stop') {
-      navigateTo('/teachers/classes/1/');
-    }
-
-    onFormSubmit();
+  const handleCorrectAnswerChange = (index: number, value: string) => {
+    const newAnswers = [...correctAnswers];
+    newAnswers[index] = value;
+    setCorrectAnswers(newAnswers);
   };
 
-  const handleGapChange = (id: string, text: string) => {
-    setGaps(
-      gaps.map((gap) => {
-        if (gap.id === id) {
-          return { ...gap, text };
-        }
-        return gap;
-      })
-    );
+  const addCorrectAnswer = () => {
+    setCorrectAnswers([...correctAnswers, ""]);
+  };
+
+  const removeCorrectAnswer = (index: number) => {
+    if (correctAnswers.length <= 1) {
+      toast.error("A questão deve ter no mínimo 1 resposta correta.");
+      return;
+    }
+    setCorrectAnswers(correctAnswers.filter((_, i) => i !== index));
+  };
+
+  const handleWrongAnswerChange = (index: number, value: string) => {
+    const newAnswers = [...wrongAnswers];
+    newAnswers[index] = value;
+    setWrongAnswers(newAnswers);
+  };
+
+  const addWrongAnswer = () => {
+    setWrongAnswers([...wrongAnswers, ""]);
+  };
+
+  const removeWrongAnswer = (index: number) => {
+    setWrongAnswers(wrongAnswers.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = () => {
+    if (!statement.trim()) {
+      toast.error("O enunciado da questão não pode estar vazio.");
+      onFormSubmit(null);
+      return;
+    }
+    if (correctAnswers.some(ans => !ans.trim())) {
+      toast.error("Todas as respostas corretas devem ser preenchidas.");
+      onFormSubmit(null);
+      return;
+    }
+
+    const finalCorrectAnswers = correctAnswers.map(ans => ans.trim()).filter(ans => ans !== "");
+    const finalWrongAnswers = wrongAnswers.map(ans => ans.trim()).filter(ans => ans !== "");
+
+    if (finalCorrectAnswers.length === 0) {
+      toast.error("Deve haver pelo menos uma resposta correta.");
+      onFormSubmit(null);
+      return;
+    }
+
+    const formattedData = {
+      statement: statement,
+      correct_answers: finalCorrectAnswers,
+      wrong_answers: finalWrongAnswers,
+    };
+
+    onFormSubmit(formattedData);
   };
 
   return (
-   <div>
-    <div className="mt-4 p-4 dark:bg-neutral-900 rounded-md border-1 dark:border-neutral-700">
-      <Label className="mb-2">Enunciado:</Label>
-        <Label className="mt-4 mb-2">Adicone "_" para fazer a lacuna:</Label>
-        <small>No máximo 3 lacunas</small>
+    <div className="mt-6 pt-6">
+      <h2 className="text-lg font-semibold mb-4">Preencha a Lacuna</h2>
+      <div className="mb-4">
+        <Label htmlFor="statement" className="font-bold">Enunciado da Questão</Label>
         <Textarea
           id="statement"
-          placeholder="Informe o Enunciado"
           value={statement}
           onChange={(e) => setStatement(e.target.value)}
-          className="h-32"
+          placeholder="Use _ para indicar onde a lacuna deve ser preenchida. Ex: A capital do Brasil é _."
+          className="mt-2"
         />
-
-        <Label className="mt-4 mb-2">Preencha o valor da lacuna:</Label>
-
-        <ul className="list-disc list-inside">
-          <li className="mb-4">Lacunas corretas em ordem certa:</li>
-          <div className="flex flex-col gap-4 w-full">
-            <div className="flex items-center gap-2">
-              <div className="rounded-full w-9 h-9 flex items-center justify-center text-sm font-bold text-white bg-purple-predominant">
-                1
-              </div>
-              <Input
-                type="text"
-                placeholder="Lacuna 1"
-                value={gaps[0].text}
-                onChange={(e) => handleGapChange(gaps[0].id, e.target.value)}
-              />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="rounded-full w-9 h-9 flex items-center justify-center text-sm font-bold text-white bg-purple-predominant">
-                2
-              </div>
-              <Input
-                type="text"
-                placeholder="Lacuna 2"
-                value={gaps[1].text}
-                onChange={(e) => handleGapChange(gaps[1].id, e.target.value)}
-              />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="rounded-full w-9 h-9 flex items-center justify-center text-sm font-bold text-white bg-purple-predominant">
-                3
-              </div>
-              <Input
-                type="text"
-                placeholder="Lacuna 3"
-                value={gaps[2].text}
-                onChange={(e) => handleGapChange(gaps[2].id, e.target.value)}
-              />
-            </div>
-          </div>
-          <li className="my-4">Lacunas faltantes (erradas):</li>
-          <div className="flex flex-col gap-4 w-full">
-            <div className="flex items-center gap-2">
-              <div className="rounded-full w-9 h-9 flex items-center justify-center text-sm font-bold text-white bg-gray-400">
-                4
-              </div>
-              <Input
-                type="text"
-                placeholder="Lacuna 4"
-                value={gaps[3].text}
-                onChange={(e) => handleGapChange(gaps[3].id, e.target.value)}
-              />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="rounded-full w-9 h-9 flex items-center justify-center text-sm font-bold text-white bg-gray-400">
-                5
-              </div>
-              <Input
-                type="text"
-                placeholder="Lacuna 5"
-                value={gaps[4].text}
-                onChange={(e) => handleGapChange(gaps[4].id, e.target.value)}
-              />
-            </div>
-          </div>
-        </ul>
       </div>
-      
 
+      <div className="mb-6">
+        <Label className="font-bold">Respostas Corretas (na ordem das lacunas)</Label>
+        {correctAnswers.map((answer, index) => (
+          <div key={index} className="flex items-center gap-2 mb-2 mt-2">
+            <Input
+              value={answer}
+              onChange={(e) => handleCorrectAnswerChange(index, e.target.value)}
+              placeholder={`Resposta correta ${index + 1}`}
+            />
+            <Button variant="outline" size="icon" onClick={() => removeCorrectAnswer(index)} disabled={correctAnswers.length <= 1} className="group">
+              <Trash2 className="text-[#AFAFAF] group-hover:text-red-500"/>
+            </Button>
+          </div>
+        ))}
+        <Button variant="outline" onClick={addCorrectAnswer} className="mt-2 w-full">
+           <Plus className="h-4 w-4 mr-2" />
+          Adicionar Resposta Correta
+        </Button>
+      </div>
+
+      <div>
+        <Label className="font-bold">Palavras para confundir (respostas incorretas)</Label>
+        {wrongAnswers.map((answer, index) => (
+          <div key={index} className="flex items-center gap-2 mb-2 mt-2">
+            <Input
+              value={answer}
+              onChange={(e) => handleWrongAnswerChange(index, e.target.value)}
+              placeholder={`Resposta incorreta ${index + 1}`}
+            />
+            <Button variant="outline" size="icon" onClick={() => removeWrongAnswer(index)} className="group">
+              <Trash2 className="text-[#AFAFAF] group-hover:text-red-500"/>
+            </Button>
+          </div>
+        ))}
+        <Button variant="outline" onClick={addWrongAnswer} className="mt-2 w-full">
+          <Plus className="h-4 w-4 mr-2" />
+          Adicionar Resposta Incorreta
+        </Button>
+      </div>
     </div>
   );
 }

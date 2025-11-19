@@ -24,7 +24,7 @@ export async function createQuestion(req: AuthenticatedRequest, res: Response) {
     // Se a validação falhar, retorne os erros detalhados do Zod
     if (!validationResult.success) {
       return res.status(400).json({
-        error: "Dados da requisição inválidos",
+        error: "Invalid request data.",
         // 'flatten()' é ótimo para enviar ao front-end
         details: validationResult.error.flatten(), 
       });
@@ -45,21 +45,18 @@ export async function createQuestion(req: AuthenticatedRequest, res: Response) {
     // O driver 'node-postgres' converte o 'data' (JS) para JSONB automaticamente
     const params = [class_id, type, new Date(), new Date(), data];
 
-    console.log("ENVIANDO PARA O BANCO:", params);
+    console.log("SENDING TO DATABASE:", params);
     
     const result = await db.query(query, params);
     
     // Capture o ID retornado pelo 'RETURNING id'
     const newQuestionId = result.rows[0].id;
 
-    return res.status(201).json({
-      message: "Questão criada com sucesso",
-      question_id: newQuestionId,
-    });
+    return res.status(201).json({ success: true, message: "Question created successfully", question_id: newQuestionId,});
     
   } catch (error) {
     // Captura erros de banco de dados ou outros imprevistos
     console.error("Erro ao criar questão:", error);
-    return res.status(500).json({ error: "Erro ao criar questão" });
+    return res.status(500).json({ success: false, message: "Erro ao criar questão" });
   }
 }

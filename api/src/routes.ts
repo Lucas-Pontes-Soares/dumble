@@ -51,6 +51,10 @@ import { getQuestionByClassId } from './controllers/questions/getQuestionByClass
 
 // imports para respostas
 import { submitAnswer } from './controllers/answers/submitAnswer';
+import { getAnswersByStudentAndClass } from './controllers/answers/getAnswersByStudentAndClass';
+import { deleteStudentAnswers } from './controllers/answers/deleteStudentAnswers';
+import { getAnswersByClassId } from './controllers/answers/getAnswersByClassId';
+import { getAnswersCorrectByClassId } from './controllers/answers/getAnswersCorrectByClassId';
 
 // Configuração do multer para upload de arquivos
 const upload = multer({ storage: multer.diskStorage({
@@ -135,13 +139,18 @@ router.post('/suggestions', verifyJWTToken, createSuggestion);
 
 // rotas para questões
 router.post("/questions", verifyJWTToken, createQuestion);
-router.patch("/questions/:id", verifyJWTToken, updateQuestion);
+router.put("/questions/:id", verifyJWTToken, updateQuestion);
 router.delete("/questions/:id", verifyJWTToken, deleteQuestion);
 router.get("/questions/:id", getQuestionById);
 router.get("/questions/class/:class_id", getQuestionByClassId); // Rota para buscar por classe
 
 // rotas respostas
 router.post('/answers', verifyJWTToken, submitAnswer);
+router.get('/student/:student_id/class/:class_id/answers', verifyJWTToken, getAnswersByStudentAndClass);
+router.get('/classes/:class_id/answers/summary', verifyJWTToken, getAnswersByClassId);
+router.get('/classes/:class_id/answers/summary/correct', verifyJWTToken, getAnswersCorrectByClassId);
+router.delete('/classes/:class_id/question/:question_id/answers', verifyJWTToken, deleteStudentAnswers);
+router.delete('/classes/:class_id/answers', verifyJWTToken, deleteStudentAnswers);
 
 // Exporta o roteador para ser usado em server.ts
 export default router;

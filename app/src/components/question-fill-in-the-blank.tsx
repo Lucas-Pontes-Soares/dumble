@@ -2,29 +2,50 @@ import { useState, useEffect } from "react";
 import { cn } from '@/lib/utils';
 
 interface QuestionFillInTheBlackProps {
+  data: {
+    statement: string;
+    correct_answers: string[];
+    wrong_answers: string[];
+  };
   showResults: boolean;
-  onValidationComplete: (status: 'correct' | 'wrong') => void;
-  onAllSelectedChange: (selected: boolean) => void; // New prop
+  onValidationComplete: (selected: boolean, answer?: any) => void;
+  onAllSelectedChange: (selected: boolean, answer?: any) => void;
 }
 
-export default function QuestionFillInTheBlack({ showResults, onValidationComplete, onAllSelectedChange }: QuestionFillInTheBlackProps) {
-  const sentence = "O ___ brincou com seu ___ .";
-  const blanks = ["dono", "cachorro"]; // Correct answers for the blanks
-  const allWords = ["dono", "casa", "cachorro", "parede"]; // All available words
+function shuffleArray(array: any[]) {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+  return array;
+}
 
-  const [filledBlanks, setFilledBlanks] = useState<string[]>(["", ""]);
-  const [availableWords, setAvailableWords] = useState<string[]>(allWords);
+export default function QuestionFillInTheBlack({ data, showResults, onValidationComplete, onAllSelectedChange }: QuestionFillInTheBlackProps) {
+  const [filledBlanks, setFilledBlanks] = useState<string[]>([]);
+  const [availableWords, setAvailableWords] = useState<string[]>([]);
+
+  useEffect(() => {
+    const blanks = data.correct_answers;
+    const allWords = shuffleArray([...data.correct_answers, ...data.wrong_answers]);
+    setFilledBlanks(Array(blanks.length).fill(""));
+    setAvailableWords(allWords);
+  }, [data.statement, JSON.stringify(data.correct_answers), JSON.stringify(data.wrong_answers)]);
 
   useEffect(() => {
     if (showResults) {
-      const isCorrect = filledBlanks.every((word, index) => word === blanks[index]);
-      onValidationComplete(isCorrect ? 'correct' : 'wrong');
+      const isCorrect = filledBlanks.every((word, index) => word === data.correct_answers[index]);
+      onValidationComplete(isCorrect);
     }
-  }, [showResults, filledBlanks, onValidationComplete, blanks]);
+  }, [showResults, filledBlanks, onValidationComplete, data.correct_answers]);
 
   useEffect(() => {
-    const allBlanksFilled = filledBlanks.every(blank => blank !== "");
-    onAllSelectedChange(allBlanksFilled);
+    if(filledBlanks.length > 0) {
+      const allBlanksFilled = filledBlanks.every(blank => blank !== "");
+      onAllSelectedChange(allBlanksFilled, filledBlanks);
+    }
   }, [filledBlanks, onAllSelectedChange]);
 
   const handleWordClick = (word: string) => {
@@ -36,7 +57,13 @@ export default function QuestionFillInTheBlack({ showResults, onValidationComple
       newFilledBlanks[firstEmptyIndex] = word;
       setFilledBlanks(newFilledBlanks);
 
-      setAvailableWords(prev => prev.filter(w => w !== word));
+      setAvailableWords(prev => {
+        const index = prev.indexOf(word);
+        if (index > -1) {
+          return [...prev.slice(0, index), ...prev.slice(index + 1)];
+        }
+        return prev;
+      });
     }
   };
 
@@ -54,7 +81,7 @@ export default function QuestionFillInTheBlack({ showResults, onValidationComple
   };
 
   const renderSentence = () => {
-    const sentenceParts = sentence.split("___");
+    const sentenceParts = data.statement.split("_");
     return (
       <p className="flex flex-wrap items-center text-base mt-4 mb-4">
         {sentenceParts.map((part, index) => (
@@ -65,15 +92,15 @@ export default function QuestionFillInTheBlack({ showResults, onValidationComple
                 className={cn(
                   "p-2 inline-flex items-center justify-center w-auto h-8 mx-2 overflow-hidden leading-8 underline underline-offset-1",
                   {
-                    "border rounded-md  border-purple-predominant": showResults && filledBlanks[index] === blanks[index],
-                    "border rounded-md  border-red-500": showResults && filledBlanks[index] !== blanks[index] && filledBlanks[index] !== "",
-                    "border rounded-md border-blue-base": !showResults && filledBlanks[index] !== '', // New line
+                    "border rounded-md  border-purple-predominant": showResults && filledBlanks[index] === data.correct_answers[index],
+                    "border rounded-md  border-red-500": showResults && filledBlanks[index] !== data.correct_answers[index] && filledBlanks[index] !== "",
+                    "border rounded-md border-blue-base": !showResults && filledBlanks[index] !== '',
                     "cursor-pointer": !showResults
                   }
                 )}
                 onClick={() => handleBlankClick(index)}
               >
-                {filledBlanks[index] !== '' ? filledBlanks[index] : '_______'}
+                {filledBlanks[index] !== '' ? filledBlanks[index] : '_'}
               </span>
             )}
           </span>
@@ -90,7 +117,7 @@ export default function QuestionFillInTheBlack({ showResults, onValidationComple
         <div className="flex flex-wrap gap-2 p-4">
           {availableWords.map((word, index) => (
             <span
-              key={index}
+              key={`${word}-${index}`}
               className={cn(
                 "border rounded-md p-2 cursor-pointer",
                 {

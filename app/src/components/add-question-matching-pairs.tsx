@@ -1,97 +1,118 @@
 import { useEffect, useState } from "react";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "./ui/button";
-import { useNavigate } from "react-router";
+import { Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { Textarea } from "./ui/textarea";
 
-export default function AddQuestionMatchingPairs({ suggestion, submitAction, onFormSubmit }: { suggestion?: any, submitAction: string | null, onFormSubmit: () => void }) {
-    const [pairs, setPairs] = useState([
-        { left: "", right: "" },
-        { left: "", right: "" },
-        { left: "", right: "" },
-        { left: "", right: "" },
-    ]);
-    const [statement, setStatement] = useState("");
+interface AddQuestionMatchingPairsProps {
+  suggestion: any;
+  submitAction: 'stop' | 'continue' | 'update' | 'delete' | null;
+  onFormSubmit: (data: any) => void;
+}
 
-    const navigateTo = useNavigate();
+export default function AddQuestionMatchingPairs({ suggestion, submitAction, onFormSubmit }: AddQuestionMatchingPairsProps) {
+  const [statement, setStatement] = useState("");
+  const [pairs, setPairs] = useState([
+    { label: "", answer: "" },
+    { label: "", answer: "" },
+  ]);
 
-    useEffect(() => {
-        if (suggestion) {
-            setStatement(suggestion.statement || "");
-            setPairs([
-                { left: suggestion.alternative1_left || "", right: suggestion.alternative1_right || "" },
-                { left: suggestion.alternative2_left || "", right: suggestion.alternative2_right || "" },
-                { left: suggestion.alternative3_left || "", right: suggestion.alternative3_right || "" },
-                { left: suggestion.alternative4_left || "", right: suggestion.alternative4_right || "" },
-            ]);
-        }
-    }, [suggestion]);
+  useEffect(() => {
+    if (suggestion) {
+      setStatement(suggestion.statement || "");
+      if (suggestion.pairs && suggestion.pairs.length > 0) {
+        setPairs(suggestion.pairs);
+      }
+    }
+  }, [suggestion]);
 
-    useEffect(() => {
-        if (submitAction) {
-            handleSubmit(submitAction);
-        }
-    }, [submitAction]);
+  useEffect(() => {
+    if (submitAction) {
+      handleSubmit();
+    }
+  }, [submitAction]);
 
-    const handlePairChange = (index: number, side: 'left' | 'right', value: string) => {
-        const newPairs = [...pairs];
-        newPairs[index][side] = value;
-        setPairs(newPairs);
+  const handlePairChange = (index: number, field: 'label' | 'answer', value: string) => {
+    const newPairs = [...pairs];
+    newPairs[index][field] = value;
+    setPairs(newPairs);
+  };
+
+  const addPair = () => {
+    setPairs([...pairs, { label: "", answer: "" }]);
+  };
+
+  const removePair = (index: number) => {
+    if (pairs.length <= 2) {
+      toast.error("A questão deve ter no mínimo 2 pares.");
+      return;
+    }
+    setPairs(pairs.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = () => {
+    if (!statement.trim()) {
+      toast.error("O enunciado da questão não pode estar vazio.");
+      onFormSubmit(null);
+      return;
+    }
+    if (pairs.some(p => !p.label.trim() || !p.answer.trim())) {
+      toast.error("Todos os campos dos pares devem ser preenchidos.");
+      onFormSubmit(null);
+      return;
+    }
+
+    const formattedData = {
+      statement: statement,
+      pairs: pairs,
     };
 
-    const handleSubmit = (action: string) => {
-        console.log(`Creating question with action: ${action}`, { statement, pairs });
-
-        // Reset form
-        setStatement("");
-        setPairs([
-            { left: "", right: "" },
-            { left: "", right: "" },
-            { left: "", right: "" },
-            { left: "", right: "" }
-        ]);
-
-        if (action === 'stop') {
-            navigateTo('/teachers/classes/1/');
-        }
-
-        onFormSubmit();
-    };
+    onFormSubmit(formattedData);
+  };
 
   return (
-    <div>
-        <div className="mt-4 p-4 dark:bg-neutral-900 rounded-md border-1 dark:border-neutral-700">
-            <Label className="mb-2">Enunciado:</Label>
-            <Textarea
-                id="statement"
-                placeholder="Informe o Enunciado"
-                value={statement}
-                onChange={(e) => setStatement(e.target.value)}
-                className="h-32"
-            />
+    <div className="mt-6 pt-6">
+      <h2 className="text-lg font-semibold mb-4">Pares Correspondentes</h2>
+      
+      <div className="mb-4">
+        <Label htmlFor="statement" className="font-bold">Enunciado da Questão</Label>
+        <Textarea
+          id="statement"
+          value={statement}
+          onChange={(e) => setStatement(e.target.value)}
+          placeholder="Ex: Relacione o país com a sua capital."
+          className="mt-2"
+        />
+      </div>
 
-                <div className="flex flex-col gap-4 mt-4">
-                    {pairs.map((pair, index) => (
-                        <div key={index} className="flex gap-4">
-                        <Input
-                            type="text"
-                            placeholder={`Par ${index + 1} - Esquerda`}
-                            value={pair.left}
-                            onChange={(e) => handlePairChange(index, 'left', e.target.value)}
-                        />
-                        <Input
-                            type="text"
-                            placeholder={`Par ${index + 1} - Direita`}
-                            value={pair.right}
-                            onChange={(e) => handlePairChange(index, 'right', e.target.value)}
-                        />
-                        </div>
-                    ))}
-                </div>
+      <div className="grid grid-cols-2 gap-x-2">
+        <Label className="font-bold">Item</Label>
+        <Label className="font-bold">Correspondência</Label>
+      </div>
+      {pairs.map((pair, index) => (
+        <div key={index} className="flex items-center gap-2 mb-2 mt-1">
+          <Input
+            value={pair.label}
+            onChange={(e) => handlePairChange(index, 'label', e.target.value)}
+            placeholder={`Item ${index + 1}`}
+          />
+          <Input
+            value={pair.answer}
+            onChange={(e) => handlePairChange(index, 'answer', e.target.value)}
+            placeholder={`Correspondência ${index + 1}`}
+          />
+          <Button variant="outline" size="icon" onClick={() => removePair(index)} disabled={pairs.length <= 2} className="group">
+            <Trash2 className="text-[#AFAFAF] group-hover:text-red-500"/>
+          </Button>
         </div>
+      ))}
 
-
+      <Button variant="outline" onClick={addPair} className="mt-2 w-full">
+        <Plus className="h-4 w-4 mr-2" />
+        Adicionar Par
+      </Button>
     </div>
   );
 }

@@ -28,9 +28,10 @@ export default function TeachersAddQuestion() {
   const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
   const [jwtToken, setJwtToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [suggestion, setSuggestion] = useState<any | null>(null);
-  const [submitAction, setSubmitAction] = useState<string | null>(null);
+  const [submitAction, setSubmitAction] = useState<'stop' | 'continue' | null>(null);
   const [open, setOpen] = useState(false);
 
   const navigate = useNavigate();
@@ -99,6 +100,82 @@ export default function TeachersAddQuestion() {
     }
   }
 
+  async function handleCreateQuestion(formData: any) {
+    if (!questionType || !submitAction) {
+      toast.error("Erro interno: tipo de questão ou ação ausente.");
+      resetSubmitAction();
+      return;
+    }
+
+    if (!formData) {
+      toast.error("Por favor, preencha todos os campos da questão.");
+      resetSubmitAction();
+      return;
+    }
+
+    let backendQuestionType: string;
+    switch (questionType) {
+      case 'multiple-choice':
+        backendQuestionType = 'QUESTIONS_MULTIPLE_CHOICE';
+        break;
+      case 'fill-in-the-blank':
+        backendQuestionType = 'QUESTIONS_FILL_IN_THE_BLANK';
+        break;
+      case 'matching-pairs':
+        backendQuestionType = 'QUESTIONS_MATCHING_PAIRS';
+        break;
+      default:
+        toast.error("Tipo de questão inválido.");
+        resetSubmitAction();
+        return;
+    }
+
+    const requestBody = {
+      class_id: class_id,
+      type: backendQuestionType,
+      data: formData,
+    };
+
+    setIsSubmitting(true);
+    try {
+      const response = await api.post<any>('/questions', requestBody, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      });
+
+      if (response.status === 201) {
+        toast.success("Questão criada com sucesso!");
+
+        if (submitAction === 'stop') {
+          navigate(`/teachers/classes/${class_id}`);
+        } else { // 'continue'
+          setPrompt("");
+          setSuggestion(null);
+          setQuestionType(null);
+        }
+      }
+    } catch (error: any) {
+      console.error("Erro ao criar questão:", error);
+      const errorData = error.response?.data;
+      if (errorData?.details?.fieldErrors) {
+        const fieldErrors = errorData.details.fieldErrors;
+        const firstErrorKey = Object.keys(fieldErrors)[0];
+        const errorMessage = fieldErrors[firstErrorKey]?.[0];
+        if (errorMessage) {
+          toast.error(`Erro: ${errorMessage}`);
+        } else {
+          toast.error(errorData.error || "Dados da questão inválidos.");
+        }
+      } else {
+        toast.error(errorData?.message || "Ocorreu um erro ao criar a questão.");
+      }
+    } finally {
+      setIsSubmitting(false);
+      resetSubmitAction();
+    }
+  }
+
   function handleExitQuestion(){
     navigate(`/teachers/classes/${class_id}`)
   }
@@ -157,11 +234,11 @@ export default function TeachersAddQuestion() {
         {questionType ? (
           <div>
               {questionType === 'multiple-choice' ? (
-                  <AddQuestionMultipleChoice suggestion={suggestion} submitAction={submitAction} onFormSubmit={resetSubmitAction} />
+                  <AddQuestionMultipleChoice suggestion={suggestion} submitAction={submitAction} onFormSubmit={handleCreateQuestion} />
               ) : questionType === 'fill-in-the-blank' ? (
-                  <AddQuestionFillInTheBlack suggestion={suggestion} submitAction={submitAction} onFormSubmit={resetSubmitAction} />
+                  <AddQuestionFillInTheBlack suggestion={suggestion} submitAction={submitAction} onFormSubmit={handleCreateQuestion} />
               ) : questionType === 'matching-pairs' ? (
-                  <AddQuestionMatchingPairs suggestion={suggestion} submitAction={submitAction} onFormSubmit={resetSubmitAction} />
+                  <AddQuestionMatchingPairs suggestion={suggestion} submitAction={submitAction} onFormSubmit={handleCreateQuestion} />
               ) : null}
           </div> 
         ) : null}
@@ -175,13 +252,17 @@ export default function TeachersAddQuestion() {
                   className="bg-transparent text-purple-predominant rounded-xl border-2 p-6 font-nunito text-base font-bold hover:border-purple-600 hover:bg-transparent mb-2 sm:mb-0" 
                   onClick={() => setSubmitAction('stop')} 
                   variant={"outline"}
+                  disabled={isSubmitting}
                 >
+                  {isSubmitting ? <Spinner/> : null}
                   CRIAR E PARAR
                 </Button>
                 <Button 
                   className="bg-purple-predominant rounded-xl border-b-4 border-b-dark-shadow p-6 font-nunito text-base font-bold hover:bg-purple-600 dark:text-white" 
                   onClick={() => setSubmitAction('continue')}
+                  disabled={isSubmitting}
                 >
+                  {isSubmitting ? <Spinner/> : null}
                   CRIAR E CONTINUAR
                 </Button>
               </div>

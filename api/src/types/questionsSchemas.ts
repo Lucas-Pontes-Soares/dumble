@@ -4,24 +4,25 @@ import { QuestionType } from './questions'; // Seu enum
 // --- PASSO 1: Defina os schemas para o que está DENTRO do 'data' ---
 
 const MultipleChoiceDataSchema = z.object({
-  prompt: z.string().min(1, "O prompt é obrigatório"),
+  statement: z.string().min(1, "O statement é obrigatório"),
   options: z.array(z.object({
-    text: z.string().min(1, "O texto da opção é obrigatório"),
+    label: z.string().min(1, "O label da opção é obrigatório"),
     is_correct: z.boolean(),
   })).min(1, "A questão deve ter pelo menos uma opção"),
 });
 
 const MatchingPairsDataSchema = z.object({
-  prompt: z.string().min(1, "O prompt é obrigatório"),
+  statement: z.string().min(1, "O statement é obrigatório"),
   pairs: z.array(z.object({
-    prompt: z.string().min(1, "O 'prompt' do par é obrigatório"),
+    label: z.string().min(1, "O 'label' do par é obrigatório"),
     answer: z.string().min(1, "O 'answer' do par é obrigatório"),
   })).min(1, "A questão deve ter pelo menos um par"),
 });
-
+  
 const FillInTheBlankDataSchema = z.object({
-  prompt_template: z.string().min(1, "O template do prompt é obrigatório"),
-  correct_answers: z.array(z.string().min(1)).min(1, "Deve haver pelo menos uma resposta correta"),
+  statement: z.string().min(1, "O enunciado da questão é obrigatório"),
+  correct_answers: z.array(z.string().min(1, "A resposta correta não pode ser vazia")).min(1, "Deve haver pelo menos uma resposta correta"),
+  wrong_answers: z.array(z.string().min(1, "A resposta incorreta não pode ser vazia")),
 });
 
 // --- PASSO 2: Crie os "Schemas Variantes" ---

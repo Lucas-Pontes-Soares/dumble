@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { verifyJWTToken } from "@/verifyJWTToken";
-import { ChevronDownIcon, Eye, EyeOff, Pen, Upload } from "lucide-react";
+import { ChevronDownIcon, Eye, EyeOff, LogOut, Pen, Upload } from "lucide-react";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router";
 import api from "@/apiService";
@@ -173,6 +173,12 @@ export default function TeachersProfile() {
     }
   };
 
+  async function handleLogout() {
+    localStorage.removeItem("JWTToken");
+    toast.success("Logged out successfully.");
+    navigate("/login");
+  }
+
   return (
       <div className="font-nunito min-h-screen pb-24">
         <div className="w-full bg-[#BF8FFF]">
@@ -187,6 +193,7 @@ export default function TeachersProfile() {
             )}
             <div className="block">
               <ModeToggle />
+              <Button variant="outline" size="icon" className="ml-2 dark:text-white dark:bg-black" onClick={() => handleLogout()}><LogOut /></Button>
             </div>
           </div>
           <div className="flex flex-col items-center gap-4 w-full">

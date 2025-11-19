@@ -23,7 +23,7 @@ export const getClass = async (req: AuthenticatedRequest, res: Response) => {
             );
 
             if (result.rowCount === 0) {
-                return res.status(404).json({ message: 'Turmas não encontradas.' });
+                return res.status(404).json({ success: false, message: 'Turmas não encontradas.' });
             }
             return res.status(200).json({success: true, message: 'Class found', class: result.rows[0]});
 

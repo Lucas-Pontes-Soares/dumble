@@ -22,8 +22,8 @@ export async function submitAnswer(req: AuthenticatedRequest, res: Response) {
     // GUARDA DE AUTENTICAÇÃO
     const userAuthenticated = req.userAuthenticated;
 
-    if (!userAuthenticated || userAuthenticated.role !== 'student') {
-      return res.status(403).json({ error: "Acesso negado. Rota apenas para alunos." });
+    if(userAuthenticated?.role !== 'student'){
+      return res.status(403).json({ success: false, message: 'Route only for students' });
     }
 
     const student_id = userAuthenticated.id;
@@ -32,7 +32,7 @@ export async function submitAnswer(req: AuthenticatedRequest, res: Response) {
     // 1. Busque a questão no banco
     const qResult = await db.query("SELECT * FROM questions WHERE id = $1", [question_id]);
     if (qResult.rows.length === 0) {
-      return res.status(404).json({ error: "Questão não encontrada" });
+      return res.status(404).json({ success: false, message: "Question not find" });
     }
     const question = qResult.rows[0];
 
@@ -42,47 +42,46 @@ export async function submitAnswer(req: AuthenticatedRequest, res: Response) {
     switch (question.type) {
       case "QUESTIONS_MULTIPLE_CHOICE":
         const correctOption = question.data.options.find((opt: any) => opt.is_correct);
-        is_correct = (correctOption && correctOption.text === answer);
+        is_correct = (correctOption && correctOption.label.trim() === (answer as string).trim());
         break;
 
       case "QUESTIONS_FILL_IN_THE_BLANK":
-        const userAnswer = (answer as string).toLowerCase();
-        const correctAnswers = question.data.correct_answers.map((ans: string) => ans.toLowerCase());
-        is_correct = correctAnswers.includes(userAnswer);
+        const userAnswers = answer as string[];
+        const correctAnswers = question.data.correct_answers as string[];
+        
+        if (userAnswers.length !== correctAnswers.length) {
+          is_correct = false;
+        } else {
+          is_correct = userAnswers.every((ans, index) => ans === correctAnswers[index]);
+        }
         break;
 
       case "QUESTIONS_MATCHING_PAIRS":
-        // Lógica de correção para "Ligar Pares"
-        
-        const correctPairs = question.data.pairs as { prompt: string, answer: string }[];
+        const correctPairs = question.data.pairs as { label: string, answer: string }[];
         const studentPairs = answer as { prompt: string, answer: string }[];
 
-        // 1. Validação básica
         if (!Array.isArray(studentPairs) || studentPairs.length !== correctPairs.length) {
           is_correct = false;
           break;
         }
 
-        // 2. Criar um "gabarito" (Map)
         const correctMap = new Map<string, string>();
         for (const pair of correctPairs) {
-          correctMap.set(pair.prompt, pair.answer);
+          correctMap.set(pair.label, pair.answer);
         }
 
-        // 3. Verificar cada par
-        let allPairsMatch = true; 
+        let allPairsMatch = true;
         for (const studentPair of studentPairs) {
-          
           if (typeof studentPair.prompt !== 'string' || typeof studentPair.answer !== 'string') {
-              allPairsMatch = false;
-              break;
+            allPairsMatch = false;
+            break;
           }
           
           const correctAnswer = correctMap.get(studentPair.prompt);
 
           if (!correctAnswer || correctAnswer !== studentPair.answer) {
             allPairsMatch = false;
-            break; 
+            break;
           }
         }
         is_correct = allPairsMatch;
@@ -97,12 +96,10 @@ export async function submitAnswer(req: AuthenticatedRequest, res: Response) {
     await db.query(insertQuery, [student_id, question_id, JSON.stringify(answer), is_correct]);
 
     // 4. Retorne o feedback imediato
-    return res.status(200).json({
-      is_correct: is_correct
-    });
+    return res.status(200).json({ success: true, message: "Answer submitted successfully", is_correct: is_correct });
 
   } catch (error) {
     console.error("Erro ao submeter resposta:", error);
-    return res.status(500).json({ error: "Erro ao submeter resposta" });
+    return res.status(500).json({ success: false, message: "Error on submit answer" });
   }
 }

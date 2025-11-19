@@ -26,7 +26,7 @@ export async function updateQuestion(req: AuthenticatedRequest, res: Response) {
     const currentResult = await db.query("SELECT * FROM questions WHERE id = $1", [id]);
 
     if (currentResult.rows.length === 0) {
-      return res.status(404).json({ error: "Questão não encontrada" });
+      return res.status(404).json({ success: false, message: "Question not found" });
     }
     const currentQuestion = currentResult.rows[0];
 
@@ -79,13 +79,10 @@ export async function updateQuestion(req: AuthenticatedRequest, res: Response) {
     const updateResult = await db.query(updateQuery, params);
 
     // Responda com sucesso
-    return res.status(200).json({
-      message: "Questão atualizada com sucesso",
-      question: updateResult.rows[0], // Envia a questão atualizada
-    });
+    return res.status(200).json({ success: true, message: "Question updated successfully", question: updateResult.rows[0] });
 
   } catch (error) {
     console.error("Erro ao atualizar questão:", error);
-    return res.status(500).json({ error: "Erro ao atualizar questão" });
+    return res.status(500).json({ success: false, message: "Erro ao atualizar questão" });
   }
 }

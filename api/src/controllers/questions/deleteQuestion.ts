@@ -26,15 +26,13 @@ export async function deleteQuestion(req: AuthenticatedRequest, res: Response) {
 
     // Se 'rowCount' for 0, ninguém foi deletado (não encontrou)
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Questão não encontrada" });
+      return res.status(404).json({ success: false, message: "Question not found" });
     }
 
-    return res.status(201).json({
-      message: "Questão DELETADA com sucesso",
-    });
+    return res.status(200).json({ success: true, message: "Question deleted successfully"});
 
   } catch (error) {
     console.error("Erro ao deletar questão:", error);
-    return res.status(500).json({ error: "Erro ao deletar questão" });
+    return res.status(500).json({ success: false, message: "Erro ao deletar questão" });
   }
 }

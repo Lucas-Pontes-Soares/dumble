@@ -1,8 +1,12 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { BrushCleaning } from 'lucide-react';
+
+interface Pair {
+  label: string;
+  answer: string;
+}
 
 interface ColumnItem {
   id: string;
@@ -10,27 +14,37 @@ interface ColumnItem {
   matchId: string;
 }
 
-const leftColumnItems: ColumnItem[] = [
-  { id: 'l1', content: 'Capital de Portugal', matchId: 'm1' },
-  { id: 'l2', content: 'Capital da França', matchId: 'm2' },
-  { id: 'l3', content: 'Capital da Espanha', matchId: 'm3' },
-  { id: 'l4', content: 'Capital do Brasil', matchId: 'm4' },
-];
-
-const rightColumnItems: ColumnItem[] = [
-  { id: 'r1', content: 'Paris', matchId: 'm2' },
-  { id: 'r2', content: 'Madri', matchId: 'm3' },
-  { id: 'r3', content: 'Lisboa', matchId: 'm1' },
-  { id: 'r4', content: 'Brasilia', matchId: 'm4' },
-];
-
 interface QuestionMatchingPairsProps {
+  data: {
+    statement: string;
+    pairs: Pair[];
+  };
   showResults: boolean;
-  onValidationComplete: (status: 'correct' | 'wrong') => void;
-  onAllSelectedChange: (selected: boolean) => void; // New prop
+  onValidationComplete: (selected: boolean, answer?: any) => void;
+  onAllSelectedChange: (selected: boolean, answer?: any) => void;
 }
 
-export default function QuestionMatchingPairs({ showResults, onValidationComplete, onAllSelectedChange }: QuestionMatchingPairsProps) {
+const shuffleArray = (array: any[]) => {
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
+};
+
+export default function QuestionMatchingPairs({ data, showResults, onValidationComplete, onAllSelectedChange }: QuestionMatchingPairsProps) {
+  const { leftColumnItems, rightColumnItems, correctPairsMap } = useMemo(() => {
+    const leftItems = data.pairs.map((p, i) => ({ id: `l${i}`, content: p.label, matchId: `m${i}` }));
+    const rightItems = data.pairs.map((p, i) => ({ id: `r${i}`, content: p.answer, matchId: `m${i}` }));
+    const correctPairs = new Map(data.pairs.map((p, i) => [`l${i}`, `r${i}`]));
+    return {
+      leftColumnItems: leftItems,
+      rightColumnItems: shuffleArray(rightItems),
+      correctPairsMap: correctPairs,
+    };
+  }, [data.pairs]);
+
   const [selectedLeft, setSelectedLeft] = useState<ColumnItem | null>(null);
   const [tempSelectedRight, setTempSelectedRight] = useState<ColumnItem | null>(null);
   const [userPairs, setUserPairs] = useState<Record<string, string>>({});
@@ -39,7 +53,6 @@ export default function QuestionMatchingPairs({ showResults, onValidationComplet
   useEffect(() => {
     if (showResults) {
       const newValidationStatus: Record<string, 'correct' | 'incorrect'> = {};
-      const leftItemsById = new Map(leftColumnItems.map(item => [item.id, item]));
       let allCorrect = true;
 
       if (Object.keys(userPairs).length !== leftColumnItems.length) {
@@ -48,7 +61,7 @@ export default function QuestionMatchingPairs({ showResults, onValidationComplet
 
       for (const leftId in userPairs) {
         const rightId = userPairs[leftId];
-        const leftItem = leftItemsById.get(leftId);
+        const leftItem = leftColumnItems.find(item => item.id === leftId);
         const rightItem = rightColumnItems.find(item => item.id === rightId);
 
         if (leftItem && rightItem) {
@@ -63,14 +76,19 @@ export default function QuestionMatchingPairs({ showResults, onValidationComplet
         }
       }
       setValidationStatus(newValidationStatus);
-      onValidationComplete(allCorrect ? 'correct' : 'wrong');
+      onValidationComplete(allCorrect);
     }
-  }, [showResults, userPairs, onValidationComplete]);
+  }, [showResults, userPairs, leftColumnItems, rightColumnItems]);
 
   useEffect(() => {
     const allPairsMade = Object.keys(userPairs).length === leftColumnItems.length;
-    onAllSelectedChange(allPairsMade);
-  }, [userPairs, onAllSelectedChange]);
+    const formattedPairs = Object.entries(userPairs).map(([leftId, rightId]) => {
+        const leftItem = leftColumnItems.find(item => item.id === leftId);
+        const rightItem = rightColumnItems.find(item => item.id === rightId);
+        return { prompt: leftItem?.content || '', answer: rightItem?.content || '' };
+    });
+    onAllSelectedChange(allPairsMade, formattedPairs);
+  }, [userPairs, leftColumnItems, rightColumnItems]);
 
 
   const handleSelect = (item: ColumnItem, column: 'left' | 'right') => {
@@ -135,28 +153,31 @@ export default function QuestionMatchingPairs({ showResults, onValidationComplet
             </Button>
         )}
       </div>
-      <p className="text-base mt-4 mb-4">Relacione cada aspecto da apresentação com a expectativa correspondente:</p>
-      <div className="mt-2 grid grid-cols-1 gap-4">
-        {leftColumnItems.map((leftItem, index) => {
-          const rightItem = rightColumnItems[index];
-          return (
-            <div key={leftItem.id} className="grid grid-cols-2 gap-4 items-stretch">
-              <div
-                className={getItemClass(leftItem)}
-                onClick={() => handleSelect(leftItem, 'left')}
-              >
-                {leftItem.content}
-              </div>
-              <div
-                className={getItemClass(rightItem)}
-                onClick={() => handleSelect(rightItem, 'right')}
-              >
-                {rightItem.content}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      <p className="text-base mt-4 mb-4">{data.statement}</p>
+      <div className="mt-2 grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
+            {leftColumnItems.map((leftItem) => (
+                <div
+                    key={leftItem.id}
+                    className={getItemClass(leftItem)}
+                    onClick={() => handleSelect(leftItem, 'left')}
+                >
+                    {leftItem.content}
+                </div>
+            ))}
+        </div>
+        <div className="grid grid-cols-1 gap-4">
+            {rightColumnItems.map((rightItem) => (
+                <div
+                    key={rightItem.id}
+                    className={getItemClass(rightItem)}
+                    onClick={() => handleSelect(rightItem, 'right')}
+                >
+                    {rightItem.content}
+                </div>
+            ))}
+        </div>
+    </div>
     </div>
   );
 }
