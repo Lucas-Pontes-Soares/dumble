@@ -74,9 +74,9 @@ export const chatbotMessageCreate = async (req: AuthenticatedRequest, res: Respo
             return res.status(404).json({ success: false, message: 'Archives not found' });
         }
 
-        let archivesContent = '\n# Contexto dos Arquivos\n';
+        let archivesContent = '\n# Files Contexts\n';
         result.rows.forEach((row: any, index: number) => {
-            archivesContent += `\n## Arquivo ${index + 1}\n${row.content}`;
+            archivesContent += `\n## Archives ${index + 1}\n${row.content}`;
         });
 
         const resultClass = await db.query('SELECT title FROM classes WHERE id = $1', [class_id]);

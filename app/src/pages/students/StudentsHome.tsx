@@ -8,6 +8,7 @@ import { verifyJWTToken } from "@/verifyJWTToken";
 import api from "@/apiService";
 import { Skeleton } from "@/components/ui/skeleton";
 import { verifyClass } from "@/verifyClass";
+import QuestionsTrailSkeleton from "@/components/questions-trail-skeleton";
 
 export default function StudentsHome() {
   const { class_id } = useParams<{ class_id: string }>();
@@ -20,14 +21,23 @@ export default function StudentsHome() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const decodedToken = verifyJWTToken("student", navigate);
-    if (decodedToken) {
-      setDecodedToken(decodedToken);
-      const token = localStorage.getItem("JWTToken");
-      setJwtToken(token);
-      verifyClass(navigate, class_id, decodedToken);
-      fetchData(token, decodedToken.id);
-    }
+    const run = async () => {
+      const decodedToken = verifyJWTToken("student", navigate);
+
+      if (decodedToken) {
+        setDecodedToken(decodedToken);
+        const token = localStorage.getItem("JWTToken");
+        setJwtToken(token);
+
+        const isValid = await verifyClass(navigate, class_id, decodedToken);
+
+        if (isValid) {
+          fetchData(token, decodedToken.id);
+        }
+      }
+    };
+
+    run();
   }, [navigate, class_id]);
 
   async function fetchData(token: string | null, studentId: string) {
@@ -130,11 +140,7 @@ export default function StudentsHome() {
       <CurrentClass class_id={`${class_id}`} title={actuallyClass?.title} userType="student"/>
       <div className="min-h-screen flex items-center justify-center mt-24 pb-24"> 
         {isLoading ? (
-          <div className="flex flex-col items-center space-y-4">
-            <Skeleton className="h-16 w-16 rounded-full" />
-            <Skeleton className="h-4 w-[200px]" />
-            <Skeleton className="h-16 w-16 rounded-full" />
-          </div>
+          <QuestionsTrailSkeleton />
         ) : (
           questions.length > 0 ? (
             <QuestionsTrail userType={"student"} questions={questions} />

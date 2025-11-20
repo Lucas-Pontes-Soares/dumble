@@ -5,7 +5,7 @@ import ClassItem from "@/components/class-item";
 import ClassItemSkeleton from "@/components/class-item-skeleton";
 import { verifyJWTToken } from "@/verifyJWTToken";
 import { useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
@@ -99,11 +99,27 @@ export default function TeachersClasses() {
     }
   }
 
+  async function handleLogout() {
+    localStorage.removeItem("JWTToken");
+    toast.success("Logged out successfully.");
+    navigate("/login");
+  }
+
   return (
     <div className="min-h-screen">
       <div className="w-full">
-        <div className="fixed top-0 left-0 right-0 z-50 bg-background space-y-4 pt-4 pb-2 text-center border-b-2 dark:border-b-gray-800 white:border-b-gray-400">
-          <h1 className="font-nunito text-xl font-extrabold">Turmas</h1>
+        <div className="fixed top-0 left-0 right-0 z-50 bg-background text-center border-b-2 dark:border-b-gray-800 white:border-b-gray-400">
+          <div className="w-full max-w-2xl mx-auto p-4 flex items-center gap-8">
+            <div className="flex-none cursor-pointer" onClick={() => handleLogout()}>
+                <X className="text-[#AFAFAF]"/>
+            </div>
+            <div className="flex-grow flex justify-center w-full">
+                <h1 className="font-nunito text-xl font-extrabold">Turmas</h1>
+            </div>
+            <div className="flex-none cursor-pointer invisible" onClick={() => handleLogout()}>
+                <X className="text-[#AFAFAF]"/>
+            </div>
+          </div>
         </div>
         <div className="w-full max-w-2xl mx-auto pt-20 pb-20 p-6">
           <div className="w-full mx-auto">

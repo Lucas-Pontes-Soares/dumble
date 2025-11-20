@@ -10,6 +10,7 @@ import { verifyJWTToken } from "@/verifyJWTToken";
 import { Spinner } from "@/components/ui/spinner"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import api from "@/apiService";
+import { verifyClass } from "@/verifyClass";
 
 export default function TeachersFile() {
   const inputFileRef = useRef<HTMLInputElement>(null);
@@ -21,19 +22,31 @@ export default function TeachersFile() {
   const [archiveToDelete, setArchiveToDelete] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [actuallyClass, setActuallyClass] = useState<any>(null);
+  
+  const { class_id } = useParams<{ class_id: string }>();
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const decodedToken = verifyJWTToken("teacher", navigate);
-    if (decodedToken) {
-      setDecodedToken(decodedToken);
-      const token = localStorage.getItem("JWTToken");
-      setJwtToken(token);
-      fetchActuallyClasses(token);
-      fetchArchives(token);
-    }
-  }, [navigate]);
+    const run = async () => {
+      const decodedToken = verifyJWTToken("teacher", navigate);
+
+      if (decodedToken) {
+        setDecodedToken(decodedToken);
+        const token = localStorage.getItem("JWTToken");
+        setJwtToken(token);
+
+        const isValid = await verifyClass(navigate, class_id, decodedToken);
+
+        if (isValid) {
+          fetchActuallyClasses(token);
+          fetchArchives(token);
+        }
+      }
+    };
+
+    run();
+  }, [navigate, class_id]);
 
   async function fetchArchives(token: string | null) {
     if (!class_id || !token) return;
@@ -65,8 +78,6 @@ export default function TeachersFile() {
       toast.error(error.response?.data?.message || "Erro ao deletar arquivo.");
     }
   }
-
-  const { class_id } = useParams<{ class_id: string }>();
 
   function handleUpload(){
     inputFileRef.current?.click();

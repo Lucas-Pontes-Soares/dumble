@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { verifyJWTToken } from "@/verifyJWTToken";
 import api from "@/apiService";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
+import { verifyClass } from "@/verifyClass";
 
 export default function StudentsRanking() {
   const { class_id } = useParams<{ class_id: string }>();
@@ -21,13 +22,23 @@ export default function StudentsRanking() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const decodedToken = verifyJWTToken("student", navigate);
-    if (decodedToken) {
-      setDecodedToken(decodedToken);
-      const token = localStorage.getItem("JWTToken");
-      setJwtToken(token);
-      fetchClassAndRankingData(token);
-    }
+    const run = async () => {
+      const decodedToken = verifyJWTToken("student", navigate);
+
+      if (decodedToken) {
+        setDecodedToken(decodedToken);
+        const token = localStorage.getItem("JWTToken");
+        setJwtToken(token);
+
+        const isValid = await verifyClass(navigate, class_id, decodedToken);
+
+        if (isValid) {
+          fetchClassAndRankingData(token);
+        }
+      }
+    };
+
+    run();
   }, [navigate, class_id]);
 
   async function fetchClassAndRankingData(token: string | null) {

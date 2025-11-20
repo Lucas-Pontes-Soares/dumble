@@ -1,12 +1,11 @@
 import TeachersNavigation from "@/components/teachers-navigation";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { verifyJWTToken } from "@/verifyJWTToken";
 import { ChevronDownIcon, Eye, EyeOff, LogOut, Pen, Upload } from "lucide-react";
 import { useEffect, useState, useCallback, useRef } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import api from "@/apiService";
 import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -14,8 +13,10 @@ import { Calendar } from "@/components/ui/calendar";
 import { format, set } from "date-fns";
 import { ModeToggle } from "@/components/mode-toggle";
 import { TeacherPicture } from "@/components/teacher-picture";
+import { verifyClass } from "@/verifyClass";
 
 export default function TeachersProfile() {
+  const { class_id } = useParams<{ class_id: string }>();
   const [teacherId, setTeacherId] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -41,7 +42,7 @@ export default function TeachersProfile() {
 
   const navigate = useNavigate();
 
-  const fetchTeacherData = useCallback(async () => {
+  const fetchTeacherData = useCallback(async (jwtToken: string | null, decodedToken: { id: string; role: string; exp: number } | null) => {
     if (decodedToken && jwtToken) {
       try {
         const response = await api.get<any>(`/teachers/${decodedToken.id}`, {
@@ -92,22 +93,33 @@ export default function TeachersProfile() {
   }, [decodedToken, jwtToken]);
 
   useEffect(() => {
-    const decoded = verifyJWTToken("teacher", navigate);
-    if (decoded) {
-      setDecodedToken(decoded);
-      const token = localStorage.getItem("JWTToken");
-      setJwtToken(token);
-    }
-  }, [navigate]);
+    const run = async () => {
+      const decodedToken = verifyJWTToken("teacher", navigate);
+
+      if (decodedToken) {
+        setDecodedToken(decodedToken);
+        const token = localStorage.getItem("JWTToken");
+        setJwtToken(token);
+
+        const isValid = await verifyClass(navigate, class_id, decodedToken);
+
+        if (isValid) {
+          fetchTeacherData(token, decodedToken);
+        }
+      }
+    };
+
+    run();
+  }, [navigate, class_id]);
 
   useEffect(() => {
     if (decodedToken && jwtToken) {
-      fetchTeacherData();
+      fetchTeacherData(jwtToken, decodedToken);
     }
   }, [decodedToken, jwtToken, fetchTeacherData]);
 
   const handleCancelEdit = () => {
-    fetchTeacherData();
+    fetchTeacherData(jwtToken, decodedToken);
     setIsEditing(false);
     setIsVisibleChangePassword(false);
   };
@@ -138,7 +150,7 @@ export default function TeachersProfile() {
         setConfirmPassword("");
         setIsVisibleChangePassword(false);
         setIsEditing(false);
-        fetchTeacherData();
+        fetchTeacherData(jwtToken, decodedToken);
       } else {
         toast.error("Failed to update profile.");
       }
@@ -164,7 +176,7 @@ export default function TeachersProfile() {
 
       if (response.data.success) {
         toast.success("Profile picture updated successfully!");
-        fetchTeacherData();
+        fetchTeacherData(jwtToken, decodedToken);
       } else {
         toast.error("Failed to update profile picture.");
       }
@@ -181,7 +193,7 @@ export default function TeachersProfile() {
 
   return (
       <div className="font-nunito min-h-screen pb-24">
-        <div className="w-full bg-[#BF8FFF]">
+        <div className="w-full bg-[#BF8FFF] dark:bg-[#9459e2] pb-4">
           <div className="flex justify-end items-end px-6 pt-6 max-w-2xl mx-auto gap-2">
             {!isEditing ? (
               <Button variant="outline" size="icon" className="dark:text-white dark:bg-black" onClick={() => setIsEditing(true)}><Pen /></Button>
@@ -199,7 +211,7 @@ export default function TeachersProfile() {
           <div className="flex flex-col items-center gap-4 w-full">
             <TeacherPicture picture={picture} teacher_id={teacherId} teacher_name={name} className="h-48 w-48 my-6 max-w-2xl mx-auto" />
             {isEditing && (
-              <div className="relative -mt-12 mb-6">
+              <div className="relative -mt-12">
                 <Input
                   ref={fileInputRef}
                   id="picture-upload"

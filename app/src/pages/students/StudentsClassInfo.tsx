@@ -10,6 +10,7 @@ import StudentsNavigation from "@/components/students-navigation";
 import CurrentClass from "@/components/current-class";
 import { TeacherPicture } from "@/components/teacher-picture";
 import getAvatarColor from "@/getAvatarColor";
+import { verifyClass } from "@/verifyClass";
 
 export default function StudentsClassInfo() {
   const [students, setStudents] = useState<Students[]>([]);
@@ -22,14 +23,24 @@ export default function StudentsClassInfo() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const decodedToken = verifyJWTToken("student", navigate);
-    if (decodedToken) {
-      setDecodedToken(decodedToken);
-      const token = localStorage.getItem("JWTToken");
-      setJwtToken(token);
-      getClassInfo(token);
-    }
-  }, [navigate]);
+    const run = async () => {
+      const decodedToken = verifyJWTToken("student", navigate);
+
+      if (decodedToken) {
+        setDecodedToken(decodedToken);
+        const token = localStorage.getItem("JWTToken");
+        setJwtToken(token);
+
+        const isValid = await verifyClass(navigate, class_id, decodedToken);
+
+        if (isValid) {
+          await getClassInfo(token);
+        }
+      }
+    };
+
+    run();
+  }, [navigate, class_id]);
 
   async function getClassInfo(token: string | null) {
     try {
@@ -69,7 +80,7 @@ export default function StudentsClassInfo() {
               <div className="py-4">
                   <div className="flex items-center gap-4">
                       <Avatar className="h-32 w-32">
-                          <AvatarFallback className={`${getAvatarColor(classInfo.id.toString())} text-white`}>{getInitials(classInfo.title)}</AvatarFallback>
+                          <AvatarFallback className={`text-4xl ${getAvatarColor(classInfo.id.toString())} text-white`}>{getInitials(classInfo.title)}</AvatarFallback>
                       </Avatar>
                       <div className="w-full space-y-2">
                           <p className="mb-2 text-xl font-bold">{classInfo.title}</p>

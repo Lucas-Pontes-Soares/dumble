@@ -25,16 +25,19 @@ export async function verifyClass(
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    // 2. Se for um aluno, verificar se ele está matriculado na classe
+    // 2. Se for um aluno, verificar se ele está matriculado
     if (decodedToken.role === "student") {
       await api.get<any>(`/classes/${class_id}/students`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
     }
+
+    return true;
+
   } catch (error: any) {
     console.error("Falha na verificação da turma:", error);
     toast.error("Turma não encontrada ou não matriculada.");
     navigate(`/${decodedToken.role}s/classes`);
+    return false;   // <<< IMPORTANTE!
   }
 }

@@ -12,6 +12,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 import { Trash2 } from "lucide-react";
+import { verifyClass } from "@/verifyClass";
 
 function transformDataForComponent(questionType: string, data: any): any {
     if (!data) {
@@ -80,16 +81,24 @@ export default function TeachersEditQuestion() {
   };
 
   useEffect(() => {
-    const decodedToken = verifyJWTToken("teacher", navigate);
-    if (decodedToken) {
-      setDecodedToken(decodedToken);
-      const token = localStorage.getItem("JWTToken");
-      setJwtToken(token);
-      if (question_id && token) {
-        fetchQuestionData(question_id, token);
+    const run = async () => {
+      const decodedToken = verifyJWTToken("teacher", navigate);
+
+      if (decodedToken) {
+        setDecodedToken(decodedToken);
+        const token = localStorage.getItem("JWTToken");
+        setJwtToken(token);
+
+        const isValid = await verifyClass(navigate, class_id, decodedToken);
+
+        if (isValid && question_id && token) {
+          fetchQuestionData(question_id, token);
+        }
       }
-    }
-  }, [navigate, question_id]);
+    };
+
+    run();
+  }, [navigate, class_id, question_id]);
 
   async function fetchQuestionData(id: string, token: string) {
     setIsLoading(true);

@@ -20,10 +20,19 @@ interface ItemQuestionTrailProps {
   userType: 'teacher' | 'student';
 }
 
+const DUMBLE_IMAGES = [
+  '/DumbleBook.png',
+  '/DumbleJump.png',
+  '/DumbleLovesick.png',
+  '/DumbleCruzado.png'
+];
+
 export default function ItemQuestionTrail({ question, userType }: ItemQuestionTrailProps) {
   const { class_id } = useParams<{ class_id: string }>();
   const [open, setOpen] = useState(false);
   const [jwtToken, setJwtToken] = useState<string | null>(null);
+  const [randomImage, setRandomImage] = useState<string>('/DumblePosition1.png'); // Default image
+  const [lastImageIndex, setLastImageIndex] = useState<number>(-1);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,6 +41,22 @@ export default function ItemQuestionTrail({ question, userType }: ItemQuestionTr
       setJwtToken(token);
     }
   }, []);
+
+  useEffect(() => {
+    if (question.position === 3) {
+      selectRandomImage();
+    }
+  }, [question.id, question.position]); // Re-select image if question changes
+
+  function selectRandomImage() {
+    let newIndex: number;
+    do {
+      newIndex = Math.floor(Math.random() * DUMBLE_IMAGES.length);
+    } while (newIndex === lastImageIndex);
+
+    setRandomImage(DUMBLE_IMAGES[newIndex]);
+    setLastImageIndex(newIndex);
+  }
 
   function getPositionClass() {
     if (question.position === 2 && question.side === 'right') return 'ml-22';
@@ -139,7 +164,7 @@ export default function ItemQuestionTrail({ question, userType }: ItemQuestionTr
 
       {question.position === 3 ? (
         <img 
-          src="/DumblePosition1.png" alt="Mascote Dumble" 
+          src={randomImage} alt="Mascote Dumble" 
           className={`absolute ${question.side === 'right' ? 'right-34' : 'left-34'} -top-6 min-w-30 ${question.status === 'locked' ? 'grayscale brightness-[1.60]' : null}`} 
         /> 
       ) : (

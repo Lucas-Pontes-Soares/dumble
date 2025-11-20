@@ -6,13 +6,14 @@ import { Label } from "@/components/ui/label";
 import { verifyJWTToken } from "@/verifyJWTToken";
 import { ChevronDownIcon, Eye, EyeOff, LogOut, Pen, Upload } from "lucide-react";
 import { useEffect, useState, useCallback, useRef } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import api from "@/apiService";
 import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { ModeToggle } from "@/components/mode-toggle";
+import { verifyClass } from "@/verifyClass";
 
 export default function StudentsProfile() {
   const [studentId, setStudentId] = useState("");
@@ -23,6 +24,7 @@ export default function StudentsProfile() {
   const [picture, setPicture] = useState("");
   const [createdAt, setCreatedAt] = useState("");
   const [updatedAt, setUpdatedAt] = useState("");
+  const { class_id } = useParams<{ class_id: string }>();
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -40,12 +42,32 @@ export default function StudentsProfile() {
 
   const navigate = useNavigate();
 
-  const fetchStudentData = useCallback(async () => {
-    if (decodedToken && jwtToken) {
+  useEffect(() => {
+    const run = async () => {
+      const decodedToken = verifyJWTToken("student", navigate);
+
+      if (decodedToken) {
+        setDecodedToken(decodedToken);
+        const token = localStorage.getItem("JWTToken");
+        setJwtToken(token);
+
+        const isValid = await verifyClass(navigate, class_id, decodedToken);
+
+        if (isValid) {
+          await fetchStudentData(token, decodedToken);
+        }
+      }
+    };
+
+    run();
+  }, [navigate, class_id]);
+
+  const fetchStudentData = useCallback(async (token: string | null, decodedToken: { id: string; role: string; exp: number } | null) => {
+    if (decodedToken && token) {
       try {
         const response = await api.get<any>(`/students/${decodedToken.id}`, {
           headers: {
-            Authorization: `Bearer ${jwtToken}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         if (response.data.success) {
@@ -90,23 +112,8 @@ export default function StudentsProfile() {
     }
   }, [decodedToken, jwtToken]);
 
-  useEffect(() => {
-    const decoded = verifyJWTToken("student", navigate);
-    if (decoded) {
-      setDecodedToken(decoded);
-      const token = localStorage.getItem("JWTToken");
-      setJwtToken(token);
-    }
-  }, [navigate]);
-
-  useEffect(() => {
-    if (decodedToken && jwtToken) {
-      fetchStudentData();
-    }
-  }, [decodedToken, jwtToken, fetchStudentData]);
-
   const handleCancelEdit = () => {
-    fetchStudentData();
+    fetchStudentData(jwtToken, decodedToken);
     setIsEditing(false);
     setIsVisibleChangePassword(false);
   };
@@ -137,7 +144,7 @@ export default function StudentsProfile() {
         setConfirmPassword("");
         setIsVisibleChangePassword(false);
         setIsEditing(false);
-        fetchStudentData();
+        fetchStudentData(jwtToken, decodedToken);
       } else {
         toast.error("Failed to update profile.");
       }
@@ -163,7 +170,7 @@ export default function StudentsProfile() {
 
       if (response.data.success) {
         toast.success("Profile picture updated successfully!");
-        fetchStudentData();
+        fetchStudentData(jwtToken, decodedToken);
       } else {
         toast.error("Failed to update profile picture.");
       }
@@ -180,7 +187,7 @@ export default function StudentsProfile() {
 
   return (
       <div className="font-nunito min-h-screen pb-24">
-        <div className="w-full bg-[#BF8FFF] dark:bg-[#9459e2]">
+        <div className="w-full bg-[#BF8FFF] dark:bg-[#9459e2] pb-4">
           <div className="flex justify-end items-end px-6 pt-6 max-w-2xl mx-auto gap-2">
             {!isEditing ? (
               <Button variant="outline" size="icon" className="dark:text-white dark:bg-black" onClick={() => setIsEditing(true)}><Pen /></Button>
@@ -198,7 +205,7 @@ export default function StudentsProfile() {
           <div className="flex flex-col items-center gap-4 w-full">
             <StudentPicture picture={picture} student_id={studentId} student_name={name} className="h-48 w-48 my-6 max-w-2xl mx-auto" />
             {isEditing && (
-              <div className="relative -mt-12 mb-6">
+              <div className="relative -mt-12">
                 <Input
                   ref={fileInputRef}
                   id="picture-upload"

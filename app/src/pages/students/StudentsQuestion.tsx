@@ -9,6 +9,7 @@ import { verifyJWTToken } from "@/verifyJWTToken";
 import api from "@/apiService";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
+import { verifyClass } from "@/verifyClass";
 
 export default function StudentsQuestion() {
   const { class_id, question_id } = useParams<{ class_id: string; question_id: string }>();
@@ -26,13 +27,25 @@ export default function StudentsQuestion() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const decodedToken = verifyJWTToken("student", navigate);
-    if (decodedToken) {
-      setDecodedToken(decodedToken);
-      const token = localStorage.getItem("JWTToken");
-      setJwtToken(token);
-      checkIfAnswered(token, decodedToken.id);
-    }
+    const run = async () => {
+      const decodedToken = verifyJWTToken("student", navigate);
+
+      if (decodedToken) {
+        setDecodedToken(decodedToken);
+        const token = localStorage.getItem("JWTToken");
+        setJwtToken(token);
+
+        const isValid = await verifyClass(navigate, class_id, decodedToken);
+
+        if (isValid) {
+          await checkIfAnswered(token, decodedToken.id);
+          fetchQuestionData(token);
+          fetchAllQuestions(token);
+        }
+      }
+    };
+
+    run();
   }, [navigate, class_id, question_id]);
 
   async function checkIfAnswered(token: string | null, studentId: string) {
@@ -51,9 +64,6 @@ export default function StudentsQuestion() {
     } catch (error) {
       console.error("Failed to check if question was answered:", error);
     }
-
-    fetchQuestionData(token);
-    fetchAllQuestions(token);
   }
 
   async function fetchAllQuestions(token: string | null) {

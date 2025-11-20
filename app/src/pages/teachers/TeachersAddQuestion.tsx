@@ -21,6 +21,7 @@ import api from "@/apiService";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { verifyClass } from "@/verifyClass";
 
 export default function TeachersAddQuestion() {
   const [questionType, setQuestionType] = useState<string | null>(null)
@@ -40,14 +41,25 @@ export default function TeachersAddQuestion() {
     setSubmitAction(null);
   };
 
-  useEffect(() => {
-    const decodedToken = verifyJWTToken("teacher", navigate);
-    if (decodedToken) {
-      setDecodedToken(decodedToken);
-      const token = localStorage.getItem("JWTToken");
-      setJwtToken(token);
-    }
-  }, [navigate]);
+   useEffect(() => {
+    const run = async () => {
+      const decodedToken = verifyJWTToken("teacher", navigate);
+
+      if (decodedToken) {
+        setDecodedToken(decodedToken);
+        const token = localStorage.getItem("JWTToken");
+        setJwtToken(token);
+
+        const isValid = await verifyClass(navigate, class_id, decodedToken);
+
+        if (isValid) {
+          
+        }
+      }
+    };
+
+    run();
+  }, [navigate, class_id]);
 
   async function handleCreateSuggestion(){
     setIsLoading(true);
@@ -86,8 +98,24 @@ export default function TeachersAddQuestion() {
 
       const suggestionData = JSON.parse(suggestionString);
       
-      setQuestionType(suggestionData.question_type);
-      setSuggestion(suggestionData.suggestion);
+      let inferredQuestionType = '';
+      if (suggestionData.options) {
+        inferredQuestionType = 'multiple-choice';
+      } else if (suggestionData.correct_answers) {
+        inferredQuestionType = 'fill-in-the-blank';
+      } else if (suggestionData.pairs) {
+        inferredQuestionType = 'matching-pairs';
+      }
+
+      if (inferredQuestionType) {
+        if (questionType === null || questionType === 'none') {
+            setQuestionType(inferredQuestionType);
+        }
+        setSuggestion(suggestionData);
+      } else {
+        toast.error("Could not determine question type from AI suggestion.");
+      }
+
     } catch (error: any) {
       console.error("Erro na requisição:", error);
       if (error instanceof SyntaxError) {
@@ -182,7 +210,7 @@ export default function TeachersAddQuestion() {
 
   return (
     <div className="w-full">
-     <div className="fixed top-0 left-0 right-0 z-50 bg-background text-center border-b-2 dark:border-b-gray-800 white:border-b-gray-400">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-background text-center border-b-2 dark:border-b-gray-800 white:border-b-gray-400">
          <div className="w-full max-w-2xl mx-auto p-4 flex items-center gap-8">
             <div className="flex-none cursor-pointer" onClick={() => setOpen(true)}>
                 <X className="text-[#AFAFAF]"/>

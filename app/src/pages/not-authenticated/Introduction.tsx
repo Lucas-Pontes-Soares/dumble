@@ -28,7 +28,7 @@ export default function Introduction() {
           </div>
 
           <div className="text-center mb-20">
-            <span className="font-bold text-2xl">A maneira divertida e eficaz de aprender tecnologia</span>
+            <span className="font-bold text-2xl">Aprenda de forma divertida e eficaz</span>
           </div>
 
           <div>

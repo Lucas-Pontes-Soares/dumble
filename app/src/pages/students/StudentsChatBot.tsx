@@ -26,6 +26,7 @@ import { Spinner } from "@/components/ui/spinner";
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import ConversorMDtoHTML from "@/ConversorMDtoHTML";
+import { verifyClass } from "@/verifyClass";
 
 
 export default function StudentsChatBot() {
@@ -42,15 +43,25 @@ export default function StudentsChatBot() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const decodedToken = verifyJWTToken("student", navigate);
-    if (decodedToken) {
-      setDecodedToken(decodedToken);
-      const token = localStorage.getItem("JWTToken");
-      setJwtToken(token);
-      fetchActuallyClasses(token);
-      getChatBotMessages(token, decodedToken);
-    }
-  }, [navigate]);
+    const run = async () => {
+      const decodedToken = verifyJWTToken("student", navigate);
+
+      if (decodedToken) {
+        setDecodedToken(decodedToken);
+        const token = localStorage.getItem("JWTToken");
+        setJwtToken(token);
+
+        const isValid = await verifyClass(navigate, class_id, decodedToken);
+
+        if (isValid) {
+          await fetchActuallyClasses(token);
+          await getChatBotMessages(token, decodedToken);
+        }
+      }
+    };
+  
+    run();
+  }, [navigate, class_id]);
 
   async function getChatBotMessages(token: string | null, decodedToken: { id: string; role: string; exp: number } | null) {
     if (!class_id || !token) return;
@@ -201,8 +212,7 @@ export default function StudentsChatBot() {
           <CardHeader className="flex-shrink-0 flex flex-row items-center border-b">
             <div className="flex items-center gap-4">
               <Avatar className="border">
-                <AvatarImage src="/avatars/01.png" alt="Image" />
-                <AvatarFallback>D</AvatarFallback>
+                <AvatarImage src="/DumbleIcon.png" alt="Image" />
               </Avatar>
               <div className="flex flex-col gap-0.5">
                 <p className="text-sm leading-none font-medium">DumbleAI</p>
