@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { ModeToggle } from "@/components/mode-toggle";
 import { verifyClass } from "@/verifyClass";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function StudentsProfile() {
   const [studentId, setStudentId] = useState("");
@@ -39,6 +40,7 @@ export default function StudentsProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [open, setOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
 
@@ -108,6 +110,8 @@ export default function StudentsProfile() {
         }
       } catch (error: any) {
         toast.error(error.response?.data?.message || "An error occurred.");
+      } finally{
+        setIsLoading(false);
       }
     }
   }, [decodedToken, jwtToken]);
@@ -227,170 +231,188 @@ export default function StudentsProfile() {
         </div>
         <div className="flex flex-col items-center gap-4 mt-8">
           <div className="w-full px-6 max-w-2xl mx-auto">
-            {isEditing ? (
-              <p className="text-muted-foreground">Ultima atualização em {updatedAt}</p>
-            ): null}
-            <div>
-              {isEditing ? (
+            {isLoading ? (
+              <div className="grid gap-4">
+                <Skeleton className="w-40 h-8" />
+                <Skeleton className="w-60 h-8" />
+                <Skeleton className="w-40 h-8" />
+              </div>
+            ) : (
+              <div>
+                {isEditing ? (
+                  <p className="text-muted-foreground">
+                    Ultima atualização em {updatedAt}
+                  </p>
+                ) : null}
+
                 <div>
-                  <Label htmlFor="name" className="mt-4 mb-2">Nome</Label>
-                  <Input
-                    id="name"
-                    type="name"
-                    placeholder="Nome"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
-                  />
+                  {isEditing ? (
+                    <div>
+                      <Label htmlFor="name" className="mt-4 mb-2">Nome</Label>
+                      <Input
+                        id="name"
+                        type="name"
+                        placeholder="Nome"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="font-bold text-xl">{name}</p>
+                      <p className="text-muted-foreground">
+                        {email} - Entrou em {createdAt}
+                      </p>
+                    </div>
+                  )}
                 </div>
-              ) : (
+
                 <div>
-                  <p className="font-bold text-xl">{name}</p>
-                  <p className="text-muted-foreground">{email} - Entrou em {createdAt}</p>
+                  {isEditing ? (
+                    <div>
+                      <Label htmlFor="email" className="mt-4 mb-2">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
+                      />
+                    </div>
+                  ) : null}
                 </div>
-              )}
-            </div>
 
-            <div>
-              {isEditing ? (
                 <div>
-                <Label htmlFor="email" className="mt-4 mb-2">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
-                />
+                  <Label htmlFor="birthday" className="mt-4 mb-2">Data de Nascimento</Label>
+                  {isEditing ? (
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger asChild className="bg-[#F7F7F7] border-[#E5E5E5]">
+                        <Button
+                          variant="outline"
+                          id="birthday"
+                          className="w-full justify-between font-normal"
+                        >
+                          {birthday ? birthday.toLocaleDateString() : <span>Selecione uma data</span>}
+                          <ChevronDownIcon className="h-4 w-4" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={birthday}
+                          captionLayout="dropdown"
+                          onSelect={(date) => {
+                            setBirthday(date);
+                            setOpen(false);
+                          }}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  ) : (
+                    <p>{birthdayString}</p>
+                  )}
                 </div>
-              ) : (
-                null
-              )}
-            </div>
 
-            <div>
-              <Label htmlFor="birthday" className="mt-4 mb-2">Data de Nascimento</Label>
-              {isEditing ? (
-                <Popover open={open} onOpenChange={setOpen}>
-                  <PopoverTrigger asChild className="bg-[#F7F7F7] border-[#E5E5E5]">
-                    <Button
-                      variant="outline"
-                      id="birthday"
-                      className="w-full justify-between font-normal"
-                    >
-                      {birthday ? birthday.toLocaleDateString() : <span>Selecione uma data</span>}
-                      <ChevronDownIcon className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={birthday}
-                      captionLayout="dropdown"
-                      onSelect={(date) => {
-                        setBirthday(date);
-                        setOpen(false);
-                      }}
-                    />
-                  </PopoverContent>
-                </Popover>
-              ) : (
-                <p>{birthdayString}</p>
-              )}
-            </div>
+                <div>
+                  {isEditing ? (
+                    <div className="mt-4 mb-4">
+                      <Button
+                        variant={"outline"}
+                        onClick={() => setIsVisibleChangePassword(!isVisibleChangePassword)}
+                      >
+                        Trocar Senha
+                      </Button>
+                    </div>
+                  ) : null}
 
-            <div>
-              {isEditing ? (
-                <div className="mt-4 mb-4">
-                  <Button variant={"outline"} onClick={() => setIsVisibleChangePassword(!isVisibleChangePassword)}>Trocar Senha</Button>
+                  {isVisibleChangePassword ? (
+                    <div className="pb-10">
+                      <Label htmlFor="password" className="my-2">Senha Atual</Label>
+                      <div className="relative">
+                        <Input
+                          id="password"
+                          type={showCurrentPassword ? "text" : "password"}
+                          placeholder="Senha"
+                          value={currentPassword}
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                          className="pr-10 bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          onClick={() => setShowCurrentPassword((prev) => !prev)}
+                        >
+                          {showCurrentPassword ? (
+                            <EyeOff className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
+                          )}
+                          <span className="sr-only">Toggle password visibility</span>
+                        </Button>
+                      </div>
+
+                      <Label htmlFor="password" className="my-2">Senha Nova</Label>
+                      <div className="relative">
+                        <Input
+                          id="password"
+                          type={showNewPassword ? "text" : "password"}
+                          placeholder="Senha"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          className="pr-10 bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          onClick={() => setShowNewPassword((prev) => !prev)}
+                        >
+                          {showNewPassword ? (
+                            <EyeOff className="h-4 w-4" aria-hidden="true" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
+                          )}
+                          <span className="sr-only">Toggle password visibility</span>
+                        </Button>
+                      </div>
+
+                      <Label htmlFor="password" className="my-2">Confirme a Senha</Label>
+                      <div className="relative">
+                        <Input
+                          id="password"
+                          type={showConfirmPassword ? "text" : "password"}
+                          placeholder="Senha"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          className="pr-10 bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          onClick={() => setShowConfirmPassword((prev) => !prev)}
+                        >
+                          {showConfirmPassword ? (
+                            <EyeOff className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
+                          )}
+                          <span className="sr-only">Toggle password visibility</span>
+                        </Button>
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
-              ) : null}
-              {isVisibleChangePassword ? (
-                <div className="pb-10">
-                  <Label htmlFor="password" className="my-2">Senha Atual</Label>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      type={showCurrentPassword ? "text" : "password"}
-                      placeholder="Senha"
-                      value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
-                      className="pr-10 bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() => setShowCurrentPassword((prev) => !prev)} 
-                    >
-                      {showCurrentPassword ? (
-                        <EyeOff className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
-                      )}
-                      <span className="sr-only">Toggle password visibility</span>
-                    </Button>
-                  </div>
-
-                  <Label htmlFor="password" className="my-2">Senha Nova</Label>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      type={showNewPassword ? "text" : "password"}
-                      placeholder="Senha"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      className="pr-10 bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() => setShowNewPassword((prev) => !prev)} 
-                    >
-                      {showNewPassword ? (
-                        <EyeOff className="h-4 w-4" aria-hidden="true" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
-                      )}
-                      <span className="sr-only">Toggle password visibility</span>
-                    </Button>
-                  </div>
-
-                  <Label htmlFor="password" className="my-2">Confirme a Senha</Label>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      type={showConfirmPassword ? "text" : "password"}
-                      placeholder="Senha"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="pr-10 bg-[#F7F7F7] border-[#E5E5E5] dark:border-[#3C3C3C]"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() => setShowConfirmPassword((prev) => !prev)} 
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-purple-predominant" aria-hidden="true" />
-                      )}
-                      <span className="sr-only">Toggle password visibility</span>
-                    </Button>
-                  </div>
-                </div>
-              ) : null}
-            </div>
+              </div>
+            )}
           </div>
       </div>
-
       <StudentsNavigation activePage="profile"/>
     </div>
   )

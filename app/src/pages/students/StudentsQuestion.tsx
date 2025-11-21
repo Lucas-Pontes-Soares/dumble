@@ -154,6 +154,9 @@ export default function StudentsQuestion() {
         const nextQuestion = questions[currentIndex + 1];
         navigate(`/students/classes/${class_id}/questions/${nextQuestion.id}`);
       } else {
+        const audio = new Audio("/final-sound.mp3");
+        audio.play();
+
         navigate(`/students/classes/${class_id}`);
       }
       setShowResults(false);

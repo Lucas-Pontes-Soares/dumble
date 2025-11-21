@@ -71,9 +71,9 @@ export const chatbotMessageCreate = async (req: AuthenticatedRequest, res: Respo
         const result = await db.query('SELECT content FROM archives WHERE class_id = $1', [class_id]);
 
         if (result.rowCount === 0) {
-            return res.status(404).json({ success: false, message: 'Archives not found' });
+            console.log("Error: Archives not found");
         }
-
+        
         let archivesContent = '\n# Files Contexts\n';
         result.rows.forEach((row: any, index: number) => {
             archivesContent += `\n## Archives ${index + 1}\n${row.content}`;

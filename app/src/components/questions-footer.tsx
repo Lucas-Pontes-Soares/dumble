@@ -32,9 +32,15 @@ export default function QuestionsFooter({ state, onContinue, allSelected }: Ques
     if (state === 'correct') {
       const randomIndex = Math.floor(Math.random() * correctPhrases.length);
       setDisplayPhrase(correctPhrases[randomIndex]);
+
+      const audio = new Audio("/correct-sound.mp3");
+      audio.play();
     } else if (state === 'wrong') {
       const randomIndex = Math.floor(Math.random() * wrongPhrases.length);
       setDisplayPhrase(wrongPhrases[randomIndex]);
+
+      const audio = new Audio("/wrong-sound.mp3");
+      audio.play();
     } else {
       setDisplayPhrase('');
     }

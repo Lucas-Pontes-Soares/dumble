@@ -63,8 +63,13 @@ export default function StudentsClasses() {
           );
           if (allClassesResponse.data.success) {
             const allClasses = allClassesResponse.data.classes;
-            const enrolledIds = new Set(enrolledResponse.data.classes.map((c: Class) => c.id));
-            const filteredOtherClasses = allClasses.filter((c: Class) => !enrolledIds.has(c.id));
+            let filteredOtherClasses;
+            if(enrolledResponse.data.success) {
+              const enrolledIds = new Set(enrolledResponse.data.classes.map((c: Class) => c.id));
+              filteredOtherClasses = allClasses.filter((c: Class) => !enrolledIds.has(c.id));
+            } else {
+              filteredOtherClasses = allClasses;
+            }
             setOtherClasses(filteredOtherClasses);
           }
 

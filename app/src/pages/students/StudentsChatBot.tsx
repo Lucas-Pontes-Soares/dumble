@@ -33,7 +33,9 @@ export default function StudentsChatBot() {
   const { class_id } = useParams<{ class_id: string }>();
   const [decodedToken, setDecodedToken] = useState<{ id: string; role: string; exp: number } | null>(null);
   const [jwtToken, setJwtToken] = useState<string | null>(null);
-  const [messages, setMessages] = useState<{ role: string; content: string; time: string }[]>([]);
+  const [messages, setMessages] = useState<{ role: string; content: string; time: string }[]>([
+    { role: "agent", content: "Olá, seja bem-vindo! Eu sou o DumbleAI, tenho acesso ao conteúdo do seu professor. Qualquer dúvida, me pergunte!", time: "" }
+  ]);
   const [input, setInput] = useState("");
   const inputLength = input.trim().length;
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -100,7 +102,9 @@ export default function StudentsChatBot() {
             }
           ];
         });
-        setMessages(fetchedMessages);
+        setMessages(prev => [prev[0], ...fetchedMessages]);
+      } else {
+        setMessages(prev => [prev[0]]);
       }
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Erro ao buscar mensagens.");
@@ -239,7 +243,7 @@ export default function StudentsChatBot() {
                     <span className="prose prose-invert text-black text-sm"><ConversorMDtoHTML message={message.content} /></span>
                   )}
 
-                  <div className="text-right text-black mt-1 text-xs">{message.time}</div>
+                  {message.time && <div className="text-right text-black mt-1 text-xs">{message.time}</div>}
                 </div>
               ))}
               <div ref={messagesEndRef} />
@@ -262,7 +266,7 @@ export default function StudentsChatBot() {
               <Button
                 type="submit"
                 size="icon"
-                className="absolute top-1/2 right-2 size-6 -translate-y-1/2 rounded-full bg-purple-predominant dark:text-white"
+                className="absolute top-1/2 right-2 size-6 -translate-y-1/2 rounded-full bg-purple-predominant dark:text-white hover:bg-purple-700"
                 disabled={inputLength === 0 || isLoading}
               >
                 {isLoading ? <Spinner className="size-3.5"/> : <ArrowUpIcon className="size-3.5" />}

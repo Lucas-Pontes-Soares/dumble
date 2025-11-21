@@ -6,7 +6,6 @@ import { columns, StudentsRank } from "../../components/students-ranking-columns
 import { useEffect, useState } from "react";
 import { verifyJWTToken } from "@/verifyJWTToken";
 import api from "@/apiService";
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
 import { verifyClass } from "@/verifyClass";
 
 export default function StudentsRanking() {
@@ -106,19 +105,6 @@ export default function StudentsRanking() {
     }
   }
 
-  const progressChartData = [
-    { name: 'Respondido', value: averageAnswered },
-    { name: 'Não Respondido', value: 1 - averageAnswered },
-  ];
-
-  const correctnessChartData = [
-    { name: 'Correto', value: averageCorrectness },
-    { name: 'Incorreto', value: 1 - averageCorrectness },
-  ];
-
-  const COLORS_PROGRESS = ['#00C49F', '#FFBB28'];
-  const COLORS_CORRECTNESS = ['#0088FE', '#FF8042'];
-
   return (
     <div>
       <CurrentClass class_id={`${class_id}`} title={actuallyClass?.title} userType="student" />
@@ -128,56 +114,6 @@ export default function StudentsRanking() {
           <span className="text-gray-600">Total de alunos: {data.length}</span>
         </div>
         <StudentsRankingDataTable columns={columns} data={data} />
-
-        <div className="py-8 flex flex-col md:flex-row gap-8">
-          {/* Gráfico 1 */}
-          <div className="flex-1">
-            <h2 className="text-xl font-bold text-center mb-4">Progresso da Turma</h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={progressChartData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                  label={({ percent }) => `${(percent ? (percent * 100).toFixed(0) : 0)}%`}
-                >
-                  {progressChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS_PROGRESS[index % COLORS_PROGRESS.length]} />
-                  ))}
-                </Pie>
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Gráfico 2 */}
-          <div className="flex-1">
-            <h2 className="text-xl font-bold text-center mb-4">Média de Acertos</h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={correctnessChartData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                  label={({ percent }) => `${(percent ? (percent * 100).toFixed(0) : 0)}%`}
-                >
-                  {correctnessChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS_CORRECTNESS[index % COLORS_CORRECTNESS.length]} />
-                  ))}
-                </Pie>
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
       </div>
       <StudentsNavigation activePage="ranking" />
     </div>

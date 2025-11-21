@@ -63,7 +63,7 @@ export const createSuggestion = async (req: AuthenticatedRequest, res: Response)
         const result = await db.query('SELECT content FROM archives WHERE class_id = $1', [class_id]);
 
         if (result.rowCount === 0) {
-            return res.status(404).json({ success: false, message: 'Archives not found' });
+            console.log("Error: Archives not found");
         }
 
         let archivesContent = '\n# Files Contexts\n';

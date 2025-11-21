@@ -92,7 +92,7 @@ export default function QuestionMultipleChoice({ data, showResults, onValidation
                 <div className={getIndicatorClass(option.label, index)}>
                   {String.fromCharCode(65 + index)}
                 </div>
-                <span className="flex-1 text-center font-bold">{option.label}</span>
+                <span className="flex-1 text-left font-bold">{option.label}</span>
                 <div className="w-10 h-10 flex items-center justify-center font-bold" />
               </Label>
             ))}

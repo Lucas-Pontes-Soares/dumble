@@ -22,7 +22,7 @@ export const StudentPicture: React.FC<StudentPictureProps> = ({
   return (
     <Avatar className={className}>
       <AvatarImage src={imageUrl} alt={`@${student_name}`} />
-      <AvatarFallback className={`${getAvatarColor(student_id)} text-white`}>{getInitials(student_name)}</AvatarFallback>
+      <AvatarFallback className={`${getAvatarColor(student_id.toString())} text-white`}>{getInitials(student_name)}</AvatarFallback>
     </Avatar>
   );
 };
