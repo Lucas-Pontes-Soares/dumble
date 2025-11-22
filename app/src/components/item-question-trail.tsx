@@ -18,6 +18,7 @@ export interface Question {
 interface ItemQuestionTrailProps {
   question: Question;
   userType: 'teacher' | 'student';
+  questionNumber: number;
 }
 
 const DUMBLE_IMAGES = [
@@ -27,7 +28,7 @@ const DUMBLE_IMAGES = [
   '/DumbleCruzado.png'
 ];
 
-export default function ItemQuestionTrail({ question, userType }: ItemQuestionTrailProps) {
+export default function ItemQuestionTrail({ question, userType, questionNumber }: ItemQuestionTrailProps) {
   const { class_id } = useParams<{ class_id: string }>();
   const [open, setOpen] = useState(false);
   const [jwtToken, setJwtToken] = useState<string | null>(null);
@@ -138,7 +139,7 @@ export default function ItemQuestionTrail({ question, userType }: ItemQuestionTr
           >
             <img src="/Shine.png" alt="Brilho" className="absolute w-16 h-16 rounded-full object-cover z-20" />
             <div className="w-20 h-20 rounded-full flex items-center justify-center text-white z-30">
-              {question.id}
+              {questionNumber}
             </div>
           </div>
         </a>
@@ -148,7 +149,7 @@ export default function ItemQuestionTrail({ question, userType }: ItemQuestionTr
             className={`bg-[#CE82FF] w-20 h-20 rounded-full flex items-center justify-center font-bold text-2xl cursor-pointer transition-transform hover:top-1 relative z-10`}
           >
             <div className="w-20 h-20 rounded-full flex items-center justify-center text-white">
-              {question.id}
+              {questionNumber}
             </div>
           </div>
         </a>
@@ -157,7 +158,7 @@ export default function ItemQuestionTrail({ question, userType }: ItemQuestionTr
           className={`bg-gray-300 dark:bg-[#1f1f1f] w-20 h-20 rounded-full flex items-center justify-center font-bold text-2xl cursor-pointer transition-transform relative z-10`}
         >
           <div className="w-20 h-20 rounded-full flex items-center justify-center text-white">
-            {question.id}
+            {questionNumber}
           </div>
         </div>
       )}
