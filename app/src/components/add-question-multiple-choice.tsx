@@ -26,7 +26,7 @@ export default function AddQuestionMultipleChoice({ suggestion, submitAction, on
       setStatement(suggestion.statement || "");
       if (suggestion.options && suggestion.options.length > 0) {
         setOptions(suggestion.options);
-        const correctIndex = options.findIndex((opt: any) => opt.is_correct);
+        const correctIndex = suggestion.options.findIndex((opt: any) => opt.is_correct);
         setCorrectOptionIndex(correctIndex !== -1 ? correctIndex : 0);
       }
     }
