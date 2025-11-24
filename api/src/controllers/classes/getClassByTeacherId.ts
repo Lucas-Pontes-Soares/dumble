@@ -38,7 +38,7 @@ export const getClassByTeacherId = async (req: AuthenticatedRequest, res: Respon
         );
 
         if (result.rowCount === 0) {
-            return res.status(404).json({ message: 'Classes not found.' });
+            return res.status(200).json({ success: false, message: 'Classes not found.' });
         }
         
         return res.status(200).json({ success: true, classes: result.rows });
