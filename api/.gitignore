@@ -1,5 +1,6 @@
 node_modules
 .env
+dist
 
 students_pictures/*
 !students_pictures/students_pictures.md

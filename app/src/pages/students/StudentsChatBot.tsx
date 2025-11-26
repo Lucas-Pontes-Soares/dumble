@@ -141,7 +141,7 @@ export default function StudentsChatBot() {
 
     try {
       //const url_api = "http://localhost:3000/chat-bot-messages";
-      const url_api = "https://dumble-api-7eebc39b5a82.herokuapp.com/chat-bot-messages";
+      const url_api = "https://dumble-api.onrender.com";
 
       const response = await fetch(url_api, {
         method: "POST",
