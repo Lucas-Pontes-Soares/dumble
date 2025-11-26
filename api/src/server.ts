@@ -14,8 +14,8 @@ const corsOptions = {
   origin: 
   [
     //'http://localhost:5173', 
-    'https://dumble.onrender.com/',
-    'https://www.dumble.onrender.com/'
+    'https://dumble.onrender.com',
+    'https://www.dumble.onrender.com'
   ], // se deixar o IP do meu pc, só ele acessa o server
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
